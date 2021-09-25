@@ -24,7 +24,7 @@ Calepin takes inspiration in the amazing slate.js framework. Yet builded for Rea
 
 We think that throwing away the VDOM and building an editor for frameworks like Solid.js or Svelte is the way toward a very performant editor.
 
-But handling thousands of nodes is not something any framework can help with. So we plan to integrate a virtual dynamic rendering.
+But handling thousands of nodes is not something any framework can help with. We need to figure out a way to virtualize / paginate the editor.
 
 ### Colaboration
 
