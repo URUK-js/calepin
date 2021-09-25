@@ -1,0 +1,79 @@
+[data-calepin-editor] * {
+  @apply transition-all;
+}
+[data-calepin-editor] {
+  @apply mx-auto p-10 mt-10 transition-all;
+  text-align: left;
+  outline: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+[data-calepin-editor][data-font="mono"] * {
+  @apply font-mono;
+}
+
+[data-calepin-editor][data-font="serif"] * {
+  @apply font-serif;
+}
+[data-calepin-editor][data-font="sans"] * {
+  @apply font-sans;
+}
+
+[data-calepin-editor][data-full-width="false"] {
+  @apply max-w-4xl;
+}
+[data-calepin-editor][data-full-width="true"] {
+  @apply max-w-full;
+}
+
+h1 {
+  @apply text-6xl font-extrabold leading-normal mt-0 mb-2 relative;
+}
+h2 {
+  @apply text-5xl font-extrabold leading-normal mt-0 mb-2 relative;
+}
+h3 {
+  @apply text-4xl font-extrabold leading-normal mt-0 mb-2 relative;
+}
+h4 {
+  @apply text-3xl font-bold  leading-normal mt-0 mb-2 relative;
+}
+h5 {
+  @apply text-2xl font-bold   leading-normal mt-0 mb-2 relative;
+}
+h6 {
+  @apply text-xl font-bold  leading-normal mt-0 mb-2 relative;
+}
+
+p {
+  @apply text-base font-normal leading-relaxed mt-0 mt-4 mb-4 relative;
+}
+
+blockquote {
+  @apply border-l-2 text-gray-700 border-gray-400 pl-4 mt-4 mb-4 relative;
+}
+
+[data-calepin-editor][data-small-text="true"] h1 {
+  @apply text-3xl;
+}
+[data-calepin-editor][data-small-text="true"] h2 {
+  @apply text-2xl;
+}
+[data-calepin-editor][data-small-text="true"] h3 {
+  @apply text-xl;
+}
+[data-calepin-editor][data-small-text="true"] h4 {
+  @apply text-lg;
+}
+[data-calepin-editor][data-small-text="true"] h5 {
+  @apply text-base;
+}
+[data-calepin-editor][data-small-text="true"] h6 {
+  @apply text-sm;
+}
+[data-calepin-editor][data-small-text="true"] p {
+  @apply text-sm;
+}
+[data-calepin-editor][data-small-text="true"] blockquote {
+  @apply text-sm;
+}
