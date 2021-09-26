@@ -1,5 +1,6 @@
 import { UndoManager } from "yjs";
-import { Doc, YMap } from "yjs/dist/src/internals";
+import { Doc, YMap, YText } from "yjs/dist/src/internals";
+import { Cursor } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataCalepinType = "data-calepin-block" | "data-calepin-leave";
@@ -30,6 +31,7 @@ export interface EditorProps extends Record<any, any> {
   spellcheck?: boolean;
   className?: string;
   id?: string;
+
   renderBefore?: () => any;
   renderAfter?: () => any;
   onChange?: (editor: Editor) => void;
@@ -38,6 +40,8 @@ export interface EditorProps extends Record<any, any> {
 }
 
 export interface Editor {
+  selection: () => Range | undefined;
+  cursor: () => Cursor | undefined;
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
   renderLeaf: ({ attributes, string, leaf }: renderLeafProps) => any;
   undoManager: UndoManager;
@@ -70,10 +74,17 @@ export type Position = {
   path: number[];
   node?: HTMLElement | Node;
   offset: number;
+  leaf: YText;
 };
 export type Range = {
   start: Position;
   end: Position;
+  arePathsEquals: boolean;
   length: number;
+  domRange: {
+    domRange: any;
+    boundingRect: DOMRect;
+  };
+  selection: Selection;
   type?: "multinodes" | "singlenode";
 };

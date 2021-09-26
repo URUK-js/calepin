@@ -2,13 +2,14 @@ import { createMemo, createSignal } from "solid-js";
 import { useEditor, useNode } from "calepin-solid";
 import { traverseDocument } from "calepin";
 import Toggle from "./Toggle";
-
+import { useSelection, useSelectionChange } from "../../../../calepin-solid/src";
+import { HooverMenu } from "../HooverMenu";
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
   const configMap = editor.toYJS().doc?.getMap("config");
   const config = useNode(configMap!);
-
+  console.log(editor);
   const count = createMemo(() => {
     let blocks = 0;
     let leafs = 0;
@@ -28,6 +29,7 @@ const Menu = ({}) => {
   let ref;
   return (
     <>
+      <HooverMenu />
       <div className="flex w-full z-10 sticky top-0 left-0 h-8 bg-white  justify-end px-10 items-center">
         <div className=" mx-10">
           {count().blocks}-{count().leafs}-{count().characters}

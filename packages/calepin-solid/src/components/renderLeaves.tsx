@@ -19,6 +19,19 @@ export const renderLeaves = ({ string, attributes, leaf, ref }: any): JSXElement
     if (leaf().underline) {
       children = <u>{children}</u>;
     }
+    if (leaf().strikethrough) {
+      children = <span style={{ "text-decoration": "line-through" }}>{children}</span>;
+    }
+    if (leaf().code) {
+      children = (
+        <span
+          style={{ color: "#EB5757", "font-family": "Space Mono !important" }}
+          className="rounded-sm bg-gray-200 font-mono px-2 "
+        >
+          {children}
+        </span>
+      );
+    }
     return children;
   });
 

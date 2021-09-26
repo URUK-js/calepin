@@ -76,6 +76,7 @@ export const formatText = (
   editor: Editor | Pick<Editor, "toYJS">,
   { format, at, range, yText }: formatTextOperation
 ) => {
+  console.log({ editor });
   const doc = editor.toYJS();
   let newPath = 0;
   doc.doc?.transact(() => {

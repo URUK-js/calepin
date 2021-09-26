@@ -1,7 +1,54 @@
 export class Cursor {
+  container: HTMLDivElement;
+  selection: () => Range;
+  constructor({ container, selection }) {
+    this.container = container;
+    this.selection = selection;
+  }
+  getEditorOffset = (selection: Selection): number => {
+    const { focusNode, focusOffset } = selection;
+    var charCount = -1,
+      node;
+    if (!focusNode) {
+      const selection = window.getSelection();
+      focusNode = selection.focusNode;
+      focusOffset = selection?.focusOffset;
+    }
+
+    if (focusNode) {
+      if (Cursor._isChildOf(focusNode, this.container)) {
+        node = focusNode;
+        charCount = focusOffset;
+
+        while (node) {
+          if (node === this.container) {
+            break;
+          }
+
+          if (node.previousSibling) {
+            node = node.previousSibling;
+            charCount += node.textContent.length;
+          } else {
+            node = node.parentNode;
+            if (node === null) {
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return charCount;
+  };
+
   static getCurrentCursorPosition(parentElement: HTMLElement | Node, focusNode?: Node, focusOffset?: number) {
     var charCount = -1,
       node;
+    if (!focusNode) {
+      const selection = window.getSelection();
+      focusNode = selection.focusNode;
+      focusOffset = selection?.focusOffset;
+    }
 
     if (focusNode) {
       if (Cursor._isChildOf(focusNode, parentElement)) {
@@ -91,9 +138,7 @@ export class Cursor {
 
   static _isChildOf(node, parentElement) {
     while (node !== null) {
-      if (node === parentElement) {
-        return true;
-      }
+      if (node === parentElement) return true;
       node = node.parentNode;
     }
 

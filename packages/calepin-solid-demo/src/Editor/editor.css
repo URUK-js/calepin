@@ -12,7 +12,7 @@
   @apply font-mono;
 }
 
-[data-calepin-editor][data-font="serif"] * {
+[data-calepin-editor][data-font="serif"] * :not(.font-mono) {
   @apply font-serif;
 }
 [data-calepin-editor][data-font="sans"] * {

@@ -4,6 +4,9 @@ import { useHistory, EditorContext, useEditor, useNode } from "./hooks";
 import { toJSON, toYJS, EditorProps, onDragOver, onDrop, onBeforeInput, onKeyDown } from "calepin";
 import * as Y from "yjs";
 
+import { useSelectionListener } from "./hooks/useSelectionListener";
+import { Cursor, Editor as EditorType, Range } from "calepin/src";
+
 export const Editor = ({
   value,
   renderBlock = renderBlockDefault,
@@ -16,11 +19,22 @@ export const Editor = ({
   id = "sltye-editor",
   props
 }: EditorProps) => {
+  let editorId = createMemo(() =>
+    Math.random()
+      .toString(36)
+      .substring(2, 9)
+  );
   let [editorRef, setEditorRef] = createSignal<HTMLDivElement | undefined>();
+  let [cursor, setCursor] = createSignal<Cursor>();
+  let [selection, setSelection] = createSignal<Range | undefined>();
+
   const doc = createMemo(() => toYJS(value).getMap("document"));
   const undoManager = useHistory(doc);
   const config = useNode(doc().doc?.getMap("config")!);
-  const editor = createMemo(() => ({
+  const editor = createMemo<EditorType>(() => ({
+    editorId: editorId(),
+    selection,
+    cursor,
     renderBlock,
     renderLeaf,
     undoManager,
@@ -31,20 +45,25 @@ export const Editor = ({
     toUpdate: () => Y.encodeStateAsUpdateV2(doc().doc as Y.Doc),
     toJSON: () => toJSON(doc().doc as Y.Doc)
   }));
+  useSelectionListener(editor(), setSelection);
+  console.log(editor());
   return (
     <EditorContext value={editor()}>
       {renderBefore && renderBefore()}
       <div
-        {...props(editor(), config())}
+        {...props(useEditor(), config())}
         onDrop={[onDrop, useEditor()]}
-        onDragOver={[onDragOver, editor()]}
-        onDragStart={[onDragOver, editor()]}
+        onDragOver={[onDragOver, useEditor()]}
+        onDragStart={[onDragOver, useEditor()]}
         className={className}
         id={id}
         spellcheck={spellcheck}
-        data-calepin-editor
+        data-calepin-editor={editorId()}
         data-gram={true}
-        ref={setEditorRef}
+        ref={(container) => {
+          setCursor(new Cursor({ container, selection }));
+          setEditorRef(container);
+        }}
         contentEditable={true}
         //@ts-ignore
         onBeforeInput={[onBeforeInput, [doc, onChange, useEditor()]]}

@@ -19,7 +19,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
   if (selection === null) return;
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed } = selection;
 
-  const range = isCollapsed ? undefined : getRange(selection);
+  const range = isCollapsed ? undefined : getRange(editor, selection);
 
   let offset = Cursor.getCurrentCursorPosition(
     editorDiv,
@@ -32,7 +32,6 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
   console.log({ path });
   if (currentNode !== focusNode) {
     currentNode = focusNode!;
-
     currentText = getTextLeave(doc(), path);
   }
   console.log({ currentText, path, anchorNode, focusNode, selection });
