@@ -1,14 +1,14 @@
 {
+  "typeAcquisition": {
+    "include": ["jest", "ts-jest"]
+  },
   "compilerOptions": {
-    "strict": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest"],
     "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "types": ["vite/client", "jest"],
-    "exclude": ["tests", "dist"]
-  }
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/*"]
 }

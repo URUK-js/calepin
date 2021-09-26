@@ -1,6 +1,6 @@
-import { UndoManager } from "yjs";
+// import { UndoManager } from "yjs";
 
-export const onKeyDown = (undoManager: UndoManager, e: KeyboardEvent) => {
+export const onKeyDown = (undoManager: any, e: KeyboardEvent) => {
   if (e.key === "z" && e.metaKey) {
     return undoManager.undo();
   }

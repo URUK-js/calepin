@@ -4,8 +4,9 @@ import { Doc, YMap } from "yjs/dist/src/internals";
 type Accessor<T> = () => T;
 export type dataCalepinType = "data-calepin-block" | "data-calepin-leave";
 export type attributes = Accessor<{
-  ["data-calepin-path"]: number[];
-  [x: dataCalepinType[1 | 2]]: any;
+  "data-calepin-path": number[];
+  "data-calepin-block"?: boolean;
+  "data-calepin-leaf"?: boolean;
 }>;
 export type children = any;
 export type block = Accessor<Record<any, any>>;
@@ -73,5 +74,6 @@ export type Position = {
 export type Range = {
   start: Position;
   end: Position;
+  length: number;
   type?: "multinodes" | "singlenode";
 };

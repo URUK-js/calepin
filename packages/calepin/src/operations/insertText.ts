@@ -1,6 +1,8 @@
 import { YText } from "yjs/dist/src/internals";
 import { Editor, Position, Range } from "../types";
 import { arePathsEquals, getTextLeave, traverseDocument } from "../utils";
+import { deleteText } from "./deleteText";
+import { removeEmptyText } from "./removeEmptyText";
 
 export type insertTextOperation = {
   at?: Position;
@@ -26,23 +28,26 @@ export const insertText = (editor: Editor, { at, range, text, yText }: insertTex
     } else {
       const startPathString = range.start.path.join(",");
       const endPathString = range.end.path.join(",");
-      traverseDocument(
-        editor,
-        (isText, node, path) => {
-          if (isText) {
-            const yText = node.get("text") as YText;
-            if (path.join(",") === startPathString) {
-              yText.delete(range.start.offset, yText.length);
-              yText.insert(range.start.offset, text);
-            } else if (path > range.start.path && path < range.end.path) {
-              yText.delete(0, yText.length);
-            } else if (path.join(",") === endPathString) {
-              yText.delete(0, range.end.offset);
+      editor.doc().transact(() => {
+        traverseDocument(
+          editor,
+          (isText, node, path) => {
+            if (isText) {
+              const yText = node.get("text") as YText;
+              if (path.join(",") === startPathString) {
+                yText.delete(range.start.offset, yText.length);
+                yText.insert(range.start.offset, text);
+              } else if (path > range.start.path && path < range.end.path) {
+                yText.delete(0, yText.length);
+              } else if (path.join(",") === endPathString) {
+                yText.delete(0, range.end.offset);
+              }
+              if (yText.length === 0) removeEmptyText(yText);
             }
-          }
-        },
-        { start: range.start.path[0], end: range.end.path[0] + 1 }
-      );
+          },
+          { start: range.start.path[0], end: range.end.path[0] + 1 }
+        );
+      });
     }
   }
 };

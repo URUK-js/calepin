@@ -2,7 +2,7 @@
   @apply transition-all;
 }
 [data-calepin-editor] {
-  @apply mx-auto px-16 mt-10 transition-all;
+  @apply mx-auto md:px-16 px-10 mt-10 transition-all;
   text-align: left;
   outline: none;
   white-space: pre-wrap;
@@ -23,7 +23,7 @@
   @apply max-w-5xl;
 }
 [data-calepin-editor][data-full-width="true"] {
-  @apply max-w-full;
+  @apply max-w-full  md:px-16 px-2;
 }
 
 h1 {

@@ -31,9 +31,6 @@ export const getYNode = (node: any, ynode = new Y.Map()) => {
 export const toYJS = (json: Value) => {
   const ydoc = new Y.Doc();
   const document = ydoc.getMap("document");
-  // const children = new Y.Array
-
-  //   yxmlText.toString(); // => 'abc'
 
   getYNode(json, document);
 

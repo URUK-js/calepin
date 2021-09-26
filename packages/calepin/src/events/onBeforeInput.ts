@@ -1,5 +1,5 @@
 import { YText } from "yjs/dist/src/internals";
-import { Cursor, getLeaf, getTextLeave, getRange, getDataTransfert } from "../utils";
+import { Cursor, getLeaf, getTextLeave, getRange, getDataTransfer } from "../utils";
 import { onBeforeInputData } from "../types";
 import { splitNode, insertText, deleteText, formatText } from "../operations";
 
@@ -27,14 +27,14 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     isCollapsed ? focusOffset : range?.start.offset
   );
 
-  const rangeLength = selection.getRangeAt(0).toString().length;
+  const rangeLength = selection.getRangeAt(0)?.toString()?.length;
   const [leaf, path] = getLeaf(anchorNode as HTMLElement);
+  console.log({ path });
+  if (currentNode !== focusNode) {
+    currentNode = focusNode!;
 
-  // if (currentNode !== focusNode) {
-
-  currentNode = focusNode!;
-  currentText = getTextLeave(doc(), path);
-  // }
+    currentText = getTextLeave(doc(), path);
+  }
   console.log({ currentText, path, anchorNode, focusNode, selection });
   if (!currentText) return;
   const start = Math.min(anchorOffset, focusOffset);
@@ -50,7 +50,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         e.inputType === "insertLineBreak"
           ? "\n"
           : e.inputType === "insertFromPaste"
-          ? getDataTransfert(e)
+          ? getDataTransfer(e)
           : (e.data as string);
 
       insertText(editor, {
@@ -59,12 +59,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         at: { path, node: anchorNode!, offset: anchorOffset },
         yText: currentText
       });
-      if (rangeLength > 0 && anchorNode === focusNode) {
-        Cursor.setCurrentCursorPosition(offset - rangeLength + text?.length, editorDiv);
-      } else {
-        console.log("ici");
-        Cursor.setCurrentCursorPosition(offset + text?.length, editorDiv);
-      }
+      Cursor.setCurrentCursorPosition(offset + text?.length, editorDiv);
       break;
     }
     case "deleteContentBackward": {
@@ -74,7 +69,11 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         at: { path, node: anchorNode!, offset: anchorOffset - 1 },
         yText: currentText
       });
-      Cursor.setCurrentCursorPosition(rangeLength === 0 ? offset - 1 : offset, editorDiv);
+
+      Cursor.setCurrentCursorPosition(
+        rangeLength === 0 ? (anchorOffset === 1 ? offset : offset - 1) : offset,
+        editorDiv
+      );
       break;
     }
     case "deleteByDrag":
@@ -188,12 +187,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
       setPosition(focusOffset - anchorOffset > 0 ? -rangeLength + data.length : 0 + data.length);
     }
   }
-  // if (currentText?.length === 0) {
-  //   const parent = currentText.parent?.parent as YArray<any>;
-  //   const [index] = path.reverse();
-  //   parent.delete(index, 1);
-  //   console.log("delete", currentText.parent);
-  // }
+
   console.log(editor.toJSON());
 
   onChange && onChange(editor);

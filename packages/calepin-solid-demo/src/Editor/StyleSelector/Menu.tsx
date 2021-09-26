@@ -2,6 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import { useEditor, useNode } from "calepin-solid";
 import { traverseDocument } from "calepin";
 import Toggle from "./Toggle";
+
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
@@ -104,7 +105,7 @@ const Menu = ({}) => {
         </div>
       </div>
       <img
-        className={` w-full object-cover ${config().showCover ? "h-72" : "h-0"} transition-all  `}
+        className={` w-full object-cover ${config().showCover ? "h-72 opacity-100" : "h-0 opacity-0"} transition-all  `}
         src="https://images.unsplash.com/photo-1587262538177-842ad13e290c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
         alt=""
       />

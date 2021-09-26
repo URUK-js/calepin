@@ -17,11 +17,15 @@
     "src"
   ],
   "scripts": {
+    "build-core": "tsdx build --transpileOnly",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
     "jest": "^27.2.2",
     "ts": "^0.2.2",
     "yjs": "^13.5.12"
+  },
+  "devDependencies": {
+    "tsdx": "^0.14.1"
   }
 }
