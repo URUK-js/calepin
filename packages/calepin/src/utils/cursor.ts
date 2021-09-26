@@ -43,6 +43,21 @@ export class Cursor {
     }
   }
 
+  static selectNode(node, startOffset, endOffset, selection) {
+    if (!selection) selection = window.getSelection();
+    const R = document.createRange();
+
+    let textNode = node;
+    while (textNode?.nodeType !== 3 && textNode?.firstChild) {
+      textNode = textNode?.firstChild;
+    }
+
+    selection.removeAllRanges();
+    R.setStart(textNode, startOffset);
+    R.setEnd(textNode, endOffset);
+    selection.addRange(R);
+  }
+
   static _createRange(node, chars, range) {
     if (!range) {
       range = document.createRange();

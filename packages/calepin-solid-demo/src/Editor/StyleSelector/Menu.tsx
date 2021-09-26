@@ -24,11 +24,10 @@ const Menu = ({}) => {
     return { blocks, leafs, characters };
   });
 
-  console.log(config());
   let ref;
   return (
     <>
-      <div className="flex w-full z-10 sticky top-0 left-0 h-10 bg-gray-50 shadow-sm justify-end px-10 items-center">
+      <div className="flex w-full z-10 sticky top-0 left-0 h-8 bg-white  justify-end px-10 items-center">
         <div className=" mx-10">
           {count().blocks}-{count().leafs}-{count().characters}
         </div>
@@ -42,7 +41,7 @@ const Menu = ({}) => {
               setOpen((open) => !open);
             }, 100);
           }}
-          className="p-2 hover:bg-gray-100 "
+          className="p-1 h-full hover:bg-gray-100 "
         >
           <Icon className="text-black w-5 h-5 " />
         </button>
@@ -66,7 +65,7 @@ const Menu = ({}) => {
                     const config = editor.config();
                     config.set("font", font.toLowerCase());
                   }}
-                  className={`justify-center rounded-sm p-2 grid h-20 cursor-pointer items-center`}
+                  className={`hover:bg-gray-100 rounded-sm justify-center rounded-sm p-2 grid h-20 cursor-pointer items-center`}
                 >
                   <div
                     className={`${font === "Sans" ? "font-sans" : font === "Serif" ? "font-serif" : "font-mono"} ${
@@ -95,8 +94,20 @@ const Menu = ({}) => {
             label={"Small text"}
             value={createMemo(() => !!config().smallText)}
           />
+          <Toggle
+            onChange={(value) => {
+              configMap?.set("showCover", value);
+            }}
+            label={"Show cover"}
+            value={createMemo(() => !!config().showCover)}
+          />
         </div>
       </div>
+      <img
+        className={` w-full object-cover ${config().showCover ? "h-72" : "h-0"} transition-all  `}
+        src="https://images.unsplash.com/photo-1587262538177-842ad13e290c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
+        alt=""
+      />
     </>
   );
 };

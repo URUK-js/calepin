@@ -74,7 +74,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         at: { path, node: anchorNode!, offset: anchorOffset - 1 },
         yText: currentText
       });
-      Cursor.setCurrentCursorPosition(offset, editorDiv);
+      Cursor.setCurrentCursorPosition(rangeLength === 0 ? offset - 1 : offset, editorDiv);
       break;
     }
     case "deleteByDrag":
@@ -106,9 +106,6 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
       selection.collapse(textNode as ChildNode, 0);
       break;
     }
-    // case "deleteByDrag": {
-    //   console.log({ e });
-    // }
 
     case "insertFromDrop": {
       setTimeout(() => {
@@ -127,6 +124,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
           }
         }
       }, 50);
+      break;
     }
     case "deleteSoftLineBackward": {
       break;
@@ -165,37 +163,17 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
       // Cursor.setCurrentCursorPosition(0, focusNode, selection);
 
       if (range?.type === "singlenode") {
-        // let newNode = editorDiv.querySelector(
-        //   `[data-calepin-path="${newPath === -1 ? path : [...path.slice(0, path.length - 1), newPath]}"]`
-        // );
         let newNode =
           newPath === -1
             ? beforeElement
-            : editorDiv.querySelector(
-                `[data-calepin-path="${
-                  newPath === -1
-                    ? path
-                    : [...path.slice(0, path.length - 1)].concat(
-                        newPath === -1 ? [path.slice().reverse()[0]] : [newPath]
-                      )
-                }"]`
-              );
-        const R = document.createRange();
+            : editorDiv.querySelector(`[data-calepin-path="${[...path.slice(0, path.length - 1), newPath]}"]`);
 
-        let textNode = newNode;
-        while (textNode?.nodeType !== 3 && textNode?.firstChild) {
-          textNode = textNode?.firstChild;
-        }
-
-        console.log({ newNode, newPath, rangeLength, textNode, beforeOffset, rangeLength });
-        selection.removeAllRanges();
-        R.setStart(textNode, newPath === -1 ? beforeOffset : 0);
-        R.setEnd(textNode, newPath === -1 ? beforeOffset + rangeLength : rangeLength);
-        selection.addRange(R);
-
-        // R.setStart(textNode, 0);
-        // R.setEnd(textNode, textNode?.textContent?.length - 1);
-        // selection.selectAllChildren(textNode as ChildNode);
+        Cursor.selectNode(
+          newNode,
+          newPath === -1 ? beforeOffset : 0,
+          newPath === -1 ? beforeOffset + rangeLength : rangeLength,
+          selection
+        );
       }
       break;
     }

@@ -2,7 +2,7 @@
   @apply transition-all;
 }
 [data-calepin-editor] {
-  @apply mx-auto p-10 mt-10 transition-all;
+  @apply mx-auto px-16 mt-10 transition-all;
   text-align: left;
   outline: none;
   white-space: pre-wrap;
@@ -20,29 +20,29 @@
 }
 
 [data-calepin-editor][data-full-width="false"] {
-  @apply max-w-4xl;
+  @apply max-w-5xl;
 }
 [data-calepin-editor][data-full-width="true"] {
   @apply max-w-full;
 }
 
 h1 {
-  @apply text-6xl font-extrabold leading-normal mt-0 mb-2 relative;
-}
-h2 {
   @apply text-5xl font-extrabold leading-normal mt-0 mb-2 relative;
 }
-h3 {
+h2 {
   @apply text-4xl font-extrabold leading-normal mt-0 mb-2 relative;
 }
+h3 {
+  @apply text-3xl font-extrabold leading-normal mt-0 mb-2 relative;
+}
 h4 {
-  @apply text-3xl font-bold  leading-normal mt-0 mb-2 relative;
+  @apply text-2xl font-bold  leading-normal mt-0 mb-2 relative;
 }
 h5 {
-  @apply text-2xl font-bold   leading-normal mt-0 mb-2 relative;
+  @apply text-xl font-bold   leading-normal mt-0 mb-2 relative;
 }
 h6 {
-  @apply text-xl font-bold  leading-normal mt-0 mb-2 relative;
+  @apply text-base font-bold  leading-normal mt-0 mb-2 relative;
 }
 
 p {
