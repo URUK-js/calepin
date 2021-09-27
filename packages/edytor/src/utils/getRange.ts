@@ -2,9 +2,22 @@ import { Editor, EdytorSelection } from "../types";
 import { getLeaf } from ".";
 import { arePathsEquals } from "./arePathsEquals";
 import { getTextLeave } from "./getTextLeave";
+import "../utils/nodePath";
+
+declare global {
+  interface Element {
+    index: number;
+    path: number[];
+  }
+  interface Node {
+    index: number;
+    path: number[];
+  }
+}
 
 export const getRange = (editor: Editor, selection: Selection): EdytorSelection => {
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed, rangeCount } = selection;
+
   if (focusNode === null) return;
   const [leaf1, path1] = getLeaf(anchorNode as HTMLElement);
   const [leaf2, path2] = getLeaf(focusNode as HTMLElement);
@@ -28,7 +41,7 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
         offset: !isFollowing ? anchorOffset : focusOffset,
         leaf: getTextLeave(editor.toYJS(), !isFollowing ? path1 : path2)
       };
-  console.log(rangeCount);
+
   const range = rangeCount >= 1 ? selection?.getRangeAt(0) : undefined;
 
   let edytorSelection = {

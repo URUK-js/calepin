@@ -38,6 +38,7 @@ export const Editor = ({
     renderBlock,
     renderLeaf,
     undoManager,
+
     editorRef,
     doc: () => doc().doc!,
     config: () => doc().doc?.getMap("config")!,
@@ -69,7 +70,7 @@ export const Editor = ({
         onBeforeInput={[onBeforeInput, [doc, onChange, useEditor()]]}
         onKeyDown={[onKeyDown, undoManager]}
       >
-        {renderChildren({ parentAttributes: createMemo(() => ({ ["data-edytor-path"]: [] })), node: doc() })}
+        {renderChildren({ node: doc() })}
       </div>
       {renderAfter && renderAfter()}
     </EditorContext>

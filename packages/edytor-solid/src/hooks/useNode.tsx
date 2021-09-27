@@ -15,13 +15,12 @@ const extractMap = (node: YMap<any>) => {
 export const useNode = (node: YMap<any>) => {
   const [value, setValue] = createSignal(extractMap(node));
   const observer = () => {
+    console.log("observe");
     setValue(extractMap(node));
   };
 
   onMount(() => {
     node.observe(observer);
-    console.log();
-    console.log(node._item?.info);
     // console.log(ref);
     // const observer = new IntersectionObserver(onVisibilityChange, { threshold: 0, root: null, rootMargin: "20%" });
     // ref && observer.observe(ref());

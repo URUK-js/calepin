@@ -1,43 +1,43 @@
 import { createMemo, JSXElement } from "solid-js";
 
-export const renderLeaves = ({ string, attributes, leaf, ref }: any): JSXElement => {
-  const children = createMemo(() => {
-    let children = string();
-    if (!children.length) children = "\uFEFF";
+export const renderLeaves = ({ text, attributes, leaf, ref }: any): JSXElement => {
+  const content = createMemo(() => {
+    let leafNode = text();
+
+    if (!leafNode.length) leafNode = "\uFEFF";
     if (leaf().bold) {
-      children = <strong>{children}</strong>;
+      leafNode = <strong>{leafNode}</strong>;
     }
 
     if (leaf().code) {
-      children = <code>{children}</code>;
+      leafNode = <code>{leafNode}</code>;
     }
 
     if (leaf().italic) {
-      children = <em>{children}</em>;
+      leafNode = <em>{leafNode}</em>;
     }
 
     if (leaf().underline) {
-      children = <u>{children}</u>;
+      leafNode = <u>{leafNode}</u>;
     }
     if (leaf().strikethrough) {
-      children = <span style={{ "text-decoration": "line-through" }}>{children}</span>;
+      leafNode = <span style={{ "text-decoration": "line-through" }}>{leafNode}</span>;
     }
     if (leaf().code) {
-      children = (
+      leafNode = (
         <span
           style={{ color: "#EB5757", "font-family": "Space Mono !important" }}
           className="rounded-sm bg-gray-200 font-mono px-2 "
         >
-          {children}
+          {leafNode}
         </span>
       );
     }
-    return children;
+    return leafNode;
   });
-
   return (
-    <span {...attributes()} ref={ref}>
-      {children()}
+    <span {...attributes} ref={ref}>
+      {content()}
     </span>
   );
 };

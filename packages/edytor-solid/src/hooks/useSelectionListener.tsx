@@ -4,8 +4,10 @@ import { useEditor } from "./useEditor";
 
 export const useSelectionListener = (editor: Editor, setSelection: () => void) => {
   const onSelectionEnd = (e: Event) => {
-    const editorId = e.target?.activeElement.getAttribute("data-edytor-editor");
+    const editorDiv = e.target?.activeElement as HTMLDivElement;
+    const editorId = editorDiv.getAttribute("data-edytor-editor");
     if (editorId === editor.editorId) {
+      console.log(e);
       setSelection(getRange(editor, window.getSelection()));
       // console.log(editor.selection());
     }

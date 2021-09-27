@@ -2,7 +2,7 @@ import { YText } from "yjs/dist/src/internals";
 import { Cursor, getLeaf, getTextLeave, getRange, getDataTransfer } from "../utils";
 import { onBeforeInputData } from "../types";
 import { splitNode, insertText, deleteText, formatText } from "../operations";
-
+import { Rangy } from "../utils/rangy";
 let currentNode = undefined as Node | undefined;
 let currentPath = undefined as string | undefined;
 let currentText = undefined as YText | undefined;
@@ -129,6 +129,8 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
     case "formatItalic":
     case "formatBold": {
+      // const R = new Rangy(editorDiv);
+      // R.saveSelection();
       const beforeElement = editorDiv.querySelector(
         `[data-edytor-path="${[...path.slice(0, path.length - 1), path.slice().reverse()[0] - 1]}"]`
       );
@@ -140,6 +142,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         format: e.inputType === "formatItalic" ? "italic" : "bold"
       });
 
+      // return R.restoreSelection();
       // Cursor.setCurrentCursorPosition(0, focusNode, selection);
 
       if (range?.type === "singlenode") {
