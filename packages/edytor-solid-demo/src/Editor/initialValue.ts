@@ -1,7 +1,7 @@
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam delectus velit laudantium officiis itaque eveniet, similique assumenda porro voluptatibus eos ducimus reiciendis saepe magnam illum perferendis quas asperiores animi rerum.";
 const HEADINGS = 1;
-const PARAGRAPHS = 2;
+const PARAGRAPHS = 1;
 
 export const initialValue = () => {
   let v = {

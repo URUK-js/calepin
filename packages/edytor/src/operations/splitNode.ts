@@ -2,53 +2,70 @@ import * as Y from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { getYNode } from "../utils";
 import { Editor, Position, EdytorSelection } from "../types";
-import { getTextLeave } from "../utils";
 import { deleteText, insertNode } from ".";
-
-// type splitOperation = {
-//   path: number[];
-//   position: number;
-// };
 
 export type splitNodeOperation = {
   at: Position;
   range?: EdytorSelection;
   yText?: YText;
 };
-export const splitNode = (editor: Editor | Pick<Editor, "toYJS">, { at, range, yText }: splitNodeOperation) => {
+
+export const splitNode = (editor: Editor | Pick<Editor, "toYJS" | "selection">) => {
   const doc = editor.toYJS();
-  const [indexOfNode] = at?.path;
-  const [indexOfText] = at?.path.slice().reverse();
 
+  const { start, end, type, length, edges } = editor.selection();
+  const [indexOfAncestor] = start?.path;
+  const [indexOfLeaf] = start?.path.slice().reverse();
   doc.doc?.transact(() => {
-    if (range) {
-      deleteText(editor, { at, range, yText });
-    }
+    const split = () => {
+      const leaf = start.leaf;
+      const branch = leaf.parent as YMap<any>;
+      const node = branch.parent as YArray<any>;
+      const rootArray = doc.get("children") as YArray<any>;
 
-    const text = getTextLeave(doc, at.path);
-    const rootArray = doc.get("children") as YArray<any>;
-    const children = text.parent?.parent as YArray<any>;
-    const parent = children.parent as YMap<any>;
-
-    const rightNodes = children.toArray().filter((_, i) => i > indexOfText);
-    const right = text?.toString()?.substring(at?.offset, text.length);
-
-    if (indexOfText === 0 && at.offset === 0) {
-      insertNode(doc, indexOfNode);
-    } else if (right) {
-      text.delete(at?.offset, right.length);
-      const { text: _, ...props } = parent?.toJSON();
+      const rightNodes = node.toArray().filter((_, i) => i > indexOfLeaf);
+      const right = leaf?.toString()?.substring(start?.offset, leaf.length);
+      console.log(rightNodes);
+      leaf.delete(start?.offset, right.length);
+      const { text: _, ...props } = branch?.toJSON();
       const newNode = new Y.Map();
-      rootArray.insert(indexOfNode + 1, [newNode]);
+      rootArray.insert(indexOfAncestor + 1, [newNode]);
       getYNode(
-        { ...props, children: [{ ...text.parent?.toJSON(), text: right }, ...rightNodes.map((x) => x.toJSON())] },
+        { ...props, children: [{ ...branch?.toJSON(), text: right }, ...rightNodes.map((x) => x.toJSON())] },
         newNode
       );
+      node.delete(indexOfLeaf + 1, rightNodes.length);
+    };
 
-      children.delete(indexOfText + 1, rightNodes.length);
-    } else {
-      insertNode(doc, indexOfNode + 1);
+    let doSplit = !(edges.start || edges.end);
+    // empty node of the node => just insert en empty paragraph before
+
+    if (edges.end && edges.start) {
+      insertNode(doc, indexOfAncestor);
+    } else if (edges.end) {
+      // end of the node => just insert en empty paragraph before
+      insertNode(doc, indexOfAncestor + 1);
+    } else if (edges.start) {
+      // start of the node => just insert en empty paragraph after
+      insertNode(doc, indexOfAncestor);
+    }
+
+    switch (type) {
+      case "collapsed": {
+        doSplit && split();
+
+        break;
+      }
+      case "singlenode": {
+        deleteText(editor, { start, end, length, type });
+        doSplit && split();
+
+        break;
+      }
+      case "multinodes": {
+        deleteText(editor, { start, end, length, type });
+      }
     }
   });
-  return indexOfNode + (indexOfText === 0 && at.offset === 0 ? 0 : 1);
+  return indexOfAncestor + (edges.end && edges.start ? 1 : indexOfLeaf === 0 && start.offset === 0 ? 0 : 1);
 };

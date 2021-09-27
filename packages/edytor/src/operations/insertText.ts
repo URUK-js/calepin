@@ -29,18 +29,18 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
       editor.doc().transact(() => {
         traverseDocument(
           editor,
-          (isText, node, path) => {
+          (isText, branch, path) => {
             if (isText) {
-              const yText = node.get("text") as YText;
+              const leaf = branch.get("text") as YText;
               if (path.join(",") === startPathString) {
-                yText.delete(start.offset, yText.length);
-                yText.insert(start.offset, text);
+                leaf.delete(start.offset, leaf.length);
+                leaf.insert(start.offset, text);
               } else if (path > start.path && path < end.path) {
-                yText.delete(0, yText.length);
+                leaf.delete(0, leaf.length);
               } else if (path.join(",") === endPathString) {
-                yText.delete(0, end.offset);
+                leaf.delete(0, end.offset);
               }
-              if (yText.length === 0) removeEmptyText(yText);
+              if (leaf.length === 0) removeEmptyText(leaf);
             }
           },
           { start: start.path[0], end: end.path[0] + 1 }

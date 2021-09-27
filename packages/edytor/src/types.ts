@@ -89,3 +89,15 @@ export type EdytorSelection = {
   selection: Selection;
   type?: "multinodes" | "collapsed" | "singlenode";
 };
+
+export interface ContentTree {
+  children: Node;
+  [key: string]: any;
+}
+export type Node = Branch[] | Leaf[];
+
+export interface Branch {
+  children: Node;
+  type: string;
+  [key: string]: any;
+}

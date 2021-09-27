@@ -17,16 +17,11 @@ export const useNode = (node: YMap<any>) => {
   const observer = () => {
     setValue(extractMap(node));
   };
-  // const onVisibilityChange = ([entry]: IntersectionObserverEntry[]) => {
-  //   console.log({ entry });
-  //   if (entry.isIntersecting) {
-  //     node.observe(observer);
-  //   } else {
-  //     node.unobserve(observer);
-  //   }
-  // };
+
   onMount(() => {
     node.observe(observer);
+    console.log();
+    console.log(node._item?.info);
     // console.log(ref);
     // const observer = new IntersectionObserver(onVisibilityChange, { threshold: 0, root: null, rootMargin: "20%" });
     // ref && observer.observe(ref());

@@ -53,25 +53,15 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
           : (e.data as string);
 
       insertText(editor, {
-        text,
-        range,
-        at: { path, node: anchorNode!, offset: anchorOffset },
-        yText: currentText
+        text
       });
 
       editor.cursor().set(offset + text?.length);
       break;
     }
     case "deleteContentBackward": {
-      deleteText(editor, {
-        length: rangeLength === 0 ? 1 : rangeLength,
-        range,
-        at: { path, node: anchorNode!, offset: anchorOffset - 1 },
-        yText: currentText
-      });
-
+      deleteText(editor);
       const { selection, start } = editor.selection();
-      selection.getRangeAt(0).setStart(start.node, start.offset + 1);
 
       Cursor.setCurrentCursorPosition(
         rangeLength === 0 ? (anchorOffset === 1 ? offset : offset - 1) : offset,
@@ -82,12 +72,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     case "deleteByDrag":
     case "deleteByCut":
     case "deleteContentForward": {
-      deleteText(editor, {
-        length: rangeLength === 0 ? 1 : rangeLength,
-        range,
-        at: { path, node: anchorNode!, offset: anchorOffset },
-        yText: currentText
-      });
+      deleteText(editor);
       if (e.inputType !== "deleteByDrag") {
         Cursor.setCurrentCursorPosition(offset, editorDiv);
       }
@@ -95,14 +80,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
 
     case "insertParagraph": {
-      const newPath = splitNode(editor, {
-        at: {
-          path,
-          offset: Cursor.getCurrentCursorPosition(leaf, focusNode!, focusOffset!)
-        },
-        yText: currentText,
-        range
-      });
+      const newPath = splitNode(editor);
 
       var textNode = editorDiv.querySelector(`[data-edytor-path="${newPath},0"]`)?.firstChild;
       selection.collapse(textNode as ChildNode, 0);

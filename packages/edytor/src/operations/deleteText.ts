@@ -3,8 +3,8 @@ import { Editor } from "../types";
 import { traverseDocument } from "../utils";
 import { removeEmptyText } from "./removeEmptyText";
 
-export const deleteText = (editor: Editor | Pick<Editor, "toYJS" | "selection">) => {
-  const { start, end, type, length } = editor.selection();
+export const deleteText = (editor: Editor | Pick<Editor, "toYJS" | "selection">, selection?) => {
+  const { start, end, type, length } = selection || editor.selection();
 
   switch (type) {
     case "collapsed": {
@@ -15,7 +15,8 @@ export const deleteText = (editor: Editor | Pick<Editor, "toYJS" | "selection">)
     }
     case "singlenode": {
       start.leaf.delete(start.offset, length);
-      start.leaf.length + 1 === 0 && removeEmptyText(start.leaf);
+      console.log(start.leaf.length + 1);
+      start.leaf.length === 0 && removeEmptyText(start.leaf);
       break;
     }
     case "multinodes":
@@ -24,17 +25,17 @@ export const deleteText = (editor: Editor | Pick<Editor, "toYJS" | "selection">)
         const endPathString = end.path.join(",");
         traverseDocument(
           editor,
-          (isText, node, path) => {
+          (isText, branch, path) => {
             if (isText) {
-              const yText = node.get("text") as YText;
+              const leaf = branch.get("text") as YText;
               if (path.join(",") === startPathString) {
-                yText.delete(start.offset, yText.length);
+                leaf.delete(start.offset, leaf.length);
               } else if (path > start.path && path < end.path) {
-                yText.delete(0, yText.length);
+                leaf.delete(0, leaf.length);
               } else if (path.join(",") === endPathString) {
-                yText.delete(0, end.offset);
+                leaf.delete(0, end.offset);
               }
-              if (yText.length === 0) removeEmptyText(yText);
+              if (leaf.length === 0) removeEmptyText(leaf);
             }
           },
           { start: start.path[0], end: end.path[0] + 1 }

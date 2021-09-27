@@ -11,9 +11,10 @@ export type formatTextOperation = {
   yText?: YText;
 };
 export type formatAtEqualPathOperation = {
-  range: EdytorSelection;
   format: string;
-  yText: YText;
+  start: EdytorSelection["start"];
+  end: EdytorSelection["end"];
+  length: EdytorSelection["length"];
 };
 
 export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
@@ -26,132 +27,123 @@ export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
   });
 };
 
-export const formatAtEqualPath = ({ yText, format, range }: formatAtEqualPathOperation) => {
-  const start = range.start.offset;
-  const length = range.end.offset - range.start.offset;
-  const parentObject = yText.parent as YMap<any>;
-  const parentArray = parentObject?.parent as YArray<YMap<any>>;
-  const content = yText.toString();
-  const index = range.start.path.slice().reverse()[0] + 1;
+export const formatAtEqualPath = ({ format, start, end }: formatAtEqualPathOperation) => {
+  const length = end.offset - start.offset;
+  const leaf = start.leaf;
 
-  const isMarkActive = parentObject.has(format);
-  const hasMarks = Array.from(parentObject.keys()).some((key) => key !== "text");
+  const branch = leaf.parent as YMap<any>;
+  const node = branch?.parent as YArray<YMap<any>>;
+  const content = leaf.toString();
+  const index = start.path.slice().reverse()[0] + 1;
 
-  if (isMarkActive && content.length === length) {
-    parentObject.delete(format);
-    return yText;
+  const isMarkActive = branch.has(format);
+  const hasMarks = Array.from(branch.keys()).some((key) => key !== "text");
+
+  if (isMarkActive && leaf.length === length) {
+    branch.delete(format);
+    return leaf;
   } else {
-    const remainingText = content.substring(range.end.offset, yText.length);
-    if (remainingText.length == 0 && yText.length === range.end.offset - range.start.offset) {
-      yText.parent.set(format, true);
-      return yText;
+    const remainingText = content.substring(end.offset, leaf.length);
+    if (remainingText.length == 0 && leaf.length === end.offset - start.offset) {
+      leaf.parent.set(format, true);
+      return leaf;
     } else {
-      yText.delete(start, yText.length);
+      leaf.delete(start.offset, leaf.length);
 
-      const formatedText = new Y.Text(content.substring(range.start.offset, range.end.offset));
+      const formatedLeaf = new Y.Text(content.substring(start.offset, end.offset));
 
-      const formatedChildren = new Y.Map();
-      formatedChildren.set("text", formatedText);
-      formatedChildren.set(format, true);
-      let newLeafs = [formatedChildren];
+      const formatedBranch = new Y.Map();
+      formatedBranch.set("text", formatedLeaf);
+      formatedBranch.set(format, true);
+      let newBranches = [formatedBranch];
 
       if (remainingText.length > 0) {
-        const nonFormatedText = new Y.Map();
-        nonFormatedText.set("text", new Y.Text(remainingText));
-        newLeafs.push(nonFormatedText);
+        const nonFormatedBranch = new Y.Map();
+        nonFormatedBranch.set("text", new Y.Text(remainingText));
+        newBranches.push(nonFormatedBranch);
       }
 
-      applyMarksFromParent(parentObject, newLeafs, format);
+      applyMarksFromParent(branch, newBranches);
 
       if (isMarkActive) {
-        formatedChildren.delete(format);
+        formatedBranch.delete(format);
       }
-      newLeafs.length && parentArray.insert(index, newLeafs);
-      return formatedText;
+      newBranches.length && node.insert(index, newBranches);
+      return formatedLeaf;
     }
   }
 };
 
-export const formatText = (
-  editor: Editor | Pick<Editor, "toYJS">,
-  { format, at, range, yText }: formatTextOperation
-) => {
-  console.log({ editor });
+export const formatText = (editor: Editor | Pick<Editor, "toYJS" | "selection">, { format }: formatTextOperation) => {
   const doc = editor.toYJS();
   let newPath = 0;
+
+  const { start, end, type, length } = editor.selection();
+
   doc.doc?.transact(() => {
-    if (!range && at) {
-      const { path, offset } = at;
-      if (!yText) yText = getTextLeave(doc, path);
-      const leaf = yText.parent as YMap<any>;
-      const isMarkActive = leaf.has(format);
-      console.log(isMarkActive && yText.length === 0);
-      const parent = yText.parent?.parent as YArray<any>;
+    switch (type) {
+      case "collapsed": {
+        const branch = start.leaf.parent as YMap<any>;
+        const node = leafObject?.parent as YArray<any>;
+        const isMarkActive = branch.has(format);
 
-      if (isMarkActive && yText.length === 0) {
-        leaf.delete(format);
-        newPath = parent.toArray().indexOf(leaf);
-      } else {
-        if (yText.length === 0) {
-          isMarkActive ? leaf.delete(format) : leaf.set(format, true);
+        if (isMarkActive && start.leaf.length === 0) {
+          branch.delete(format);
+          newPath = node.toArray().indexOf(branch);
         } else {
-          splitLeaf(editor, { yText, at });
+          if (start.leaf.length === 0) {
+            isMarkActive ? branch.delete(format) : branch.set(format, true);
+          } else {
+            splitLeaf(editor, { yText: start.leaf, at: start });
 
-          const newChild = new Y.Map();
-          newChild.set("text", new Y.Text(""));
-          newChild.set(format, true);
+            const newChild = new Y.Map();
+            newChild.set("text", new Y.Text(""));
+            newChild.set(format, true);
 
-          applyMarksFromParent(leaf, [newChild]);
+            applyMarksFromParent(branch, [newChild]);
 
-          console.log(parent.toJSON());
-          if (isMarkActive) {
-            newChild.delete(format);
+            if (isMarkActive) newChild.delete(format);
+
+            node.insert(start.path.slice().reverse()[0] + 1, [newChild]);
+
+            if (start.leaf.length === 0) {
+              node.delete(start.path.slice().reverse()[0]);
+            }
+            newPath = node.toArray().indexOf(newChild);
           }
-
-          parent.insert(path.slice().reverse()[0] + 1, [newChild]);
-
-          console.log(yText.toString(), newChild.toJSON());
-          if (yText.length === 0) {
-            parent.delete(path.slice().reverse()[0]);
-          }
-          newPath = parent.toArray().indexOf(newChild);
         }
+        mergeLeafs(editor, node);
+        return newPath;
       }
-      mergeLeafs(editor, leaf.parent);
-      return newPath;
-    } else if (range) {
-      if (arePathsEquals(range.start.path, range.end.path)) {
-        if (!yText) yText = getTextLeave(doc, range.start.path);
-        const newText = formatAtEqualPath({ yText, format, range });
-        mergeLeafs(editor, yText.parent?.parent);
-        newPath = newText.parent?.parent.toArray().indexOf(newText.parent);
-      } else {
+      case "singlenode": {
+        const newText = formatAtEqualPath({ format, start, end, length });
+        mergeLeafs(editor, start.leaf.parent?.parent);
+        newPath = start.leaf.parent?.parent.toArray().indexOf(newText.parent);
+        break;
+      }
+      case "multinodes": {
+        const startPathString = start.path.join(",");
+        const endPathString = end.path.join(",");
         traverseDocument(
           editor,
-          (isText, node, path) => {
+          (isText, branch, path) => {
             if (isText) {
-              const yText = node.get("text") as YText;
-              const parent = yText.parent?.parent;
-              if (path.join(",") === startPathString) {
-                const newChildren = new Y.Map();
-                const newText = new Y.Text(yText.toString().substring(range.start.offset, yText.length));
-                newChildren.set("text", newText);
-                newChildren.set(format, true);
-                console.log(parent?._length);
-                console.log(parent?.toJSON());
-                parent.insert(path.slice().reverse()[0] + 1, [newChildren]);
-                yText.delete(range.start.offset, yText.length);
-              } else if (path > range.start.path && path < range.end.path) {
-                // yText.delete(0, yText.length);
-              } else if (path.join(",") === endPathString) {
-                // yText.delete(0, range.end.offset);
-              }
+              const leaf = branch.get("text") as YText;
+              const node = leaf.parent?.parent as YArray<any>;
+              const isStart = path.join(",") === startPathString;
+              const isEnd = path.join(",") === endPathString;
+              const startOffset = isStart ? start.offset : 0;
+              const endOffset = isEnd ? end.offset : leaf.length;
+              formatAtEqualPath({ format, start: { leaf, path, offset: startOffset }, end: { offset: endOffset } });
+              mergeLeafs(editor, node);
             }
           },
-          { start: range.start.path[0], end: range.end.path[0] + 1 }
+          { start: start.path[0], end: end.path[0] + 1 }
         );
+        break;
       }
     }
   });
+
   return newPath;
 };
