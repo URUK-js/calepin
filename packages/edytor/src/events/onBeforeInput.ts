@@ -131,33 +131,30 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     case "formatBold": {
       // const R = new Rangy(editorDiv);
       // R.saveSelection();
-      const beforeElement = editorDiv.querySelector(
-        `[data-edytor-path="${[...path.slice(0, path.length - 1), path.slice().reverse()[0] - 1]}"]`
-      );
-      const beforeOffset = beforeElement?.textContent.length;
-      const newPath = formatText(editor, {
-        yText: currentText,
-        at: { offset: anchorOffset, path },
-        range,
-        format: e.inputType === "formatItalic" ? "italic" : "bold"
-      });
+
+      // const newPath = formatText(editor, {
+      //   format: e.inputType === "formatItalic" ? "italic" : "bold"
+      // });
 
       // return R.restoreSelection();
       // Cursor.setCurrentCursorPosition(0, focusNode, selection);
+      // console.log(editorDiv.getElementsByTagName("text"));
 
-      if (range?.type === "singlenode") {
-        let newNode =
-          newPath === -1
-            ? beforeElement
-            : editorDiv.querySelector(`[data-edytor-path="${[...path.slice(0, path.length - 1), newPath]}"]`);
+      // editor.cursor().setRange(editor.selection().editorOffset, editor.selection().length);
 
-        Cursor.selectNode(
-          newNode,
-          newPath === -1 ? beforeOffset : 0,
-          newPath === -1 ? beforeOffset + rangeLength : rangeLength,
-          selection
-        );
-      }
+      // if (range?.type === "singlenode") {
+      //   let newNode =
+      //     newPath === -1
+      //       ? beforeElement
+      //       : editorDiv.querySelector(`[data-edytor-path="${[...path.slice(0, path.length - 1), newPath]}"]`);
+
+      //   Cursor.selectNode(
+      //     newNode,
+      //     newPath === -1 ? beforeOffset : 0,
+      //     newPath === -1 ? beforeOffset + rangeLength : rangeLength,
+      //     selection
+      //   );
+      // }
       break;
     }
 

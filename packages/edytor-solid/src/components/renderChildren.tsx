@@ -16,7 +16,6 @@ const renderChild = (child) => {
   const { renderLeaf, renderBlock } = useEditor();
   const node = useNode(child);
   const isBlock = child.has("children");
-  console.log("hello", node());
 
   if (isBlock) {
     const children = createMemo(() => renderChildren({ node: child }));
@@ -34,7 +33,6 @@ const renderChild = (child) => {
     );
   } else {
     const text = useText(child.get("text"));
-    console.log("hello", text());
     return renderLeaf({
       text,
       attributes: {

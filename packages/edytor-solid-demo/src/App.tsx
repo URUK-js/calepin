@@ -10,6 +10,14 @@ const App: Component = () => {
   return (
     <div>
       <Editor
+        hotkeys={[
+          { operation: "formatText", keys: "mod+b", data: { format: "bold" } },
+          { operation: "formatText", keys: "mod+i", data: { format: "italic" } },
+          { operation: "formatText", keys: "mod+u", data: { format: "underline" } },
+          { operation: "formatText", keys: "mod+shift+c", data: { format: "code" } },
+          { operation: "formatText", keys: "mod+shift+x", data: { format: "strikethrough" } },
+          { operation: "formatText", keys: "mod+shift+h", data: { format: "highlight", color: "purple" } }
+        ]}
         value={initialValue()}
         props={(editor, config) => ({
           "data-font": config.font || "sans",

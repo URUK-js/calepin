@@ -14,6 +14,7 @@ export const Editor = ({
   spellcheck = false,
   onChange = () => null,
   renderBefore,
+  hotkeys,
   renderAfter,
   className = "sltye-editor",
   id = "sltye-editor",
@@ -35,6 +36,7 @@ export const Editor = ({
     editorId: editorId(),
     selection,
     cursor,
+    hotkeys,
     renderBlock,
     renderLeaf,
     undoManager,
@@ -68,7 +70,7 @@ export const Editor = ({
         contentEditable={true}
         //@ts-ignore
         onBeforeInput={[onBeforeInput, [doc, onChange, useEditor()]]}
-        onKeyDown={[onKeyDown, undoManager]}
+        onKeyDown={[onKeyDown, useEditor()]}
       >
         {renderChildren({ node: doc() })}
       </div>

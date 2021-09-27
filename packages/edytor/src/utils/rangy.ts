@@ -31,10 +31,9 @@ export class Rangy {
     range.setStart(containerEl, 0);
     range.collapse(true);
     var nodeStack = [containerEl],
-      node,
       foundStart = false,
       stop = false;
-
+    let node = undefined as Node | undefined;
     while (!stop && (node = nodeStack.pop())) {
       if (node.nodeType == 3) {
         var nextCharIndex = charIndex + node.length;
@@ -43,7 +42,14 @@ export class Rangy {
           foundStart = true;
         }
         if (foundStart && savedSel.end >= charIndex && savedSel.end < nextCharIndex) {
-          range.setEnd(node, savedSel.end - charIndex);
+          const offset = savedSel.end - charIndex;
+
+          if (offset === 0) {
+            console.log({ node }, node.previousSibling);
+            range.setEnd(node.previousSibling, node.previousSibling.textContent.length);
+          } else {
+            range.setEnd(node, offset);
+          }
           stop = true;
         }
         charIndex = nextCharIndex;

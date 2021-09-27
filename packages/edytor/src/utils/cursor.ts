@@ -81,6 +81,62 @@ export class Cursor {
   set = (offset: number) => {
     Cursor.setCurrentCursorPosition(offset, this.container, this.selection().selection);
   };
+  setRange = (offset: number, length) => {
+    const { range, selection } = this.selection();
+    const { startNode, startOffset, endNode, endOffset } = this.getRangeBoundaries(offset, length);
+    selection.removeAllRanges();
+
+    const R = document.createRange();
+    R.selectNode(this.container);
+    R.setStart(startNode, startOffset);
+    R.setEnd(endNode, endOffset);
+    selection.addRange(R);
+  };
+
+  getRangeBoundaries = (offset: number, length) => {
+    const [startNode, startOffset] = this.getRangeBoundary(this.container, { count: offset - length }, true);
+    const [endNode, endOffset] = this.getRangeBoundary(this.container, { count: offset }, false);
+
+    if (startNode.length === startOffset) {
+      const getNextNode = (node: ChildNode) => {
+        const childNodes = Array.from(node.parentElement.childNodes);
+        const index = childNodes.indexOf(node);
+        console.log({ index, childNodes, next: childNodes[index + 1] });
+      };
+      getNextNode(startNode);
+    }
+    return {
+      startNode,
+      startOffset,
+      endNode,
+      endOffset
+    };
+  };
+  getRangeBoundary = (node, chars, isStart): [ChildNode, number] => {
+    let result;
+    if (chars.count === 0) {
+      result = [node, chars.count];
+    } else if (node && chars.count > 0) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        if (node.textContent.length < chars.count) {
+          chars.count -= node.textContent.length;
+        } else {
+          result = [node, chars.count];
+          chars.count = 0;
+        }
+      } else {
+        for (var lp = 0; lp < node.childNodes.length; lp++) {
+          result = this.getRangeBoundary(node.childNodes[lp], chars, isStart);
+          if (chars.count === 0) {
+            break;
+          }
+        }
+      }
+    }
+
+    return result;
+  };
+
   static setCurrentCursorPosition(chars, element, s?: Selection) {
     if (chars >= 0) {
       var selection = s || window.getSelection();
@@ -97,7 +153,6 @@ export class Cursor {
 
   static selectNode(node, startOffset, endOffset, selection) {
     if (!selection) selection = window.getSelection();
-    const R = document.createRange();
 
     let textNode = node;
     while (textNode?.nodeType !== 3 && textNode?.firstChild) {
@@ -105,6 +160,8 @@ export class Cursor {
     }
 
     selection.removeAllRanges();
+    const R = document.createRange();
+
     R.setStart(textNode, startOffset);
     R.setEnd(textNode, endOffset);
     selection.addRange(R);

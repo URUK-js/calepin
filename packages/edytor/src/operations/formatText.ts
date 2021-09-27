@@ -15,6 +15,7 @@ export type formatAtEqualPathOperation = {
   start: EdytorSelection["start"];
   end: EdytorSelection["end"];
   length: EdytorSelection["length"];
+  data?: object;
 };
 
 export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
@@ -27,7 +28,7 @@ export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
   });
 };
 
-export const formatAtEqualPath = ({ format, start, end }: formatAtEqualPathOperation) => {
+export const formatAtEqualPath = ({ format, start, end, data = {} }: formatAtEqualPathOperation) => {
   const length = end.offset - start.offset;
   const leaf = start.leaf;
 
@@ -62,7 +63,11 @@ export const formatAtEqualPath = ({ format, start, end }: formatAtEqualPathOpera
         nonFormatedBranch.set("text", new Y.Text(remainingText));
         newBranches.push(nonFormatedBranch);
       }
-
+      Object.keys(data).forEach((key) => {
+        newBranches.forEach((branch) => {
+          branch.set(key, data[key]);
+        });
+      });
       applyMarksFromParent(branch, newBranches);
 
       if (isMarkActive) {
@@ -74,13 +79,12 @@ export const formatAtEqualPath = ({ format, start, end }: formatAtEqualPathOpera
   }
 };
 
-export const formatText = (editor: Editor | Pick<Editor, "toYJS" | "selection">, { format }: formatTextOperation) => {
-  const doc = editor.toYJS();
+export const formatText = (editor: Editor, { format, ...data }: formatTextOperation) => {
   let newPath = 0;
 
   const { start, end, type, length } = editor.selection();
-
-  doc.doc?.transact(() => {
+  console.log(editor.selection());
+  editor.doc().transact(() => {
     switch (type) {
       case "collapsed": {
         const branch = start.leaf.parent as YMap<any>;
@@ -116,7 +120,7 @@ export const formatText = (editor: Editor | Pick<Editor, "toYJS" | "selection">,
         return newPath;
       }
       case "singlenode": {
-        const newText = formatAtEqualPath({ format, start, end, length });
+        const newText = formatAtEqualPath({ format, start, end, length, data });
         mergeLeafs(editor, start.leaf.parent?.parent);
         newPath = start.leaf.parent?.parent.toArray().indexOf(newText.parent);
         break;
@@ -134,7 +138,12 @@ export const formatText = (editor: Editor | Pick<Editor, "toYJS" | "selection">,
               const isEnd = path.join(",") === endPathString;
               const startOffset = isStart ? start.offset : 0;
               const endOffset = isEnd ? end.offset : leaf.length;
-              formatAtEqualPath({ format, start: { leaf, path, offset: startOffset }, end: { offset: endOffset } });
+              formatAtEqualPath({
+                format,
+                start: { leaf, path, offset: startOffset },
+                end: { offset: endOffset },
+                data
+              });
               mergeLeafs(editor, node);
             }
           },

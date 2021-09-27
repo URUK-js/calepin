@@ -26,12 +26,17 @@ export type renderBlockProps = {
   block: block;
 };
 
+interface HotKeys {
+  operation: (editor: Editor) => void | "formatText" | "wrapInlines";
+  keys: string;
+  data: Record<any, any>;
+}
 export interface EditorProps extends Record<any, any> {
   value: Value;
   spellcheck?: boolean;
   className?: string;
   id?: string;
-
+  hotkeys: HotKeys[];
   renderBefore?: () => any;
   renderAfter?: () => any;
   onChange?: (editor: Editor) => void;
@@ -40,6 +45,7 @@ export interface EditorProps extends Record<any, any> {
 }
 
 export interface Editor {
+  hotkeys: HotKeys[];
   selection: () => EdytorSelection | undefined;
   cursor: () => Cursor | undefined;
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
@@ -80,7 +86,9 @@ export type EdytorSelection = {
   start: Position;
   end: Position;
   arePathsEquals: boolean;
+  editorOffset: number;
   length: number;
+  range?: Range;
   boundingRect?: DOMRect;
   edges: {
     start: boolean;

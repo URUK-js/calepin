@@ -77,3 +77,17 @@ blockquote {
 [data-edytor-editor][data-small-text="true"] blockquote {
   @apply text-sm;
 }
+
+[data-edytor-editor] mark.red {
+  @apply bg-red-100 text-red-400;
+}
+
+[data-edytor-editor] mark.blue {
+  @apply bg-blue-100 text-blue-400;
+}
+[data-edytor-editor] mark.purple {
+  @apply bg-purple-100 text-purple-400;
+}
+[data-edytor-editor] mark.yellow {
+  @apply bg-yellow-100 text-yellow-400;
+}

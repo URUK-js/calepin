@@ -7,9 +7,7 @@ export const useSelectionListener = (editor: Editor, setSelection: () => void) =
     const editorDiv = e.target?.activeElement as HTMLDivElement;
     const editorId = editorDiv.getAttribute("data-edytor-editor");
     if (editorId === editor.editorId) {
-      console.log(e);
       setSelection(getRange(editor, window.getSelection()));
-      // console.log(editor.selection());
     }
   };
 

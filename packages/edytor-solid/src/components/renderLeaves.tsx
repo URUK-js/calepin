@@ -33,6 +33,9 @@ export const renderLeaves = ({ text, attributes, leaf, ref }: any): JSXElement =
         </span>
       );
     }
+    if (leaf().highlight) {
+      leafNode = <mark className={leaf().color}>{leafNode}</mark>;
+    }
     return leafNode;
   });
   return (
