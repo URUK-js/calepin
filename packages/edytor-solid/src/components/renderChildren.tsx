@@ -16,7 +16,7 @@ const renderChild = (child) => {
   const { renderLeaf, renderBlock } = useEditor();
   const node = useNode(child);
   const isBlock = child.has("children");
-
+  console.log("hello");
   if (isBlock) {
     const children = createMemo(() => renderChildren({ node: child }));
     return (

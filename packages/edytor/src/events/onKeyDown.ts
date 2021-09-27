@@ -4,8 +4,6 @@ import { formatText, formatTextOperation } from "../operations";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
   if (e.metaKey) {
-    e.preventDefault();
-    e.stopPropagation();
     console.log(toKeyCode(""));
 
     if (e.key === "z" && e.metaKey) {
@@ -18,6 +16,8 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
     for (let i = 0; i < editor.hotkeys.length; i++) {
       const { keys, operation, data } = editor.hotkeys[i];
       if (isHotkey(keys, e)) {
+        e.preventDefault();
+        e.stopPropagation();
         if (typeof operation === "function") {
           return operation(editor);
         }

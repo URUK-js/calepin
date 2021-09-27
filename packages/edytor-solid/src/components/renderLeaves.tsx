@@ -25,12 +25,12 @@ export const renderLeaves = ({ text, attributes, leaf, ref }: any): JSXElement =
     }
     if (leaf().code) {
       leafNode = (
-        <span
+        <code
           style={{ color: "#EB5757", "font-family": "Space Mono !important" }}
-          className="rounded-sm bg-gray-200 font-mono px-2 "
+          className="rounded-sm bg-gray-200 font-mono px-1 "
         >
           {leafNode}
-        </span>
+        </code>
       );
     }
     if (leaf().highlight) {

@@ -60,7 +60,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
       break;
     }
     case "deleteContentBackward": {
-      deleteText(editor);
+      deleteText(editor, { mode: "backward" });
       const { selection, start } = editor.selection();
 
       Cursor.setCurrentCursorPosition(
@@ -72,7 +72,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     case "deleteByDrag":
     case "deleteByCut":
     case "deleteContentForward": {
-      deleteText(editor);
+      deleteText(editor, { mode: "forward" });
       if (e.inputType !== "deleteByDrag") {
         Cursor.setCurrentCursorPosition(offset, editorDiv);
       }
