@@ -1,5 +1,5 @@
 import * as Y from "yjs";
-import { YNode, YLeaf } from "../../src/utils/yClasses";
+import { YNode, YLeaf, EdytorDoc } from "../../src/utils/yClasses";
 
 test("new blank node", () => {
   const doc = new Y.Doc();
@@ -175,4 +175,56 @@ test("to string method", () => {
       .get("newNode")
       .string()
   ).toStrictEqual(text);
+});
+
+test("editorFixture", () => {
+  const value = [
+    {
+      type: "paragraph",
+      data: { comment: "hello" },
+      content: [{ text: "Bold text", bold: true }],
+      children: [
+        {
+          type: "paragraph",
+          content: [{ text: "Lorem ipsum dolor sit", italic: true }]
+        },
+        {
+          type: "paragraph",
+          content: [{ text: "Lorem ipsum dolor sit", data: { comment: "hello" } }]
+        }
+      ]
+    }
+  ];
+
+  const arrayJSON = [
+    {
+      id: "w64jUJ8tkajDeCfp7PpV",
+      type: "paragraph",
+      data: { comment: "hello" },
+      content: [{ text: "Bold text", bold: true }],
+      children: [
+        {
+          id: "XQ8denWELmLPRXheCP-3",
+          type: "paragraph",
+          data: {},
+          content: [{ text: "Lorem ipsum dolor sit", italic: true }],
+          children: []
+        },
+        {
+          id: "yQrUzQPhjHJWy7wmTGtQ",
+          type: "paragraph",
+          data: {},
+          content: [{ text: "Lorem ipsum dolor sit", data: { comment: "hello" } }],
+          children: []
+        }
+      ]
+    }
+  ];
+  const array = new EdytorDoc(value).getArray("children").toJSON();
+
+  expect(array[0].data).toStrictEqual(arrayJSON[0].data);
+  expect(array[0].content[0]).toStrictEqual(arrayJSON[0].content[0]);
+  expect(array[0].children[0].content[0]).toStrictEqual(arrayJSON[0].children[0].content[0]);
+  expect(array[0].children[1].content[0]).toStrictEqual(arrayJSON[0].children[1].content[0]);
+  expect(array[0].children[1]).toHaveProperty("id");
 });

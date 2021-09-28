@@ -1,5 +1,5 @@
 import { nanoid } from "./nanoid";
-import * as Y from "yjs";
+import { Doc, Map, Text, Array } from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 
 export type YNodeProps = {
@@ -14,16 +14,43 @@ export type YLeafProps = {
   marks?: string[];
 };
 
-export class YNode extends Y.Map<any> {
+interface jsonLeaf extends Record<string, any> {
+  text: string;
+  data?: object;
+}
+type jsonNode = {
+  type: string;
+  content?: jsonLeaf[];
+  data?: object;
+  children?: jsonNode[];
+};
+
+const getContent = ({ text, data, ...marks }: jsonLeaf): YLeaf => {
+  return new YLeaf({ text, data, marks: Object.keys(marks) });
+};
+const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
+  return new YNode(type, { ...props, children: children.map(getChildren), content: content.map(getContent) });
+};
+export class EdytorDoc extends Doc {
+  constructor(value?: jsonNode[]) {
+    super();
+    if (value) {
+      const array = this.getArray("children");
+      array.insert(0, value.map(getChildren));
+    }
+  }
+}
+
+export class YNode extends Map<any> {
   id: string;
   constructor(type: string, props?: YNodeProps) {
     super();
-    new Y.Map();
+    new Map();
     this.set("id", nanoid());
     this.set("type", type);
-    this.set("data", new Y.Map(props?.data ? Object.entries(props.data) : []));
-    this.set("content", props?.content instanceof Y.Array ? props.content : Y.Array.from(props?.content || []));
-    this.set("children", props?.children instanceof Y.Array ? props.children : Y.Array.from(props?.children || []));
+    this.set("data", new Map(props?.data ? Object.entries(props.data) : []));
+    this.set("content", props?.content instanceof Array ? props.content : Array.from(props?.content || []));
+    this.set("children", props?.children instanceof Array ? props.children : Array.from(props?.children || []));
   }
   data = (): YMap<any> => this.get("data");
   content = (): YArray<YLeaf> => this.get("content");
@@ -42,16 +69,16 @@ export class YNode extends Y.Map<any> {
   };
 }
 
-export class YLeaf extends Y.Map<any> {
+export class YLeaf extends Map<any> {
   id: string;
   constructor(props?: YLeafProps) {
     super();
     this.id = nanoid();
 
-    this.set("text", new Y.Text(props?.text || ""));
+    this.set("text", new Text(props?.text || ""));
 
     if (props?.data) {
-      this.set("data", new Y.Map(props?.data ? Object.entries(props.data) : []));
+      this.set("data", new Map(props?.data ? Object.entries(props.data) : []));
     }
     if (props?.marks) {
       props.marks.forEach((mark) => {
