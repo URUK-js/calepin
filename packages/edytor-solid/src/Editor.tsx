@@ -56,6 +56,7 @@ export const Editor = ({
       <div
         {...props(useEditor(), config())}
         onDrop={[onDrop, useEditor()]}
+        on
         onDragOver={[onDragOver, useEditor()]}
         onDragStart={[onDragOver, useEditor()]}
         className={className}

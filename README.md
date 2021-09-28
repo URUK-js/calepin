@@ -1,6 +1,41 @@
 > Warning
 > this a work in progress wich is absolutly not ready for production
 
+## Datastructure
+
+```
+const datastructure = {
+  data: {},
+  children: [
+    //// <== this is a the trunk
+    {
+      type: "paragraph", //// <== this is a node
+      content: [
+        // <== a node can have leaves
+
+        { text: "Bold text", bold: true, data: { aribtrary: "data" } }, // <== this is a leaf
+        {
+          type: "inline",
+          content: [{ text: "Inline with text", data: { aribtrary: "data" } }] // <== this is a fruit be let's call it a leaf too
+        }
+      ],
+      children: [
+        // <== a node can have branches leading to new nodes
+        {
+          type: "paragraph",
+          content: [{ text: "Lorem ipsum dolor sit" }]
+        },
+        {
+          type: "paragraph",
+          content: [{ text: "Lorem ipsum dolor sit" }]
+        }
+      ]
+    }
+  ]
+};
+
+```
+
 ## Why another text editor ?
 
 For the past few years i've tested all rich text editor the js ecosystem have to offer. Yet, I found none to be have all the functionnality I looked for. Here is the list of thing Edytor aims to acheive.

@@ -45,7 +45,7 @@ export interface EditorProps extends Record<any, any> {
 }
 
 export interface Editor {
-  hotkeys: HotKeys[];
+  hotkeys?: HotKeys[];
   selection: () => EdytorSelection | undefined;
   cursor: () => Cursor | undefined;
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
@@ -94,7 +94,7 @@ export type EdytorSelection = {
     start: boolean;
     end: boolean;
   };
-  selection: Selection;
+  selection?: Selection;
   type?: "multinodes" | "collapsed" | "singlenode";
 };
 
