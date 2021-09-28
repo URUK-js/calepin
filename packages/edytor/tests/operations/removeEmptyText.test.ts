@@ -1,5 +1,7 @@
 // import { toYJS, removeEmptyText } from "../..";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // test("remove empty text", () => {
 //   const initialValue = {
 //     children: [

@@ -13,7 +13,6 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
   if (!text || text === null || !text.length) return;
 
   const { start, end, type, length } = editor.selection();
-  if (type === "notInDoc") return console.error("Path is not in document space");
   switch (type) {
     case "collapsed": {
       start.leaf.insert(start.offset, text);

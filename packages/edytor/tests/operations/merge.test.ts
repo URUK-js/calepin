@@ -1,5 +1,7 @@
 // import { areLeafsMergeable, mergeLeafs, toYJS } from "../../";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // test("Sould merge simple", () => {
 //   const initialValue = {
 //     children: [

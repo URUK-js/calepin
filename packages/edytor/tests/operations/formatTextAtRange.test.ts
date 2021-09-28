@@ -1,5 +1,8 @@
 // import { toYJS, formatText } from "../../";
 
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // test("format range at same path", () => {
 //   const initialValue = {
 //     children: [

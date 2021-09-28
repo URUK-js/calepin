@@ -6,3 +6,4 @@ export * from "./getTextLeave";
 export * from "./jsonConverter";
 export * from "./traverseDocument";
 export * from "./cursor";
+export * from "./yClasses/index";

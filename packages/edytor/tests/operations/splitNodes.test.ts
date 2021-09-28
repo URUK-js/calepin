@@ -1,5 +1,7 @@
 // import { toYJS, splitNode } from "../../";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // test("splitNodeSimple", () => {
 //   const initialValue = {
 //     children: [

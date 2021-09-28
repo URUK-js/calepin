@@ -1,4 +1,7 @@
 // import { toYJS, formatText } from "../../";
+test("ok", () => {
+  expect(true).toBe(true);
+});
 
 // test("format at same path", () => {
 //   const initialValue = {

@@ -1,16 +1,16 @@
 import * as Y from "yjs";
-import { YNode, YLeaf, EdytorDoc } from "../../src/utils/yClasses";
+import { YNode, YLeaf, EdytorDoc } from "../..";
 
 test("new blank node", () => {
   const doc = new Y.Doc();
   doc.getMap("test").set("newNode", new YNode("paragraph"));
+  const N = new YNode("paragraph");
   const newNode = doc
     .getMap("test")
     .get("newNode")
     .toJSON();
   const nodeJSON = {
     id: newNode.id,
-    data: {},
     type: "paragraph",
     content: [],
     children: []
@@ -111,7 +111,7 @@ test("new node with leaf", () => {
   const nodeJSON = {
     id: newNode.id,
     type: "paragraph",
-    data: {},
+
     content: [{ text: "" }],
     children: []
   };
@@ -129,7 +129,7 @@ test("new node with Yarray of leaves", () => {
   const nodeJSON = {
     id: newNode.id,
     type: "paragraph",
-    data: {},
+
     content: [{ text: "" }],
     children: []
   };
@@ -145,9 +145,9 @@ test("new node with Yarray of children", () => {
   const nodeJSON = {
     id: newNode.id,
     type: "paragraph",
-    data: {},
+
     content: [],
-    children: [{ type: "paragraph", id: newNode.children[0].id, children: [], data: {}, content: [] }]
+    children: [{ type: "paragraph", id: newNode.children[0].id, children: [], content: [] }]
   };
 
   console.log(newNode);
@@ -177,7 +177,7 @@ test("to string method", () => {
   ).toStrictEqual(text);
 });
 
-test("editorFixture", () => {
+test("editorDoc", () => {
   const value = [
     {
       type: "paragraph",
@@ -220,11 +220,28 @@ test("editorFixture", () => {
       ]
     }
   ];
-  const array = new EdytorDoc(value).getArray("children").toJSON();
+  const doc = new EdytorDoc(value);
+  const array = doc.children.toJSON();
 
   expect(array[0].data).toStrictEqual(arrayJSON[0].data);
   expect(array[0].content[0]).toStrictEqual(arrayJSON[0].content[0]);
   expect(array[0].children[0].content[0]).toStrictEqual(arrayJSON[0].children[0].content[0]);
   expect(array[0].children[1].content[0]).toStrictEqual(arrayJSON[0].children[1].content[0]);
   expect(array[0].children[1]).toHaveProperty("id");
+  expect(array[0].children[0].content[0].data).toBe(undefined);
+  expect(array[0].children[1].data).toBe(undefined);
+
+  //INTERNAL METHODS
+  const leafAtPath = doc.getLeafAtPath([0, 1, 0]);
+  console.log(leafAtPath.toJSON());
+  expect(array[0].children[1].content[0]).toStrictEqual(leafAtPath.toJSON());
+
+  const leafAtPathFail = doc.getLeafAtPath([0, 0, 0, 0]);
+  expect(leafAtPathFail).toBe(undefined);
+
+  const nodeAtPath = doc.getNodeAtPath([0, 1]);
+  expect(array[0].children[1]).toStrictEqual(nodeAtPath.toJSON());
+
+  const nodeAtPathFail = doc.getNodeAtPath([0, 1, 1]);
+  expect(nodeAtPathFail).toBe(undefined);
 });

@@ -1,5 +1,7 @@
 // import { toYJS, splitLeaf } from "../../";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // // test("splitLeafSimple", () => {
 // //   const initialValue = {
 // //     children: [

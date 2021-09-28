@@ -1,6 +1,6 @@
 import { UndoManager } from "yjs";
-import { Doc, YMap, YText } from "yjs/dist/src/internals";
-import { Cursor } from "./utils";
+import { Doc, YArray, YMap, YText } from "yjs/dist/src/internals";
+import { Cursor, EdytorDoc } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
@@ -53,10 +53,13 @@ export interface Editor {
   undoManager: UndoManager;
   editorRef: Accessor<HTMLDivElement | undefined>;
   toUpdate: () => Uint8Array;
-  doc: () => Doc;
+  doc: EdytorDoc;
   config: () => YMap<any>;
   toYJS: Accessor<YMap<any>>;
   toJSON: () => Value;
+  //
+
+  children: YArray<any>;
 }
 
 export interface Value {
@@ -95,7 +98,7 @@ export type EdytorSelection = {
     end: boolean;
   };
   selection?: Selection;
-  type?: "multinodes" | "collapsed" | "singlenode";
+  type?: "multinodes" | "collapsed" | "singlenode" | "notInDoc";
 };
 
 export interface ContentTree {

@@ -1,5 +1,7 @@
 // import { getYNode, jsonNodeToYNode, toJSON, toYJS } from "../../src/Editor/jsonConverter";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // const value = {
 //   children: [
 //     {

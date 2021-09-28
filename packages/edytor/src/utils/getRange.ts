@@ -2,7 +2,7 @@ import { Editor, EdytorSelection } from "../types";
 import { getLeaf } from ".";
 import { arePathsEquals } from "./arePathsEquals";
 import { getTextLeave } from "./getTextLeave";
-import "../utils/nodePath";
+// import "./nodePath";
 
 declare global {
   interface Element {
