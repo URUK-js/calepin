@@ -1,71 +1,68 @@
 import { YMap, YText } from "yjs/dist/src/internals";
 import { Editor, EdytorSelection } from "../types";
-import { getYNode, traverseDocument } from "../utils";
+import { getYNode, traverseDocument, YLeaf } from "../utils";
 import { removeEmptyText } from "./removeEmptyText";
 import * as Y from "yjs";
 import { mergeLeafs } from "./merge";
 const mergeWithPrevBranch = (editor: Editor) => {
   const { start } = editor.selection();
-  let prevLeaf = [];
+  let prevLeaf;
   let stop = false;
-  const branches = start.leaf.parent.parent.toArray();
-  traverseDocument(editor, (isText, node, path) => {
+
+  editor.doc.traverse((node, isText, path) => {
     if (isText) {
-      if (node === start.leaf.parent) {
+      console.log(node);
+      if (node === start.leaf) {
         stop = true;
       } else if (!stop) {
-        prevLeaf = [node, path];
+        prevLeaf = node;
       }
     }
   });
-  console.log({ prevLeaf, branches });
+  //TODO the children should be pull to the depth level of the removed parent
 
-  prevLeaf[0].parent.insert(
-    prevLeaf[1].slice().reverse()[0] + 1,
-    branches.map((branch: YMap) => {
-      const node = new Y.Map();
-      getYNode(branch.toJSON(), node);
-      const leaf = branch.get("text") as YText;
-      leaf.delete(0, leaf.length);
-      removeEmptyText(leaf);
-      return node;
-    })
-  );
-
-  start.leaf.parent.parent.delete();
+  editor.doc.transact(() => {
+    prevLeaf.nodeContent().insert(
+      prevLeaf.nodeContent().length,
+      start.leaf
+        .nodeContent()
+        .toArray()
+        .map((leaf: YLeaf) => {
+          return new YLeaf(leaf.toJSON());
+        })
+    );
+    // start.leaf.nodeContent().delete(start.path.slice().reverse()[0]);
+  });
 };
 
 const mergeWithNextBranch = (editor: Editor) => {
   const { start } = editor.selection();
-  let nextLeaf = [];
+  let nextLeaf;
   let stop = false;
 
-  traverseDocument(editor, (isText, node, path) => {
+  editor.doc.traverse((node, isText) => {
     if (isText) {
-      if (node === start.leaf.parent) {
+      if (node === start.leaf) {
         stop = true;
       } else if (stop) {
-        nextLeaf = [node, path];
+        nextLeaf = node;
         stop = false;
       }
     }
   });
 
-  const branches = nextLeaf[0].parent.toArray();
-  console.log({ nextLeaf, branches, con: nextLeaf[0].parent.toJSON() });
+  //TODO the children should be pull to the depth level of the removed parent
 
-  start.leaf.parent.parent.insert(
-    start.path.slice().reverse()[0] + 1,
-    branches.map((branch: YMap) => {
-      const node = new Y.Map();
-      getYNode(branch.toJSON(), node);
-      const leaf = branch.get("text") as YText;
-      leaf.delete(0, leaf.length);
-      removeEmptyText(leaf);
-      return node;
-    })
+  start.leaf.nodeContent().insert(
+    start.leaf.nodeContent().length,
+    nextLeaf
+      .nodeContent()
+      .toArray()
+      .map((leaf: YLeaf) => {
+        return new YLeaf(leaf.toJSON());
+      })
   );
-  mergeLeafs(editor, start.leaf.parent.parent);
+  // mergeLeafs(editor, start.leaf.parent.parent);
   // start.leaf.parent.parent.delete();
 };
 
@@ -78,56 +75,54 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
 
   switch (type) {
     case "collapsed": {
-      const isEmpty = start.leaf.length === 0;
+      const isEmpty = start.leaf.length() === 0;
       if (start.offset === 0 && mode === "backward" && !isEmpty) {
-        return editor.doc().transact(() => {
+        return editor.doc.transact(() => {
           mergeWithPrevBranch(editor);
         });
       }
       if (
-        start.offset === start.leaf.length &&
+        start.offset === start.leaf.length() &&
         mode === "forward" &&
         !isEmpty &&
-        start.path.slice().reverse()[0] + 1 === start.leaf.parent.parent.length
+        start.path.slice().reverse()[0] + 1 === start.leaf.nodeContentLength()
       ) {
         return mergeWithNextBranch(editor);
       }
       console.log(
-        start.offset === start.leaf.length,
+        start.offset === start.leaf.length(),
         mode === "forward",
         !isEmpty,
-        start.path.slice().reverse()[0] + 1 === start.leaf.parent.parent.length,
-        start.leaf.parent.parent.length,
+        start.path.slice().reverse()[0] + 1 === start.leaf.nodeContentLength(),
+        start.leaf.node.length,
         start.leaf.parent.parent
       );
 
-      start.leaf.delete(start.offset, length || 1);
+      start.leaf.deleteText(start.offset, length || 1);
       isEmpty && start.offset === 0 && removeEmptyText(start.leaf);
       break;
     }
     case "singlenode": {
-      start.leaf.delete(start.offset, length);
-      console.log(start.leaf.length + 1);
-      start.leaf.length === 0 && removeEmptyText(start.leaf);
+      start.leaf.deleteText(start.offset, length);
+      // start.leaf.length() === 0 && removeEmptyText(start.leaf);
       break;
     }
     case "multinodes":
       {
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
-        traverseDocument(
-          editor,
-          (isText, branch, path) => {
+        editor.doc.traverse(
+          (leaf, isText, path) => {
             if (isText) {
-              const leaf = branch.get("text") as YText;
+              const l = leaf as YLeaf;
               if (path.join(",") === startPathString) {
-                leaf.delete(start.offset, leaf.length);
+                l.deleteText(start.offset, l.length());
               } else if (path > start.path && path < end.path) {
-                leaf.delete(0, leaf.length);
+                l.deleteText(0, l.length());
               } else if (path.join(",") === endPathString) {
-                leaf.delete(0, end.offset);
+                l.deleteText(0, end.offset);
               }
-              if (leaf.length === 0) removeEmptyText(leaf);
+              // if (leaf.length === 0) removeEmptyText(leaf);
             }
           },
           { start: start.path[0], end: end.path[0] + 1 }

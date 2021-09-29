@@ -19,7 +19,7 @@ const App: Component = () => {
           { operation: "formatText", keys: "mod+shift+h", data: { format: "highlight", color: "purple" } }
         ]}
         value={initialValue()}
-        props={(editor, config) => ({
+        props={(_, config) => ({
           "data-font": config.font || "sans",
           "data-full-width": !!config.fullWidth,
           "data-small-text": !!config.smallText

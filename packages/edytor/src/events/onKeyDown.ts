@@ -4,12 +4,13 @@ import { formatText, formatTextOperation } from "../operations";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
   if (e.metaKey) {
-    console.log(toKeyCode(""));
-
     if (e.key === "z" && e.metaKey) {
+      e.preventDefault();
+      console.log(editor.undoManager);
       return editor.undoManager.undo();
     }
     if (e.key === "Z" && e.metaKey && e.shiftKey) {
+      e.preventDefault();
       return editor.undoManager.redo();
     }
 

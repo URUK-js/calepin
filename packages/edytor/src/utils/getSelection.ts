@@ -21,6 +21,7 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
   if (focusNode === null) return;
   const [leaf1, path1] = getLeaf(anchorNode as HTMLElement);
   const [leaf2, path2] = getLeaf(focusNode as HTMLElement);
+
   const equalPaths = arePathsEquals(path2, path1);
   const isFollowing = equalPaths ? anchorOffset < focusOffset : leaf1.compareDocumentPosition(leaf2) === 4;
 
@@ -30,7 +31,7 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
 
     ancestor: document.querySelector(`[data-edytor-path="${(isFollowing ? path1 : path2).slice(0, 1)}"]`),
     offset: isFollowing ? anchorOffset : focusOffset,
-    leaf: getTextLeave(editor.toYJS(), isFollowing ? path1 : path2)
+    leaf: editor.doc.getLeafAtPath(isFollowing ? path1 : path2)
   };
 
   const end = isCollapsed
@@ -39,7 +40,7 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
         node: !isFollowing ? anchorNode : focusNode,
         path: !isFollowing ? path1 : path2,
         offset: !isFollowing ? anchorOffset : focusOffset,
-        leaf: getTextLeave(editor.toYJS(), !isFollowing ? path1 : path2)
+        leaf: editor.doc.getLeafAtPath(!isFollowing ? path1 : path2)
       };
 
   const range = rangeCount >= 1 ? selection?.getRangeAt(0) : undefined;

@@ -1,45 +1,42 @@
-import { createSignal, createMemo, Accessor, JSXElement, mapArray, createEffect, on, For } from "solid-js";
-import { useNode } from "../hooks/useNode";
-import { useText } from "../hooks/useText";
-import { useChildren } from "../hooks/useChildren";
-import { useEditor } from "../hooks/useEditor";
-import { YMap } from "yjs/dist/src/internals";
+import { createMemo, JSXElement, mapArray } from "solid-js";
+import { useNode, useText, useChildren, useEditor } from "../hooks";
+import { YArray, YMap } from "yjs/dist/src/internals";
+import { YLeaf, YNode } from "edytor";
 
-{
-  /* <button onClick={() => child.set("type", "paragraph")}>aeazeaze</button> */
-}
-export const renderChildren = ({ node }: { node: YMap<any> }): JSXElement => {
-  return mapArray(useChildren(node), renderChild);
+export const renderChildren = (children: YArray<YNode>): JSXElement => {
+  return mapArray(useChildren(children), renderNode);
 };
 
-const renderChild = (child) => {
-  const { renderLeaf, renderBlock } = useEditor();
-  const node = useNode(child);
-  const isBlock = child.has("children");
+export const renderContent = (content: YArray<YLeaf>): JSXElement => {
+  return mapArray(useChildren(content), renderLeaf);
+};
 
-  if (isBlock) {
-    const children = createMemo(() => renderChildren({ node: child }));
-    return (
-      <>
-        {renderBlock({
-          attributes: {
-            "data-edytor-component": "true",
-            "data-edytor-block": "true"
-          },
-          block: node,
-          children
-        })}
-      </>
-    );
-  } else {
-    const text = useText(child.get("text"));
-    return renderLeaf({
-      text,
-      attributes: {
-        "data-edytor-component": "true",
-        "data-edytor-leaf": "true"
-      },
-      leaf: node
-    });
-  }
+export const renderLeaf = (leaf: YLeaf): JSXElement => {
+  const { renderLeaf } = useEditor();
+  return renderLeaf({
+    text: useText(leaf.text()),
+    attributes: {
+      id: leaf.id,
+      "data-edytor-element": "true",
+      "data-edytor-leaf": "true"
+    },
+
+    leaf: useNode(leaf)
+  });
+};
+export const renderNode = (node: YNode) => {
+  const { renderBlock } = useEditor();
+  const children = renderChildren(node.children());
+  const content = renderContent(node.content());
+  return renderBlock({
+    attributes: {
+      id: node.id,
+      "data-edytor-element": "true",
+      "data-edytor-block": "true"
+    },
+    node,
+    block: useNode(node),
+    children,
+    content
+  });
 };

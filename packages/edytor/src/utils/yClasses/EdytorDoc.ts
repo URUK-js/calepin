@@ -1,4 +1,4 @@
-import { Doc } from "yjs";
+import { Doc, encodeStateAsUpdateV2 } from "yjs";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf, YNode } from ".";
 
@@ -21,18 +21,19 @@ const getChildren = ({ type, content = [], children = [], ...props }: jsonNode):
 };
 export class EdytorDoc extends Doc {
   children: YArray<YNode>;
+  config: YMap<any>;
   constructor(value?: jsonNode[]) {
     super();
     if (value) {
       const array = this.getArray("children");
       array.insert(0, value.map(getChildren));
     }
+    this.config = this.getMap("config");
     this.children = this.getArray("children");
   }
   getLeafAtPath = ([start, ...path]: number[]): YLeaf => {
     let node = this.children.get(start);
     let leaf;
-
     for (let i = 0; i < path.length; i++) {
       const index = path[i];
 
@@ -71,7 +72,7 @@ export class EdytorDoc extends Doc {
       end?: number;
     }
   ) => {
-    const traverse = (node: YMap<any>, path: number[]) => {
+    const traverse = (node: YNode | YLeaf, path: number[]) => {
       if (node instanceof YLeaf) {
         cb(node, true, path);
       } else {
@@ -89,6 +90,15 @@ export class EdytorDoc extends Doc {
     for (let i = 0; i < array.length; i++) {
       traverse(array[i], [i + (opts?.start || 0)]);
     }
+  };
+  toJSON = () => {
+    return {
+      children: this.children.toJSON(),
+      config: this.config.toJSON()
+    };
+  };
+  toUpdate = () => {
+    return encodeStateAsUpdateV2(this);
   };
   string = (): string => {
     let t = "";

@@ -1,19 +1,19 @@
-import { createSignal, onMount, onCleanup } from "solid-js";
-
-import { YArray, YMap } from "yjs/dist/src/internals";
+import { YLeaf, YNode } from "edytor";
+import { createSignal, onMount, onCleanup, Accessor } from "solid-js";
+import { YArray } from "yjs/dist/src/internals";
 
 // TO DO conditionally observe if inside viewport
-export const useChildren = (node: YMap<any>) => {
-  const [value, setValue] = createSignal(node.get("children").toArray());
+export const useChildren = (array: YArray<YNode | YLeaf>): Accessor<YNode | YLeaf> => {
+  const [value, setValue] = createSignal(array.toArray());
 
   const observer = () => {
-    setValue(node.get("children").toArray());
+    setValue(array.toArray());
   };
   onMount(() => {
-    node.get("children").observe(observer);
+    array.observe(observer);
   });
   onCleanup(() => {
-    node.get("children")?.unobserve(observer);
+    array.unobserve(observer);
   });
 
   return value;

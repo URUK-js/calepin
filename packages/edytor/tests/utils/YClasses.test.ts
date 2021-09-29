@@ -22,19 +22,19 @@ test("new node with data", () => {
   const doc = new Y.Doc();
   doc.getMap("test").set("newNode", new YNode("paragraph", { data: { comments: ["hello"] } }));
 
-  const newNode = doc
-    .getMap("test")
-    .get("newNode")
-    .toJSON();
+  const newNode = doc.getMap("test").get("newNode") as YNode;
+
   const nodeJSON = {
-    id: newNode.id,
+    id: newNode.get("id"),
     type: "paragraph",
-    data: { comments: ["hello"] },
+    data: { comments: ["hello"], responses: ["hola"] },
     content: [],
     children: []
   };
 
-  expect(newNode).toStrictEqual(nodeJSON);
+  newNode.setData({ responses: ["hola"] });
+
+  expect(newNode.toJSON()).toStrictEqual(nodeJSON);
 });
 test("new leaf", () => {
   const doc = new Y.Doc();
@@ -68,15 +68,13 @@ test("new leaf with data", () => {
   const doc = new Y.Doc();
   doc.getMap("test").set("newNode", new YLeaf({ data: { comments: ["hello"] } }));
   const nodeJSON = {
-    data: { comments: ["hello"] },
+    data: { comments: ["hello"], responses: ["hola"] },
     text: ""
   };
-  expect(
-    doc
-      .getMap("test")
-      .get("newNode")
-      .toJSON()
-  ).toStrictEqual(nodeJSON);
+
+  const newNode = doc.getMap("test").get("newNode") as YNode;
+  newNode.setData({ responses: ["hola"] });
+  expect(newNode.toJSON()).toStrictEqual(nodeJSON);
 });
 test("new leaf with marks", () => {
   const doc = new Y.Doc();
@@ -86,12 +84,7 @@ test("new leaf with marks", () => {
     bold: true,
     italic: true
   };
-  console.log(
-    doc
-      .getMap("test")
-      .get("newNode")
-      .toJSON()
-  );
+
   expect(
     doc
       .getMap("test")
@@ -122,18 +115,19 @@ test("new node with Yarray of leaves", () => {
   const doc = new Y.Doc();
 
   doc.getMap("test").set("newNode", new YNode("paragraph", { content: Y.Array.from([new YLeaf()]) }));
-  const newNode = doc
-    .getMap("test")
-    .get("newNode")
-    .toJSON();
-  const nodeJSON = {
-    id: newNode.id,
-    type: "paragraph",
+  const newNode = doc.getMap("test").get("newNode") as YNode;
 
+  const nodeJSON = {
+    id: newNode.get("id"),
+    type: "paragraph",
+    data: {
+      lorem: "ipsum"
+    },
     content: [{ text: "" }],
     children: []
   };
-  expect(newNode).toStrictEqual(nodeJSON);
+  newNode.setData({ lorem: "ipsum" });
+  expect(newNode.toJSON()).toStrictEqual(nodeJSON);
 });
 test("new node with Yarray of children", () => {
   const doc = new Y.Doc();
@@ -168,7 +162,14 @@ test("to string method", () => {
     })
   );
   const text = "Lorem ipsum dolor sic";
+  const newNode = doc
+    .getMap("test")
+    .get("newNode")
+    .get("children")
+    .get(1) as YNode;
+  console.log(newNode.node());
 
+  expect(newNode.node()).toBe(doc.getMap("test").get("newNode"));
   expect(
     doc
       .getMap("test")
@@ -221,8 +222,9 @@ test("editorDoc", () => {
     }
   ];
   const doc = new EdytorDoc(value);
-  const array = doc.children.toJSON();
-
+  const jsonDoc = doc.toJSON();
+  expect(jsonDoc.config).toStrictEqual({});
+  const array = jsonDoc.children;
   expect(array[0].data).toStrictEqual(arrayJSON[0].data);
   expect(array[0].content[0]).toStrictEqual(arrayJSON[0].content[0]);
   expect(array[0].children[0].content[0]).toStrictEqual(arrayJSON[0].children[0].content[0]);
@@ -244,4 +246,8 @@ test("editorDoc", () => {
 
   const nodeAtPathFail = doc.getNodeAtPath([0, 1, 1]);
   expect(nodeAtPathFail).toBe(undefined);
+
+  const newDoc = new EdytorDoc();
+  Y.applyUpdateV2(newDoc, doc.toUpdate());
+  expect(newDoc.toJSON()).toStrictEqual(jsonDoc);
 });

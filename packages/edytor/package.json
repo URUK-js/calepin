@@ -9,16 +9,9 @@
   "homepage": "http://lerna create library",
   "license": "MIT",
   "main": "index.ts",
-  "directories": {
-    "src": "src",
-    "test": "tests"
-  },
-  "files": [
-    "src"
-  ],
   "scripts": {
     "build-core": "tsdx build --transpileOnly",
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "is-hotkey": "^0.2.0",

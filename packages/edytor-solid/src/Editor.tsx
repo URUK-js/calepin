@@ -1,11 +1,20 @@
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, createMemo, onMount, onCleanup } from "solid-js";
 import { renderLeaves as renderLeafDefault, renderBlock as renderBlockDefault, renderChildren } from "./components";
-import { useHistory, EditorContext, useEditor, useNode } from "./hooks";
-import { toJSON, toYJS, EditorProps, onDragOver, onDrop, onBeforeInput, onKeyDown } from "edytor";
-import * as Y from "yjs";
-
-import { useSelectionListener } from "./hooks/useSelectionListener";
-import { Cursor, Editor as EditorType, EdytorSelection } from "edytor/src";
+import { useHistory, EditorContext, useEditor, useNode, useSelectionListener } from "./hooks";
+import "edytor/src/utils/nodePath";
+import {
+  toJSON,
+  toYJS,
+  EditorProps,
+  onDragOver,
+  onDrop,
+  onBeforeInput,
+  onKeyDown,
+  Cursor,
+  Editor as EditorType,
+  EdytorDoc,
+  EdytorSelection
+} from "edytor";
 
 export const Editor = ({
   value,
@@ -29,9 +38,15 @@ export const Editor = ({
   let [cursor, setCursor] = createSignal<Cursor>();
   let [selection, setSelection] = createSignal<EdytorSelection | undefined>();
 
-  const doc = createMemo(() => toYJS(value).getMap("document"));
+  const doc = createMemo(() => new EdytorDoc(value))();
+
+  const onChangeObserver = () => {
+    console.log(doc.children.toJSON());
+  };
+  onMount(() => doc.children.observeDeep(onChangeObserver));
+  onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
   const undoManager = useHistory(doc);
-  const config = useNode(doc().doc?.getMap("config")!);
+  const config = useNode(doc.config);
   const editor = createMemo<EditorType>(() => ({
     editorId: editorId(),
     selection,
@@ -40,25 +55,24 @@ export const Editor = ({
     renderBlock,
     renderLeaf,
     undoManager,
-
     editorRef,
-    doc: () => doc().doc!,
-    config: () => doc().doc?.getMap("config")!,
-    toYJS: doc,
-    toUpdate: () => Y.encodeStateAsUpdateV2(doc().doc as Y.Doc),
-    toJSON: () => toJSON(doc().doc as Y.Doc)
-  }));
-  useSelectionListener(editor(), setSelection);
-  console.log(editor());
+    doc,
+    children: doc.children,
+    config: doc.config,
+    toUpdate: doc.toUpdate,
+    toString: doc.string,
+    toJSON: doc.toJSON
+  }))();
+  useSelectionListener(editor, setSelection);
+
   return (
-    <EditorContext value={editor()}>
+    <EditorContext value={editor}>
       {renderBefore && renderBefore()}
       <div
         {...props(useEditor(), config())}
         onDrop={[onDrop, useEditor()]}
-        on
-        onDragOver={[onDragOver, useEditor()]}
-        onDragStart={[onDragOver, useEditor()]}
+        onDragOver={[onDragOver, editor]}
+        onDragStart={[onDragOver, editor]}
         className={className}
         id={id}
         spellcheck={spellcheck}
@@ -70,10 +84,10 @@ export const Editor = ({
         }}
         contentEditable={true}
         //@ts-ignore
-        onBeforeInput={[onBeforeInput, [doc, onChange, useEditor()]]}
-        onKeyDown={[onKeyDown, useEditor()]}
+        onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
+        onKeyDown={[onKeyDown, editor]}
       >
-        {renderChildren({ node: doc() })}
+        {renderChildren(doc.children)}
       </div>
       {renderAfter && renderAfter()}
     </EditorContext>

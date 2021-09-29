@@ -1,11 +1,14 @@
+import { EdytorDoc } from "edytor/src";
 import { createMemo, onMount, onCleanup, Accessor } from "solid-js";
 import { UndoManager } from "yjs";
 import { YMap } from "yjs/dist/src/internals";
 // import { Cursor } from "../Cursor";
-export const useHistory = (doc: Accessor<YMap<any>>) => {
-  const undoManager = createMemo((): UndoManager => {
-    return new UndoManager(doc());
-  });
+export const useHistory = (doc: EdytorDoc) => {
+  const undoManager = createMemo(
+    (): UndoManager => {
+      return new UndoManager(doc.children);
+    }
+  );
 
   onMount(() => {
     // this don't work very well

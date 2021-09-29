@@ -30,11 +30,8 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
   const rangeLength = selection.getRangeAt(0)?.toString()?.length;
   const [leaf, path] = getLeaf(anchorNode as HTMLElement);
   console.log({ path });
-  if (currentNode !== focusNode) {
-    currentNode = focusNode!;
-    currentText = getTextLeave(doc(), path);
-  }
-  console.log({ currentText, path, anchorNode, focusNode, selection });
+  const currentText = editor.selection().start.leaf;
+  console.log({ path, anchorNode, focusNode, selection });
   if (!currentText) return;
   const start = Math.min(anchorOffset, focusOffset);
   const setPosition = (chars: number) => Cursor.setCurrentCursorPosition(offset + chars, editorDiv, selection);
@@ -61,8 +58,6 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
     case "deleteContentBackward": {
       deleteText(editor, { mode: "backward" });
-      const { selection, start } = editor.selection();
-
       Cursor.setCurrentCursorPosition(
         rangeLength === 0 ? (anchorOffset === 1 ? offset : offset - 1) : offset,
         editorDiv
@@ -168,8 +163,6 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
       setPosition(focusOffset - anchorOffset > 0 ? -rangeLength + data.length : 0 + data.length);
     }
   }
-
-  // console.log(editor.toJSON());
 
   // onChange && onChange(editor);
 };

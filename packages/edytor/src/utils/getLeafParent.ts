@@ -1,6 +1,7 @@
 export const getLeafParent = (anchorNode: HTMLElement): HTMLElement | undefined => {
   const { parentElement } = anchorNode;
 
+  console.log({ anchorNode });
   if (anchorNode?.hasAttribute && anchorNode?.hasAttribute("data-edytor-path")) {
     return anchorNode;
   } else if (parentElement?.hasAttribute("data-edytor-leaf")) {

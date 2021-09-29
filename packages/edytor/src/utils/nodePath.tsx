@@ -24,6 +24,7 @@ type X = PropertyDescriptor & ThisType<Element>;
     }
   });
 })(Element || Node);
+
 (function(constructor) {
   "use strict";
   Object.defineProperty(constructor.prototype, "path", {
@@ -38,9 +39,9 @@ type X = PropertyDescriptor & ThisType<Element>;
           parent = false;
         }
       }
-      const p = path.reverse();
-      this.parentNode.setAttribute("data-edytor-path", p.toString());
-      return p;
+      path.reverse();
+      this.setAttribute("data-edytor-path", path.toString());
+      return path;
     }
   });
 })(Element || Node);

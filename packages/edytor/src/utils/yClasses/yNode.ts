@@ -15,7 +15,7 @@ export class YNode extends Map<any> {
     this.set("id", nanoid());
     this.set("type", type);
     if (props?.data) {
-      this.set("data", new Map(props?.data ? Object.entries(props.data) : []));
+      this.set("data", new Map(Object.entries(props.data)));
     }
     this.set("content", props?.content instanceof Array ? props.content : Array.from(props?.content || []));
     this.set("children", props?.children instanceof Array ? props.children : Array.from(props?.children || []));
@@ -25,12 +25,13 @@ export class YNode extends Map<any> {
   children = (): YArray<YNode> => this.get("children");
   node = (): YNode | undefined => this.parent.parent as YNode;
   setData = (data: object) => {
+    console.log(data);
     if (this.has("data")) {
       Object.keys(data).forEach((key) => {
         this.data().set(key, data[key]);
       });
     } else {
-      this.set("data", Object.entries(data));
+      this.set("data", new Map(Object.entries(data)));
     }
   };
   string = (): string => {

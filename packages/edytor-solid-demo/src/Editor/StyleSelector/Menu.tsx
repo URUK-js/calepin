@@ -1,24 +1,21 @@
 import { createMemo, createSignal } from "solid-js";
 import { useEditor, useNode } from "edytor-solid";
-import { traverseDocument } from "edytor";
 import Toggle from "./Toggle";
-import { useSelection, useSelectionChange } from "../../../../edytor-solid/src";
 import { HooverMenu } from "../HooverMenu";
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
-  const configMap = editor.toYJS().doc?.getMap("config");
-  const config = useNode(configMap!);
-  console.log(editor);
+  const config = useNode(editor.config);
+
   const count = createMemo(() => {
     let blocks = 0;
     let leafs = 0;
     let characters = 0;
 
-    traverseDocument(editor, (isText, node) => {
+    editor.doc.traverse((node, isText) => {
       if (isText) {
+        // characters += node.string;
         leafs++;
-        characters += node.toString().length;
       } else {
         blocks++;
       }
@@ -65,8 +62,7 @@ const Menu = ({}) => {
               return (
                 <div
                   onClick={() => {
-                    const config = editor.config();
-                    config.set("font", font.toLowerCase());
+                    editor.config.set("font", font.toLowerCase());
                   }}
                   className={`hover:bg-gray-100 rounded-sm justify-center rounded-sm p-2 grid h-20 cursor-pointer items-center`}
                 >
@@ -85,21 +81,21 @@ const Menu = ({}) => {
           <hr className="my-1 bg-gray-100 text-gray-200" />
           <Toggle
             onChange={(value) => {
-              configMap?.set("fullWidth", value);
+              editor.config?.set("fullWidth", value);
             }}
             label={"Full width"}
             value={createMemo(() => !!config().fullWidth)}
           />
           <Toggle
             onChange={(value) => {
-              configMap?.set("smallText", value);
+              editor.config?.set("smallText", value);
             }}
             label={"Small text"}
             value={createMemo(() => !!config().smallText)}
           />
           <Toggle
             onChange={(value) => {
-              configMap?.set("showCover", value);
+              editor.config?.set("showCover", value);
             }}
             label={"Show cover"}
             value={createMemo(() => !!config().showCover)}

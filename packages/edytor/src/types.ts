@@ -1,6 +1,7 @@
 import { UndoManager } from "yjs";
-import { Doc, YArray, YMap, YText } from "yjs/dist/src/internals";
-import { Cursor, EdytorDoc } from "./utils";
+import { YArray, YMap, YText } from "yjs/dist/src/internals";
+import { Cursor, EdytorDoc } from ".";
+import { jsonNode, YLeaf } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
@@ -27,12 +28,12 @@ export type renderBlockProps = {
 };
 
 interface HotKeys {
-  operation: (editor: Editor) => void | "formatText" | "wrapInlines";
+  operation: ((editor: Editor) => void) | "formatText" | "wrapInlines";
   keys: string;
   data: Record<any, any>;
 }
 export interface EditorProps extends Record<any, any> {
-  value: Value;
+  value: jsonNode[];
   spellcheck?: boolean;
   className?: string;
   id?: string;
@@ -54,8 +55,7 @@ export interface Editor {
   editorRef: Accessor<HTMLDivElement | undefined>;
   toUpdate: () => Uint8Array;
   doc: EdytorDoc;
-  config: () => YMap<any>;
-  toYJS: Accessor<YMap<any>>;
+  config: YMap<any>;
   toJSON: () => Value;
   //
 
@@ -83,7 +83,7 @@ export type Position = {
   path: number[];
   node?: HTMLElement | Node;
   offset: number;
-  leaf: YText;
+  leaf: YLeaf;
 };
 export type EdytorSelection = {
   start: Position;
