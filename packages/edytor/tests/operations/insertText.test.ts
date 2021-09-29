@@ -1,4 +1,5 @@
 import { insertText } from "../..";
+import { YNode } from "../../src";
 import { makeEditorFixture } from "../fixture/editorFixture";
 
 test("insert hello", () => {

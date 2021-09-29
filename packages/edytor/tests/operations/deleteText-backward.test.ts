@@ -42,6 +42,7 @@ test("delet deep", () => {
   deleteText(editor, { mode: "backward" });
   expect(editor.doc.string()).toBe("hello edy");
 });
+
 test("delet deep", () => {
   const value = [
     {
@@ -63,6 +64,37 @@ test("delet deep", () => {
       id: editor.children.toJSON()[0].id,
       type: "paragraph",
       content: [{ text: "hello", bold: true }],
+      children: []
+    }
+  ]);
+});
+test("delete not everything", () => {
+  const value = [
+    {
+      id: "id",
+      type: "paragraph",
+      content: [
+        { text: "hello ", bold: true },
+        { text: " edytor", italic: true }
+      ],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value, {
+    start: { path: [0, 0], offset: 5 },
+    end: { path: [0, 1], offset: 1 },
+    length: 2
+  });
+  deleteText(editor, { mode: "backward" });
+
+  expect(editor.doc.string()).toBe("helloedytor");
+  console.log(editor.toJSON());
+  expect(editor.children.toJSON()).toStrictEqual([
+    {
+      id: "id",
+      type: "paragraph",
+      content: [{ text: "hello", bold: true }],
+      content: [{ text: "edytor", italic: true }],
       children: []
     }
   ]);

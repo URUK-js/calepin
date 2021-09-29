@@ -10,7 +10,6 @@ import {
 } from "phosphor-solid";
 import { EdytorSelection, formatText } from "edytor/src";
 
-const iconsProps = {};
 export const HooverMenu = ({}) => {
   let ref = undefined as undefined | HTMLDivElement;
   const editor = useEditor();
@@ -20,7 +19,6 @@ export const HooverMenu = ({}) => {
       ref.style.transform = `scale(0)`;
       ref.style.opacity = "0";
     } else {
-      console.log(s);
       ref.style.opacity = "1";
       ref.style.transform = `scale(1)`;
       ref.style.top = `${s.boundingRect.top + window.pageYOffset - ref.offsetHeight - 5}px`;

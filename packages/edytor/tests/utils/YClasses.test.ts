@@ -1,5 +1,6 @@
 import * as Y from "yjs";
 import { YNode, YLeaf, EdytorDoc } from "../..";
+import { makeEditorFixture } from "../fixture/editorFixture";
 
 // test("new blank node", () => {
 //   const doc = new Y.Doc();
@@ -292,3 +293,42 @@ import { YNode, YLeaf, EdytorDoc } from "../..";
 //   Y.applyUpdateV2(newDoc, doc.toUpdate());
 //   expect(newDoc.toJSON()).toStrictEqual(jsonDoc);
 // });
+
+test("insert at range multinodes-3", () => {
+  const value = [
+    {
+      type: "paragraph",
+
+      content: [{ text: "Bold text" }],
+      children: []
+    },
+    {
+      type: "paragraph",
+
+      content: [{ text: "Bold text" }, { text: "Bold text" }],
+      children: [
+        {
+          type: "paragraph",
+
+          content: [{ text: "Bold text" }, { text: "Bold text" }],
+          children: []
+        },
+        {
+          type: "paragraph",
+
+          content: [{ text: "Bold text" }],
+          children: []
+        }
+      ]
+    }
+  ];
+  const editor = makeEditorFixture(value);
+  const n = editor.children
+    .get(1)
+    .get("children")
+    .get(0)
+    .get("content")
+    .get(1) as YNode;
+
+  console.log(n.index(), n.path());
+});

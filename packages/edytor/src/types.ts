@@ -46,6 +46,7 @@ export interface EditorProps extends Record<any, any> {
 }
 
 export interface Editor {
+  editorId: string;
   hotkeys?: HotKeys[];
   selection: () => EdytorSelection | undefined;
   cursor: () => Cursor | undefined;
@@ -57,6 +58,8 @@ export interface Editor {
   doc: EdytorDoc;
   config: YMap<any>;
   toJSON: () => Value;
+  ID_TO_MAP: WeakMap<any, any>;
+  MAP_TO_ID: WeakMap<any, any>;
   //
 
   children: YArray<any>;

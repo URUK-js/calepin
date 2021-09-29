@@ -1,7 +1,7 @@
 import { Editor, EdytorSelection } from "../types";
 import { getLeaf } from ".";
 import { arePathsEquals } from "./arePathsEquals";
-import { getTextLeave } from "./getTextLeave";
+
 // import "./nodePath";
 
 declare global {
@@ -19,8 +19,8 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed, rangeCount } = selection;
 
   if (focusNode === null) return;
-  const [leaf1, path1] = getLeaf(anchorNode as HTMLElement);
-  const [leaf2, path2] = getLeaf(focusNode as HTMLElement);
+  const [leaf1, path1] = getLeaf(editor, anchorNode as HTMLElement);
+  const [leaf2, path2] = getLeaf(editor, focusNode as HTMLElement);
 
   const equalPaths = arePathsEquals(path2, path1);
   const isFollowing = equalPaths ? anchorOffset < focusOffset : leaf1.compareDocumentPosition(leaf2) === 4;

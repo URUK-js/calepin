@@ -35,16 +35,15 @@ export class EdytorDoc extends Doc {
     let node = this.children.get(start);
 
     let i = 0;
-    console.log(node && node.string());
+
     while (i < path.length - 1) {
       const index = path[i];
-      console.log(index);
+
       i++;
       node = node.get("children").get(index);
     }
 
     const leaf = node && node.get("content").get(path.slice().reverse()[0]);
-    console.log(leaf && leaf.string());
 
     return leaf;
   };
@@ -53,12 +52,10 @@ export class EdytorDoc extends Doc {
 
     for (let i = 0; i < path.length; i++) {
       const index = path[i];
-
       if (node.get) {
         node = node.get("children").get(index);
       } else {
         node = undefined;
-        break;
       }
     }
     return node;
@@ -72,8 +69,6 @@ export class EdytorDoc extends Doc {
   ) => {
     const traverse = (node: YNode | YLeaf, path: number[]) => {
       if (node instanceof YLeaf) {
-        console.log(path);
-        // should be  [ 0, 0 ] [ 0, 1 ] [ 0, 2 ] [ 0, 0, 0 ] [ 0, 0, 1 ] [ 0, 0, 2 ]
         cb(node, true, path);
       } else {
         const array = node

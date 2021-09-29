@@ -66,9 +66,22 @@ export class YLeaf extends Map<any> {
     }
   };
   index = (): number => {
-    return this.nodeContent()
-      .toArray()
-      .indexOf(this);
+    let i = 0;
+    let n = this;
+    while (n._item.left) {
+      i++;
+      n = n._item.left.content.type;
+    }
+    return i;
+  };
+  path = (): number => {
+    let path = [] as number[];
+    let n = this;
+    while (n) {
+      path.push(n.index());
+      n = n.node();
+    }
+    return path.reverse();
   };
   remove = () => {
     this.nodeContent().delete(this.index());

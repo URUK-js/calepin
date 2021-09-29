@@ -1,7 +1,5 @@
-import { YMap, YText } from "yjs/dist/src/internals";
 import { Editor, EdytorSelection } from "../types";
-import { getYNode, traverseDocument, YLeaf } from "../utils";
-import { removeEmptyText } from "./removeEmptyText";
+import { YLeaf } from "../utils";
 import * as Y from "yjs";
 import { mergeLeafs } from "./merge";
 const mergeWithPrevBranch = (editor: Editor) => {
@@ -102,23 +100,24 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       {
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
-        editor.doc.transact(() => {
-          editor.doc.traverse(
-            (leaf, isText, path) => {
-              if (isText) {
-                const l = leaf as YLeaf;
-                if (path.join(",") === startPathString) {
-                  l.deleteText(start.offset, l.length());
-                } else if (path > start.path && path < end.path) {
-                  l.deleteText(0, l.length());
-                } else if (path.join(",") === endPathString) {
-                  l.deleteText(0, end.offset);
-                }
+        // editor.doc.transact(() => {
+        editor.doc.traverse(
+          (leaf, isText, path) => {
+            if (isText) {
+              const l = leaf as YLeaf;
+              console.log(path);
+              if (path.join(",") === startPathString) {
+                l.deleteText(start.offset, l.length());
+              } else if (path > start.path && path < end.path) {
+                l.deleteText(0, l.length());
+              } else if (path.join(",") === endPathString) {
+                l.deleteText(0, end.offset);
               }
-            },
-            { start: start.path[0], end: end.path[0] + 1 }
-          );
-        });
+            }
+          }
+          // { start: start.path[0] - 1, end: end.path[0] + 1 }
+        );
+        // });
       }
       break;
   }

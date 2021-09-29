@@ -58,6 +58,8 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
     case "deleteContentBackward": {
       deleteText(editor, { mode: "backward" });
+      console.log(editor.toJSON());
+
       Cursor.setCurrentCursorPosition(
         rangeLength === 0 ? (anchorOffset === 1 ? offset : offset - 1) : offset,
         editorDiv

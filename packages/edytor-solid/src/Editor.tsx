@@ -47,6 +47,7 @@ export const Editor = ({
   onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
   const undoManager = useHistory(doc);
   const config = useNode(doc.config);
+
   const editor = createMemo<EditorType>(() => ({
     editorId: editorId(),
     selection,
@@ -61,7 +62,9 @@ export const Editor = ({
     config: doc.config,
     toUpdate: doc.toUpdate,
     toString: doc.string,
-    toJSON: doc.toJSON
+    toJSON: doc.toJSON,
+    ID_TO_MAP: new WeakMap(),
+    MAP_TO_ID: new WeakMap()
   }))();
   useSelectionListener(editor, setSelection);
 
@@ -74,7 +77,7 @@ export const Editor = ({
         onDragOver={[onDragOver, editor]}
         onDragStart={[onDragOver, editor]}
         className={className}
-        id={id}
+        id={editor.editorId}
         spellcheck={spellcheck}
         data-edytor-editor={editorId()}
         data-gram={true}
