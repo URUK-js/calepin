@@ -20,8 +20,7 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
       break;
     }
     case "singlenode": {
-      start.leaf.deleteText(start.offset, length);
-      start.leaf.insert(start.offset, text);
+      start.leaf.replaceText(start.offset, length, text);
       break;
     }
     case "multinodes": {
@@ -33,14 +32,12 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
             if (isText) {
               const l = leaf as YLeaf;
               if (path.join(",") === startPathString) {
-                l.deleteText(start.offset, l.length());
-                l.insert(start.offset, text);
+                l.replaceText(start.offset, l.length(), text);
               } else if (path > start.path && path < end.path) {
-                l.deleteText(0, l.length());
+                l.deleteText(0, l.length(), true);
               } else if (path.join(",") === endPathString) {
-                l.deleteText(0, end.offset);
+                l.deleteText(0, end.offset, true);
               }
-              // if (l.length() === 0) removeEmptyText(l);
             }
           },
           { start: start.path[0], end: end.path[0] + 1 }

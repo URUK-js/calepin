@@ -31,12 +31,16 @@ export class YLeaf extends Map<any> {
   data = (): YMap<any> => this.get("data");
   text = (): YText => this.get("text");
   length = (): number => this.text().length;
+  replaceText = (start: number, length: number, text: string) => {
+    const currentText = this.string().split("");
+    currentText.splice(start, length, ...text.split(""));
+
+    return this.setText(currentText.join(""));
+  };
   setText = (text: string) => {
     const t = this.text();
-    this.doc.transact(() => {
-      t.delete(0, t.length);
-      t.insert(0, text);
-    });
+    t.delete(0, t.length);
+    t.insert(0, text);
   };
   string = (): string => this.get("text").toString();
   node = (): YNode => this.parent.parent as YNode;
@@ -54,7 +58,25 @@ export class YLeaf extends Map<any> {
       this.set("data", new Map(Object.entries(data)));
     }
   };
-  deleteText = (index: number, length: number) => this.text().delete(index, length);
+  isEmpty = () => this.length() === 0;
+  deleteText = (index: number, length: number, removeIfEmpty = true) => {
+    this.text().delete(index, length);
+    if (this.isEmpty() && removeIfEmpty) {
+      this.remove();
+    }
+  };
+  index = (): number => {
+    return this.nodeContent()
+      .toArray()
+      .indexOf(this);
+  };
+  remove = () => {
+    this.nodeContent().delete(this.index());
+    if (this.nodeContentLength() === 0) {
+      console.log(this.node);
+      this.node().delete();
+    }
+  };
   insert = (index: number, text) => {
     this.text().insert(index, text);
   };

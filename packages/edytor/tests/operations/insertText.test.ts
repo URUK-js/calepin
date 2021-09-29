@@ -42,8 +42,10 @@ test("insert hello", () => {
 
   insertText(editor, { text: "or" });
   expect(editor.doc.string()).toBe("hello edytor");
-  expect(editor.toJSON()).toStrictEqual([
+
+  expect(editor.doc.toJSON().children).toStrictEqual([
     {
+      id: editor.doc.toJSON().children[0].id,
       type: "paragraph",
       content: [
         { text: "hello", bold: true },

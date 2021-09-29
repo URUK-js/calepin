@@ -33,21 +33,19 @@ export class EdytorDoc extends Doc {
   }
   getLeafAtPath = ([start, ...path]: number[]): YLeaf => {
     let node = this.children.get(start);
-    let leaf;
-    for (let i = 0; i < path.length; i++) {
-      const index = path[i];
 
-      if (!node?.get) {
-        leaf = undefined;
-        break;
-      } else {
-        if (i === path.length - 1) {
-          leaf = node.get("content").get(index);
-        } else {
-          node = node.get("children").get(index);
-        }
-      }
+    let i = 0;
+    console.log(node && node.string());
+    while (i < path.length - 1) {
+      const index = path[i];
+      console.log(index);
+      i++;
+      node = node.get("children").get(index);
     }
+
+    const leaf = node && node.get("content").get(path.slice().reverse()[0]);
+    console.log(leaf && leaf.string());
+
     return leaf;
   };
   getNodeAtPath = ([start, ...path]: number[]): YNode => {
@@ -74,15 +72,19 @@ export class EdytorDoc extends Doc {
   ) => {
     const traverse = (node: YNode | YLeaf, path: number[]) => {
       if (node instanceof YLeaf) {
+        console.log(path);
+        // should be  [ 0, 0 ] [ 0, 1 ] [ 0, 2 ] [ 0, 0, 0 ] [ 0, 0, 1 ] [ 0, 0, 2 ]
         cb(node, true, path);
       } else {
-        cb(node, false, path);
         const array = node
-          .get("content")
+          .content()
           .toArray()
-          .concat(node.get("children").toArray());
+          //@ts-ignore
+          .concat(node.children().toArray());
+        cb(node, false, path);
+
         for (let i = 0; i < array.length; i++) {
-          traverse(array[i], [...path, i]);
+          traverse(array[i], [...path.slice(0, path.length - 1), 0, i]);
         }
       }
     };

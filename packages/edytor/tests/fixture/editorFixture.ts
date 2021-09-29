@@ -30,7 +30,7 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
   };
   const equalPaths = arePathsEquals(start.path, end.path);
   if (!start.leaf) {
-    return { type: "notInDoc" };
+    return { type: "notInDoc" } as EdytorSelection;
   } else {
     return {
       start,
@@ -39,7 +39,7 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
       length: length || end.offset - start.offset,
       edges: {
         start: start.offset === 0,
-        end: end.offset === end.leaf.length
+        end: end.offset === end.leaf.length()
       },
       type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : "multinodes"
     } as EdytorSelection;

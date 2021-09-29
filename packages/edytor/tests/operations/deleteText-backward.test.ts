@@ -42,6 +42,31 @@ test("delet deep", () => {
   deleteText(editor, { mode: "backward" });
   expect(editor.doc.string()).toBe("hello edy");
 });
+test("delet deep", () => {
+  const value = [
+    {
+      type: "paragraph",
+      content: [
+        { text: "hello", bold: true },
+        { text: " edyt", italic: true }
+      ],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 5 } });
+  deleteText(editor, { mode: "backward" });
+
+  expect(editor.doc.string()).toBe("hello");
+  // console.log(editor.toJSON())
+  expect(editor.children.toJSON()).toStrictEqual([
+    {
+      id: editor.children.toJSON()[0].id,
+      type: "paragraph",
+      content: [{ text: "hello", bold: true }],
+      children: []
+    }
+  ]);
+});
 
 test("should fail silently", () => {
   const value = [
@@ -67,6 +92,7 @@ test("delete multinodes", () => {
       children: []
     }
   ];
+
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 1], offset: 5 } });
   deleteText(editor, { mode: "backward" });
   expect(editor.doc.string()).toBe("");
@@ -86,58 +112,59 @@ test("delete multinodes", () => {
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 2], offset: 5 } });
   deleteText(editor, { mode: "backward" });
   expect(editor.doc.string()).toBe("");
+  console.log(editor.children.toJSON());
+  expect(editor.children.toJSON()).toStrictEqual([
+    { id: editor.children.toJSON()[0].id, type: "paragraph", content: [{ text: "" }], children: [] }
+  ]);
 });
-// test("insert at range single node", () => {
-//   const value = [
-//     {
-//       type: "paragraph",
-//       content: [{ text: "hello", bold: true }],
-//       children: []
-//     }
-//   ];
-//   const editor = makeEditorFixture(value, {
-//     start: { path: [0, 0], offset: 0 },
-//     end: { path: [0, 0], offset: 5 },
-//     length: 5
-//   });
-//   deleteText(editor, { mode: "backward" });
-//   expect(editor.doc.string()).toBe("or");
-// });
-// test("insert at range multinodes-2", () => {
-//   const value = [
-//     {
-//       type: "paragraph",
 
-//       content: [{ text: "Bold text" }, { text: "Bold" }],
-//       children: []
-//     }
-//   ];
-//   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 1], offset: 4 } });
-//   deleteText(editor, { mode: "backward" });
-//   expect(editor.doc.string()).toBe("or");
-// });
-// test("insert at range multinodes-3", () => {
-//   const value = [
-//     {
-//       type: "paragraph",
+test("delete range deep", () => {
+  const value = [
+    {
+      id: "id",
+      type: "paragraph",
+      content: [
+        { text: "hello", bold: true },
+        { text: " edyt", italic: true },
+        { text: "or", italic: true }
+      ],
+      children: [
+        {
+          id: "id2",
+          type: "paragraph",
+          content: [
+            { text: "bonjour", bold: true },
+            { text: " edyt", italic: true },
+            { text: "or", italic: true }
+          ],
+          children: []
+        }
+      ]
+    }
+  ];
 
-//       content: [{ text: "Bold text" }, { text: "Bold" }, { text: "Bold" }],
-//       children: []
-//     }
-//   ];
-//   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 2], offset: 4 } });
-//   deleteText(editor, { mode: "backward" });
-//   expect(editor.doc.string()).toBe("or");
-// });
-// test("insert at range multinodes-3", () => {
-//   const value = [
-//     {
-//       type: "paragraph",
-//       content: [{ text: "Bold text" }],
-//       children: []
-//     }
-//   ];
-//   const editor = makeEditorFixture(value);
-//   deleteText(editor, { mode: "backward" });
-//   expect(editor.doc.string()).toBe("Bold text");
-// });
+  const expectedValue = [
+    {
+      id: "id",
+      type: "paragraph",
+      content: [
+        { text: "hello", bold: true },
+        { text: " edyt", italic: true },
+        { text: "or", italic: true }
+      ],
+      children: []
+    }
+  ];
+
+  const editor = makeEditorFixture(value, {
+    start: { path: [0, 0, 0], offset: 0 },
+    end: { path: [0, 0, 2], offset: 2 },
+    length: 12
+  });
+
+  deleteText(editor, { mode: "backward" });
+  console.log(JSON.stringify(editor.doc.toJSON(), null, 3));
+  expect(editor.doc.string()).toBe("hello edytor");
+
+  expect(editor.children.toJSON()).toStrictEqual(expectedValue);
+});

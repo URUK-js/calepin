@@ -96,29 +96,29 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
     }
     case "singlenode": {
       start.leaf.deleteText(start.offset, length);
-      // start.leaf.length() === 0 && removeEmptyText(start.leaf);
       break;
     }
     case "multinodes":
       {
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
-        editor.doc.traverse(
-          (leaf, isText, path) => {
-            if (isText) {
-              const l = leaf as YLeaf;
-              if (path.join(",") === startPathString) {
-                l.deleteText(start.offset, l.length());
-              } else if (path > start.path && path < end.path) {
-                l.deleteText(0, l.length());
-              } else if (path.join(",") === endPathString) {
-                l.deleteText(0, end.offset);
+        editor.doc.transact(() => {
+          editor.doc.traverse(
+            (leaf, isText, path) => {
+              if (isText) {
+                const l = leaf as YLeaf;
+                if (path.join(",") === startPathString) {
+                  l.deleteText(start.offset, l.length());
+                } else if (path > start.path && path < end.path) {
+                  l.deleteText(0, l.length());
+                } else if (path.join(",") === endPathString) {
+                  l.deleteText(0, end.offset);
+                }
               }
-              // if (leaf.length === 0) removeEmptyText(leaf);
-            }
-          },
-          { start: start.path[0], end: end.path[0] + 1 }
-        );
+            },
+            { start: start.path[0], end: end.path[0] + 1 }
+          );
+        });
       }
       break;
   }
