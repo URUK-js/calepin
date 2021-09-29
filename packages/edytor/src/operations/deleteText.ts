@@ -72,10 +72,10 @@ type deleteTextOpts = {
 };
 export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) => {
   const { start, end, type, length } = selection || editor.selection();
-
   switch (type) {
     case "collapsed": {
       const isEmpty = start.leaf.length() === 0;
+
       if (start.offset === 0 && mode === "backward" && !isEmpty) {
         return editor.doc.transact(() => {
           mergeWithPrevBranch(editor);
@@ -89,17 +89,9 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       ) {
         return mergeWithNextBranch(editor);
       }
-      console.log(
-        start.offset === start.leaf.length(),
-        mode === "forward",
-        !isEmpty,
-        start.path.slice().reverse()[0] + 1 === start.leaf.nodeContentLength(),
-        start.leaf.node.length,
-        start.leaf.parent.parent
-      );
-
-      start.leaf.deleteText(start.offset, length || 1);
-      isEmpty && start.offset === 0 && removeEmptyText(start.leaf);
+      console.log(length || 1);
+      start.leaf.deleteText(start.offset + (mode === "backward" ? -length || -1 : length), length || 1);
+      // isEmpty && start.offset === 0 && removeEmptyText(start.leaf);
       break;
     }
     case "singlenode": {

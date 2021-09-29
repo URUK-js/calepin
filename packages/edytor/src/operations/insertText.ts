@@ -1,7 +1,6 @@
 import { YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
-import { traverseDocument, YLeaf } from "../utils";
-import { removeEmptyText } from "./removeEmptyText";
+import { YLeaf } from "../utils";
 
 export type insertTextOperation = {
   at?: Position;

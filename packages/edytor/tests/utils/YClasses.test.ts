@@ -37,9 +37,9 @@ test("new node with data", () => {
   expect(newNode.toJSON()).toStrictEqual(nodeJSON);
 });
 test("new leaf", () => {
-  const doc = new Y.Doc();
+  const doc = new EdytorDoc();
   doc.getMap("test").set("newLeaf", new YLeaf());
-
+  const leaf = doc.getMap("test").get("newLeaf") as YLeaf;
   const nodeJSON = {
     text: ""
   };
@@ -49,7 +49,17 @@ test("new leaf", () => {
       .get("newLeaf")
       .toJSON()
   ).toStrictEqual(nodeJSON);
-  expect(doc.getMap("test").get("newLeaf")).toHaveProperty("id");
+  expect(leaf).toHaveProperty("id");
+
+  leaf.setText("hello");
+  expect(leaf.string()).toBe("hello");
+  leaf.setText("hello");
+  expect(leaf.string()).toBe("hello");
+
+  leaf.setData({ test: true });
+  expect(leaf.data().toJSON()).toStrictEqual({ test: true });
+  leaf.setData({ test2: true });
+  expect(leaf.data().toJSON()).toStrictEqual({ test: true, test2: true });
 });
 test("new leaf with text", () => {
   const doc = new Y.Doc();
@@ -170,6 +180,37 @@ test("to string method", () => {
   console.log(newNode.node());
 
   expect(newNode.node()).toBe(doc.getMap("test").get("newNode"));
+  expect(
+    newNode
+      .content()
+      .get(0)
+      .node()
+  ).toBe(newNode);
+  expect(
+    newNode
+      .content()
+      .get(0)
+      .nodeContent()
+  ).toBe(newNode.content());
+  expect(
+    newNode
+      .content()
+      .get(0)
+      .nodeContentLength()
+  ).toBe(newNode.content().length);
+
+  expect(
+    newNode
+      .content()
+      .get(0)
+      .nodeChildren()
+  ).toBe(newNode.children());
+  expect(
+    newNode
+      .content()
+      .get(0)
+      .nodeChildrenLength()
+  ).toBe(newNode.children().length);
   expect(
     doc
       .getMap("test")

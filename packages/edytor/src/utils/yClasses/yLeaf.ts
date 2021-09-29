@@ -19,7 +19,7 @@ export class YLeaf extends Map<any> {
     this.set("text", new Text(props?.text || ""));
 
     if (props?.data) {
-      this.set("data", new Map(props?.data ? Object.entries(props.data) : []));
+      this.set("data", new Map(Object.entries(props.data)));
     }
     if (props?.marks) {
       props.marks.forEach((mark) => {
@@ -51,7 +51,7 @@ export class YLeaf extends Map<any> {
         this.data().set(key, data[key]);
       });
     } else {
-      this.set("data", Object.entries(data));
+      this.set("data", new Map(Object.entries(data)));
     }
   };
   deleteText = (index: number, length: number) => this.text().delete(index, length);

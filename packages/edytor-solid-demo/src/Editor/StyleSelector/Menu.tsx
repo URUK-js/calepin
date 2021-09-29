@@ -14,7 +14,7 @@ const Menu = ({}) => {
 
     editor.doc.traverse((node, isText) => {
       if (isText) {
-        // characters += node.string;
+        characters += node.string();
         leafs++;
       } else {
         blocks++;
@@ -29,7 +29,7 @@ const Menu = ({}) => {
       <HooverMenu />
       <div className="flex w-full z-10 sticky top-0 left-0 h-8 bg-white  justify-end px-10 items-center">
         <div className=" mx-10">
-          {count().blocks}-{count().leafs}-{count().characters}
+          {count().blocks}-{count().leafs}-{count().characters.length}
         </div>
 
         <button

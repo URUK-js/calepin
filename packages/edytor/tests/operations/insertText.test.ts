@@ -85,7 +85,7 @@ test("insert at range multinodes-2", () => {
   const value = [
     {
       type: "paragraph",
-      data: { comment: "hello" },
+
       content: [{ text: "Bold text" }, { text: "Bold" }],
       children: []
     }
@@ -98,7 +98,7 @@ test("insert at range multinodes-3", () => {
   const value = [
     {
       type: "paragraph",
-      data: { comment: "hello" },
+
       content: [{ text: "Bold text" }, { text: "Bold" }, { text: "Bold" }],
       children: []
     }
@@ -106,4 +106,16 @@ test("insert at range multinodes-3", () => {
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 2], offset: 4 } });
   insertText(editor, { text: "or" });
   expect(editor.doc.string()).toBe("or");
+});
+test("insert at range multinodes-3", () => {
+  const value = [
+    {
+      type: "paragraph",
+      content: [{ text: "Bold text" }],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value);
+  insertText(editor, { text: "" });
+  expect(editor.doc.string()).toBe("Bold text");
 });
