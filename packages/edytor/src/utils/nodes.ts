@@ -2,7 +2,7 @@ import { YArray, YMap } from "yjs/dist/src/internals";
 import { mergeLeafs } from "../operations";
 import { Editor } from "../types";
 import { getIndex, getNode } from "./common";
-import { leafLength, leafString } from "./leaves";
+import { leafLength, leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
 import { EdytorDoc, YLeaf, YNode } from "./yClasses";
 
 export class NodeHarvest {
@@ -42,7 +42,6 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
       }
     }
   });
-  console.log(prevLeaf);
   if (!prevLeaf) return;
 
   prevLeaf.nodeContent().insert(
@@ -56,6 +55,48 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
   );
   mergeLeafs(prevLeaf.nodeContent());
   (start.leaf.parent.parent as YArray<YNode>).delete(getIndex(getNode(start.leaf)));
+};
+
+export const mergeContentWithNextLeaf = (editor: Editor) => {
+  const { start } = editor.selection();
+  let nextLeaf;
+  let stop = false;
+
+  editor.doc.traverse((node, isText) => {
+    if (isText) {
+      if (node === start.leaf) {
+        stop = true;
+      } else if (stop) {
+        nextLeaf = node;
+        stop = false;
+      }
+    }
+  });
+
+  //TODO the children should be pull to the depth level of the removed parent
+  console.log(leafNodeContent(nextLeaf).toArray());
+  leafNodeContent(start.leaf).insert(
+    leafNodeContentLength(start.leaf),
+    leafNodeContent(nextLeaf)
+      .toArray()
+      .map((leaf: YLeaf) => {
+        return new YLeaf(leaf.toJSON());
+      })
+  );
+  mergeLeafs(leafNodeContent(start.leaf));
+  console.log(start.leaf.parent.toJSON());
+  const node = getNode(nextLeaf);
+  if (hasChildren(node)) {
+    console.log(node.get("children").toJSON());
+    node.parent.insert(
+      getIndex(node),
+      node
+        .get("children")
+        .toJSON()
+        .map((node) => new YNode(node.type, node))
+    );
+  }
+  node.parent.delete(getIndex(node));
 };
 
 export const deleteNode = (node) => {

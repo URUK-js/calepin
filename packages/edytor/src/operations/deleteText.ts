@@ -6,42 +6,13 @@ import {
   hasChildren,
   leafLength,
   leafNodeContent,
+  leafNodeContentStringLength,
   leafString,
   LeavesHarvest,
+  mergeContentWithNextLeaf,
   mergeContentWithPrevLeaf,
   YLeaf
 } from "../utils";
-
-const mergeWithNextBranch = (editor: Editor) => {
-  const { start } = editor.selection();
-  let nextLeaf;
-  let stop = false;
-
-  editor.doc.traverse((node, isText) => {
-    if (isText) {
-      if (node === start.leaf) {
-        stop = true;
-      } else if (stop) {
-        nextLeaf = node;
-        stop = false;
-      }
-    }
-  });
-
-  //TODO the children should be pull to the depth level of the removed parent
-
-  start.leaf.nodeContent().insert(
-    start.leaf.nodeContent().length,
-    nextLeaf
-      .nodeContent()
-      .toArray()
-      .map((leaf: YLeaf) => {
-        return new YLeaf(leaf.toJSON());
-      })
-  );
-  // mergeLeafs(editor, start.leaf.parent.parent);
-  // start.leaf.parent.parent.delete();
-};
 
 type deleteTextOpts = {
   mode: "forward" | "backward" | "none";
@@ -49,7 +20,7 @@ type deleteTextOpts = {
 };
 export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) => {
   const { start, end, type, length } = selection || editor.selection();
-  console.log({ type, length }, editor.selection(), editor.ID_TO_NODE);
+
   switch (type) {
     case "collapsed": {
       const isEmpty = leafLength(start.leaf) === 0;
@@ -57,13 +28,9 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       if (start.offset === 0 && mode === "backward" && !isEmpty) {
         return mergeContentWithPrevLeaf(editor);
       }
-      if (
-        start.offset === leafLength(start.leaf) &&
-        mode === "forward" &&
-        !isEmpty &&
-        start.path.slice().reverse()[0] + 1 === start.leaf.nodeContentLength()
-      ) {
-        return mergeWithNextBranch(editor);
+
+      if (start.offset === leafNodeContentStringLength(start.leaf) && mode === "forward") {
+        return mergeContentWithNextLeaf(editor);
       }
 
       deleteLeafText(start.leaf, start.offset + (mode === "backward" ? -length || -1 : length), length || 1);

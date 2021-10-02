@@ -87,6 +87,10 @@ export const leafNodeId = (leaf): string => leafNode(leaf).get("id");
 export const leafNodeContent = (leaf): YArray<YLeaf> => leaf.parent as YArray<YLeaf>;
 
 export const leafNodeContentLength = (leaf): number => leafNodeContent(leaf).length;
+export const leafNodeContentStringLength = (leaf): number =>
+  leafNodeContent(leaf)
+    .toArray()
+    .reduce((acc, leaf) => acc + leafLength(leaf), 0);
 
 export const leafNodeChildren = (leaf): YArray<YNode> => leafNode(leaf).get("children") as YArray<YNode>;
 
