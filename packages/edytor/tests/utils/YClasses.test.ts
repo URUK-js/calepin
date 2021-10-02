@@ -1,7 +1,9 @@
 import * as Y from "yjs";
 import { YNode, YLeaf, EdytorDoc } from "../..";
 import { makeEditorFixture } from "../fixture/editorFixture";
-
+test("ok", () => {
+  expect(true).toBe(true);
+});
 // test("new blank node", () => {
 //   const doc = new Y.Doc();
 //   doc.getMap("test").set("newNode", new YNode("paragraph"));
@@ -294,41 +296,54 @@ import { makeEditorFixture } from "../fixture/editorFixture";
 //   expect(newDoc.toJSON()).toStrictEqual(jsonDoc);
 // });
 
-test("insert at range multinodes-3", () => {
-  const value = [
-    {
-      type: "paragraph",
+// test("insert at range multinodes-3", () => {
+//   const value = [
+//     {
+//       type: "paragraph",
 
-      content: [{ text: "Bold text" }],
-      children: []
-    },
-    {
-      type: "paragraph",
+//       content: [{ text: "Bold text" }],
+//       children: []
+//     },
+//     {
+//       type: "paragraph",
 
-      content: [{ text: "Bold text" }, { text: "Bold text" }],
-      children: [
-        {
-          type: "paragraph",
+//       content: [{ text: "Bold text" }, { text: "Bold text" }],
+//       children: [
+//         {
+//           type: "paragraph",
 
-          content: [{ text: "Bold text" }, { text: "Bold text" }],
-          children: []
-        },
-        {
-          type: "paragraph",
+//           content: [{ text: "Bold text" }, { text: "Bold text" }],
+//           children: []
+//         },
+//         {
+//           type: "paragraph",
 
-          content: [{ text: "Bold text" }],
-          children: []
-        }
-      ]
-    }
-  ];
-  const editor = makeEditorFixture(value);
-  const n = editor.children
-    .get(1)
-    .get("children")
-    .get(0)
-    .get("content")
-    .get(1) as YNode;
+//           content: [{ text: "Bold text" }],
+//           children: []
+//         }
+//       ]
+//     }
+//   ];
+//   const editor = makeEditorFixture(value);
+//   const n = editor.children
+//     .get(1)
+//     .get("children")
+//     .get(0)
+//     .get("content")
+//     .get(1) as YLeaf;
 
-  console.log(n.index(), n.path());
-});
+//   console.log(n.index(), n.path());
+
+//   const X = new EdytorDoc();
+//   //   const newEditor = Y.applyUpdateV2(X,editor.toUpdate() )
+//   const NN = editor.children
+//     .get(1)
+//     .get("children")
+//     .get(0)
+//     .get("content")
+//     .get(1) as YNode;
+
+//   //   console.log(newEditor)
+//   //   expect(newEditor).toBeInstanceOf(EdytorDoc)
+//   //   expect(NN.index()).toBe(1)
+// });

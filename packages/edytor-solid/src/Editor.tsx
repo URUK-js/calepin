@@ -1,10 +1,7 @@
 import { createSignal, createMemo, onMount, onCleanup } from "solid-js";
 import { renderLeaves as renderLeafDefault, renderBlock as renderBlockDefault, renderChildren } from "./components";
 import { useHistory, EditorContext, useEditor, useNode, useSelectionListener } from "./hooks";
-import "edytor/src/utils/nodePath";
 import {
-  toJSON,
-  toYJS,
   EditorProps,
   onDragOver,
   onDrop,
@@ -29,16 +26,14 @@ export const Editor = ({
   id = "sltye-editor",
   props
 }: EditorProps) => {
-  let editorId = createMemo(() =>
-    Math.random()
-      .toString(36)
-      .substring(2, 9)
-  );
+  let editorId = Math.random()
+    .toString(36)
+    .substring(2, 9);
   let [editorRef, setEditorRef] = createSignal<HTMLDivElement | undefined>();
   let [cursor, setCursor] = createSignal<Cursor>();
   let [selection, setSelection] = createSignal<EdytorSelection | undefined>();
 
-  const doc = createMemo(() => new EdytorDoc(value))();
+  const doc = new EdytorDoc(value);
 
   const onChangeObserver = () => {
     console.log(doc.children.toJSON());
@@ -49,7 +44,7 @@ export const Editor = ({
   const config = useNode(doc.config);
 
   const editor = createMemo<EditorType>(() => ({
-    editorId: editorId(),
+    editorId,
     selection,
     cursor,
     hotkeys,
@@ -63,6 +58,7 @@ export const Editor = ({
     toUpdate: doc.toUpdate,
     toString: doc.string,
     toJSON: doc.toJSON,
+    ID_TO_NODE: new Map(),
     ID_TO_MAP: new WeakMap(),
     MAP_TO_ID: new WeakMap()
   }))();
@@ -79,7 +75,7 @@ export const Editor = ({
         className={className}
         id={editor.editorId}
         spellcheck={spellcheck}
-        data-edytor-editor={editorId()}
+        data-edytor-editor={editorId}
         data-gram={true}
         ref={(container) => {
           setCursor(new Cursor({ container, selection }));

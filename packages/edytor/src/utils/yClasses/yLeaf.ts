@@ -1,4 +1,4 @@
-import { nanoid } from "../nanoid";
+import { nanoid } from "..";
 import { Map, Text } from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { YNode } from ".";
@@ -7,6 +7,7 @@ export type YLeafProps = {
   data?: any;
   text?: string;
   marks?: string[];
+  id?: string;
 };
 
 export class YLeaf extends Map<any> {
@@ -14,8 +15,8 @@ export class YLeaf extends Map<any> {
 
   constructor(props?: YLeafProps) {
     super();
-    this.id = nanoid();
 
+    this.set("id", props?.id || nanoid());
     this.set("text", new Text(props?.text || ""));
 
     if (props?.data) {
@@ -58,23 +59,21 @@ export class YLeaf extends Map<any> {
       this.set("data", new Map(Object.entries(data)));
     }
   };
-  isEmpty = () => this.length() === 0;
-  deleteText = (index: number, length: number, removeIfEmpty = true) => {
+  isEmpty = () => this.text() === undefined || this.length() === 0;
+  deleteText = (index: number, length: number, removeIfEmpty?: boolean) => {
     this.text().delete(index, length);
-    if (this.isEmpty() && removeIfEmpty) {
-      this.remove();
-    }
+    removeIfEmpty && this.removeIfEmpty();
   };
   index = (): number => {
     let i = 0;
     let n = this;
-    while (n._item.left) {
+    while (n?._item?.left) {
       i++;
       n = n._item.left.content.type;
     }
     return i;
   };
-  path = (): number => {
+  path = (): number[] => {
     let path = [] as number[];
     let n = this;
     while (n) {
@@ -83,11 +82,12 @@ export class YLeaf extends Map<any> {
     }
     return path.reverse();
   };
-  remove = () => {
-    this.nodeContent().delete(this.index());
-    if (this.nodeContentLength() === 0) {
-      console.log(this.node);
-      this.node().delete();
+  removeIfEmpty = () => {
+    if (this.isEmpty()) {
+      this.nodeContent().delete(this.index());
+      if (this.nodeContentLength() === 0) {
+        this.node().delete();
+      }
     }
   };
   insert = (index: number, text) => {

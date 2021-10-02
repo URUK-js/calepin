@@ -1,6 +1,7 @@
 import { Doc, encodeStateAsUpdateV2 } from "yjs";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf, YNode } from ".";
+import { getNodeContent, getNodeChildren } from "../nodes";
 
 export interface jsonLeaf extends Record<string, any> {
   text: string;
@@ -33,23 +34,17 @@ export class EdytorDoc extends Doc {
   }
   getLeafAtPath = ([start, ...path]: number[]): YLeaf => {
     let node = this.children.get(start);
-
     let i = 0;
-
     while (i < path.length - 1) {
       const index = path[i];
-
       i++;
       node = node.get("children").get(index);
     }
 
-    const leaf = node && node.get("content").get(path.slice().reverse()[0]);
-
-    return leaf;
+    return node && node.get("content").get(path.slice().reverse()[0]);
   };
   getNodeAtPath = ([start, ...path]: number[]): YNode => {
     let node = this.children.get(start);
-
     for (let i = 0; i < path.length; i++) {
       const index = path[i];
       if (node.get) {
@@ -68,14 +63,14 @@ export class EdytorDoc extends Doc {
     }
   ) => {
     const traverse = (node: YNode | YLeaf, path: number[]) => {
-      if (node instanceof YLeaf) {
+      if (node.has("text")) {
         cb(node, true, path);
       } else {
-        const array = node
-          .content()
+        console.log();
+        const array = getNodeContent(node)
           .toArray()
           //@ts-ignore
-          .concat(node.children().toArray());
+          .concat(getNodeChildren(node).toArray());
         cb(node, false, path);
 
         for (let i = 0; i < array.length; i++) {

@@ -1,40 +1,24 @@
-import { YText } from "yjs/dist/src/internals";
-import { Cursor, getLeaf, getTextLeave, getRange, getDataTransfer } from "../utils";
+import { Cursor, replaceLeafText } from "../utils";
 import { onBeforeInputData } from "../types";
 import { splitNode, insertText, deleteText, formatText } from "../operations";
-import { Rangy } from "../utils/rangy";
-let currentNode = undefined as Node | undefined;
-let currentPath = undefined as string | undefined;
-let currentText = undefined as YText | undefined;
 
 const prevent = (e: InputEvent) => {
   e.preventDefault();
   e.stopPropagation();
 };
+
+const getDataTransfer = (e: InputEvent) => e.dataTransfer.getData("text/plain");
+
 export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: InputEvent) => {
   prevent(e);
-  // console.log(e);
+
   const editorDiv = e.target as HTMLDivElement;
-  const selection = window.getSelection();
-  if (selection === null) return;
+
+  const { editorOffset, selection, start, length } = editor.selection();
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed } = selection;
-
-  const range = isCollapsed ? undefined : getRange(editor, selection);
-
-  let offset = Cursor.getCurrentCursorPosition(
-    editorDiv,
-    isCollapsed ? focusNode : range?.start.node,
-    isCollapsed ? focusOffset : range?.start.offset
-  );
-
   const rangeLength = selection.getRangeAt(0)?.toString()?.length;
-  const [leaf, path] = getLeaf(anchorNode as HTMLElement);
-  console.log({ path });
-  const currentText = editor.selection().start.leaf;
-  console.log({ path, anchorNode, focusNode, selection });
-  if (!currentText) return;
-  const start = Math.min(anchorOffset, focusOffset);
-  const setPosition = (chars: number) => Cursor.setCurrentCursorPosition(offset + chars, editorDiv, selection);
+
+  const setPosition = (chars: number) => Cursor.setCurrentCursorPosition(editorOffset + chars, editorDiv, selection);
 
   switch (e.inputType) {
     case "insertFromPaste":
@@ -53,17 +37,17 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         text
       });
 
-      editor.cursor().set(offset + text?.length);
+      editor.cursor().set(editorOffset + text?.length);
       break;
     }
     case "deleteContentBackward": {
       deleteText(editor, { mode: "backward" });
       console.log(editor.toJSON());
 
-      Cursor.setCurrentCursorPosition(
-        rangeLength === 0 ? (anchorOffset === 1 ? offset : offset - 1) : offset,
-        editorDiv
-      );
+      // Cursor.setCurrentCursorPosition(
+      //   rangeLength === 0 ? (anchorOffset === 1 ? editorOffset : editorOffset - 1) : editorOffset,
+      //   editorDiv
+      // );
       break;
     }
     case "deleteByDrag":
@@ -71,7 +55,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     case "deleteContentForward": {
       deleteText(editor, { mode: "forward" });
       if (e.inputType !== "deleteByDrag") {
-        Cursor.setCurrentCursorPosition(offset, editorDiv);
+        Cursor.setCurrentCursorPosition(editorOffset, editorDiv);
       }
       break;
     }
@@ -89,15 +73,12 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
         const text = e.dataTransfer?.getData("text/plain");
         if (text) {
           insertText(editor, {
-            text,
-            range,
-            at: { path, node: anchorNode!, offset: anchorOffset },
-            yText: currentText
+            text
           });
           if (rangeLength > 0 && anchorNode === focusNode) {
-            Cursor.setCurrentCursorPosition(offset - rangeLength + text.length, editorDiv);
+            Cursor.setCurrentCursorPosition(editorOffset - rangeLength + text.length, editorDiv);
           } else {
-            Cursor.setCurrentCursorPosition(offset + text.length, editorDiv);
+            Cursor.setCurrentCursorPosition(editorOffset + text.length, editorDiv);
           }
         }
       }, 50);
@@ -126,45 +107,19 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
     case "formatItalic":
     case "formatBold": {
-      // const R = new Rangy(editorDiv);
-      // R.saveSelection();
-
-      // const newPath = formatText(editor, {
-      //   format: e.inputType === "formatItalic" ? "italic" : "bold"
-      // });
-
-      // return R.restoreSelection();
-      // Cursor.setCurrentCursorPosition(0, focusNode, selection);
-      // console.log(editorDiv.getElementsByTagName("text"));
-
-      // editor.cursor().setRange(editor.selection().editorOffset, editor.selection().length);
-
-      // if (range?.type === "singlenode") {
-      //   let newNode =
-      //     newPath === -1
-      //       ? beforeElement
-      //       : editorDiv.querySelector(`[data-edytor-path="${[...path.slice(0, path.length - 1), newPath]}"]`);
-
-      //   Cursor.selectNode(
-      //     newNode,
-      //     newPath === -1 ? beforeOffset : 0,
-      //     newPath === -1 ? beforeOffset + rangeLength : rangeLength,
-      //     selection
-      //   );
-      // }
       break;
     }
 
     case "insertReplacementText": {
       const dataTransfer = e.dataTransfer as DataTransfer;
       const data = dataTransfer.getData("text/plain");
+
       doc().doc.transact(() => {
-        currentText!.delete(start, rangeLength);
-        currentText?.insert(start, data);
+        replaceLeafText(start.leaf, start.offset, length, data);
       });
       setPosition(focusOffset - anchorOffset > 0 ? -rangeLength + data.length : 0 + data.length);
     }
   }
 
-  // onChange && onChange(editor);
+  onChange && onChange(editor);
 };

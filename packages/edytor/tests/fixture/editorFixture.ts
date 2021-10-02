@@ -1,4 +1,5 @@
-import { Editor, EdytorDoc, jsonNode, arePathsEquals } from "../..";
+import { encodeStateAsUpdateV2 } from "yjs";
+import { Editor, EdytorDoc, jsonNode } from "../..";
 import { EdytorSelection } from "../../src";
 
 type partialSelection = {
@@ -28,7 +29,7 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
     ...end,
     leaf: doc.getLeafAtPath(end.path)
   };
-  const equalPaths = arePathsEquals(start.path, end.path);
+  const equalPaths = start.path.join("") === end.path.join("");
   if (!start.leaf) {
     return { type: "notInDoc" } as EdytorSelection;
   } else {
@@ -55,9 +56,44 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
     doc,
     children: doc.getArray("children"),
     toJSON: () => {
-      doc.traverse((node) => node.delete("id"));
-      return doc.children.toJSON();
+      let array = doc.children.toJSON();
+
+      const traverse = (node) => {
+        if (!node.text) {
+          const array = (node.content || []).concat(node.children || []);
+          for (let i = 0; i < array.length; i++) {
+            traverse(array[i]);
+          }
+        } else {
+          node.id = undefined;
+          delete node.id;
+        }
+      };
+
+      for (let i = 0; i < array.length; i++) {
+        traverse(array[i]);
+      }
+
+      return array;
     },
+    removeIds: (doc) => {
+      const traverse = (node) => {
+        if (!node.text) {
+          const array = (node.content || []).concat(node.children || []);
+          for (let i = 0; i < array.length; i++) {
+            traverse(array[i]);
+          }
+        } else {
+          delete node.id;
+        }
+      };
+
+      for (let i = 0; i < doc.length; i++) {
+        traverse(doc[i]);
+      }
+      return doc;
+    },
+    toUpdate: () => encodeStateAsUpdateV2(doc),
     selection: () => makeSelectionFromProgrammaticOperation(doc, selection)
   } as Editor;
 };

@@ -1,6 +1,5 @@
 import * as Y from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
-import { getYNode } from "../utils";
 import { Editor, Position, EdytorSelection } from "../types";
 import { deleteText, insertNode } from ".";
 
@@ -30,10 +29,10 @@ export const splitNode = (editor: Editor | Pick<Editor, "toYJS" | "selection">) 
       const { text: _, ...props } = branch?.toJSON();
       const newNode = new Y.Map();
       rootArray.insert(indexOfAncestor + 1, [newNode]);
-      getYNode(
-        { ...props, children: [{ ...branch?.toJSON(), text: right }, ...rightNodes.map((x) => x.toJSON())] },
-        newNode
-      );
+      // getYNode(
+      //   { ...props, children: [{ ...branch?.toJSON(), text: right }, ...rightNodes.map((x) => x.toJSON())] },
+      //   newNode
+      // );
       node.delete(indexOfLeaf + 1, rightNodes.length);
     };
 

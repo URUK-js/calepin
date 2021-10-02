@@ -6,7 +6,6 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
   if (e.metaKey) {
     if (e.key === "z" && e.metaKey) {
       e.preventDefault();
-      console.log(editor.undoManager);
       return editor.undoManager.undo();
     }
     if (e.key === "Z" && e.metaKey && e.shiftKey) {

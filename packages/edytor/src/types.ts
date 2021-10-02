@@ -58,6 +58,7 @@ export interface Editor {
   doc: EdytorDoc;
   config: YMap<any>;
   toJSON: () => Value;
+  ID_TO_NODE: Map<string, YMap<any>>;
   ID_TO_MAP: WeakMap<any, any>;
   MAP_TO_ID: WeakMap<any, any>;
   //
@@ -84,7 +85,7 @@ export type onBeforeInputData = [any, (editor: Editor) => void, Editor];
 
 export type Position = {
   path: number[];
-  node?: HTMLElement | Node;
+  node?: Node;
   offset: number;
   leaf: YLeaf;
 };

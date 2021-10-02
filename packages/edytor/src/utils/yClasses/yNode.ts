@@ -1,4 +1,4 @@
-import { nanoid } from "../nanoid";
+import { nanoid } from "..";
 import { Map, Array } from "yjs";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf } from ".";
@@ -11,8 +11,6 @@ export type YNodeProps = {
 };
 
 export class YNode extends Map<any> {
-  id: string;
-
   constructor(type: string, props?: YNodeProps) {
     super();
 
@@ -34,9 +32,9 @@ export class YNode extends Map<any> {
     if (!this.has("children")) this.set("children", new Array());
     return this.get("children");
   };
+  id = (): string => this.get("id");
   node = (): YNode | undefined => this.parent.parent as YNode;
   setData = (data: object) => {
-    console.log(data);
     if (this.has("data")) {
       Object.keys(data).forEach((key) => {
         this.data().set(key, data[key]);
@@ -70,12 +68,11 @@ export class YNode extends Map<any> {
     let n = this;
     while (n._item.left) {
       i++;
-      console.log(n);
       n = n._item.left.content.type;
     }
     return i;
   };
-  path = (): number => {
+  path = (): number[] => {
     let path = [] as number[];
     let n = this;
     while (n) {
@@ -87,8 +84,15 @@ export class YNode extends Map<any> {
   delete = () => {
     if (this.isEmpty()) {
       //
-    } else if (this.isContentEmpty()) {
     } else if (this.isChildrenEmpty()) {
+    }
+    const children = this.children().toJSON();
+    const index = this.index();
+    if (!this.isChildrenEmpty()) {
+      this.parent.insert(
+        index,
+        children.map(({ type, ...props }) => new YNode(type, props))
+      );
     }
     (this.parent as YArray<YNode>).delete(this.index());
     if (this.parent === (this.doc as EdytorDoc).children && (this.doc as EdytorDoc).children.length === 0) {

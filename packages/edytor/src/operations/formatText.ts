@@ -1,7 +1,6 @@
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import * as Y from "yjs";
 import { Editor, Position, EdytorSelection } from "../types";
-import { arePathsEquals, getTextLeave, traverseDocument } from "../utils";
 import { mergeLeafs, splitLeaf } from ".";
 
 export type formatTextOperation = {
@@ -128,9 +127,8 @@ export const formatText = (editor: Editor, { format, ...data }: formatTextOperat
       case "multinodes": {
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
-        traverseDocument(
-          editor,
-          (isText, branch, path) => {
+        editor.doc.traverse(
+          (branch, isText, path) => {
             if (isText) {
               const leaf = branch.get("text") as YText;
               const node = leaf.parent?.parent as YArray<any>;

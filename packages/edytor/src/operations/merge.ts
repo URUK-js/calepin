@@ -1,5 +1,4 @@
 import { YArray, YMap } from "yjs/dist/src/internals";
-import { Editor } from "../types";
 
 export const areLeafsMergeable = (nodes: YMap<any>[]) => {
   let keys = nodes.map((node) => Array.from(node.keys())).flat();
@@ -8,7 +7,7 @@ export const areLeafsMergeable = (nodes: YMap<any>[]) => {
   });
 };
 
-export const mergeLeafs = (editor: Editor | Pick<Editor, "toYJS">, leafs: YArray<YMap<any>>) => {
+export const mergeLeafs = (leafs: YArray<YMap<any>>) => {
   let currentLeaf = leafs.get(0);
   let leafsToDelete = [] as YMap<any>[];
   leafs.forEach((_, i) => {

@@ -1,7 +1,6 @@
 import * as Y from "yjs";
 import { YText, YArray, YMap } from "yjs/dist/src/internals";
 import { Editor, Position } from "../types";
-import { getTextLeave } from "../utils";
 import { applyMarksFromParent } from ".";
 
 type splitLeafOperation = {
@@ -9,7 +8,6 @@ type splitLeafOperation = {
   at: Position;
 };
 export const splitLeaf = (editor: Editor | Pick<Editor, "toYJS">, { yText, at }: splitLeafOperation) => {
-  if (!yText) yText = getTextLeave(editor.toYJS(), at.path);
   const content = yText.toString();
 
   const rightText = content.substring(at.offset, yText.length);
