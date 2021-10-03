@@ -14,7 +14,7 @@ test("delete on multinodes single parent", () => {
     start: { path: [0, 0], offset: 5 },
     end: { path: [0, 1], offset: 3 }
   });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
 
   expect(editor.doc.string()).toBe("helloedytor");
 
@@ -42,7 +42,7 @@ test("delete multinodes", () => {
   ];
 
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 1], offset: 5 } });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   expect(editor.doc.string()).toBe("");
 
   expect(editor.toJSON()).toStrictEqual([
@@ -69,7 +69,7 @@ test("delete multinodes with a leaf in middle", () => {
     }
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 2], offset: 5 } });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   expect(editor.doc.string()).toBe("");
   expect(editor.toJSON()).toStrictEqual([
     {
@@ -132,7 +132,7 @@ test("delete range deep", () => {
     length: 12
   });
 
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   const v = editor.toJSON();
   console.log(JSON.stringify(v, null, 3));
   expect(editor.doc.string()).toBe("hello edytor");
@@ -231,7 +231,7 @@ test("delete and delete node", () => {
     start: { path: [2, 0, 0], offset: 0 },
     end: { path: [2, 0, 0], offset: 4 }
   });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   const v = editor.toJSON();
   delete v[2].children[0].content[0].id;
 
@@ -282,7 +282,7 @@ test("delete and delete node", () => {
     start: { path: [0, 0], offset: 15 },
     end: { path: [0, 0, 0], offset: 4 }
   });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
 
   expect(editor.toJSON()).toStrictEqual(expectedValue);
 });

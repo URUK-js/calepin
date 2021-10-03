@@ -1,5 +1,6 @@
 import { createSignal, onMount, onCleanup, Accessor } from "solid-js";
 import { YMap } from "yjs/dist/src/internals";
+import { useEditor } from ".";
 
 const extractMap = (node: YMap<any>) => {
   let json = {};
@@ -13,6 +14,7 @@ const extractMap = (node: YMap<any>) => {
 };
 // TO DO conditionally observe if inside viewport
 export const useNode = (node: YMap<any>) => {
+  const editor = useEditor();
   const [value, setValue] = createSignal(extractMap(node));
   const observer = () => {
     console.log("observe");
@@ -20,6 +22,8 @@ export const useNode = (node: YMap<any>) => {
   };
 
   onMount(() => {
+    console.log(editor);
+    editor.ID_TO_NODE.set(node.get("id"), node);
     node.observe(observer);
     // console.log(ref);
     // const observer = new IntersectionObserver(onVisibilityChange, { threshold: 0, root: null, rootMargin: "20%" });

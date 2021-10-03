@@ -44,16 +44,15 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
   });
   if (!prevLeaf) return;
 
-  prevLeaf.nodeContent().insert(
-    prevLeaf.nodeContent().length,
-    start.leaf
-      .nodeContent()
+  leafNodeContent(prevLeaf).insert(
+    leafNodeContentLength(prevLeaf),
+    leafNodeContent(start.leaf)
       .toArray()
       .map((leaf: YLeaf) => {
         return new YLeaf(leaf.toJSON());
       })
   );
-  mergeLeafs(prevLeaf.nodeContent());
+  mergeLeafs(leafNodeContent(prevLeaf));
   (start.leaf.parent.parent as YArray<YNode>).delete(getIndex(getNode(start.leaf)));
 };
 

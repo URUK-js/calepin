@@ -1,6 +1,6 @@
 import { YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
-import { deleteLeafText, getPath, leafLength, LeavesHarvest, replaceLeafText, YLeaf } from "../utils";
+import { deleteLeafText, getPath, insertTextInLeaf, leafLength, LeavesHarvest, replaceLeafText, YLeaf } from "../utils";
 
 export type insertTextOperation = {
   at?: Position;
@@ -16,8 +16,8 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
 
   switch (type) {
     case "collapsed": {
-      insertText;
-      start.leaf.insert(start.offset, text);
+      insertTextInLeaf(start.leaf, start.offset, text);
+
       break;
     }
     case "singlenode": {

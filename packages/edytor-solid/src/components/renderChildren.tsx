@@ -12,39 +12,25 @@ export const renderContent = (content: YArray<YLeaf>): JSXElement => {
   return mapArray(useChildren(content), renderLeaf);
 };
 
-const useSetIdToMap = (node: YNode | YLeaf) => {
-  const id = node.get("id");
-  const { ID_TO_NODE } = useEditor();
-  onMount(() => {
-    ID_TO_NODE.set(id, node);
-  });
-  onCleanup(() => {
-    ID_TO_NODE.delete(id);
-  });
-};
-
-export const renderLeaf = (leaf: YLeaf): JSXElement => {
+export const renderLeaf = (node: YLeaf): JSXElement => {
   const { renderLeaf } = useEditor();
 
-  useSetIdToMap(leaf);
-
+  const leaf = useNode(node);
   return renderLeaf({
-    text: useText(leafText(leaf)),
+    text: useText(leafText(node)),
     attributes: {
-      id: getId(leaf),
+      id: getId(node),
       "data-edytor-element": "true",
       "data-edytor-leaf": "true"
     },
-
-    leaf: useNode(leaf)
+    leaf
   });
 };
 export const renderNode = (node: YNode) => {
   const { renderBlock } = useEditor();
-  useSetIdToMap(node);
   const children = renderChildren(node.get("children"));
   const content = renderContent(node.get("content"));
-
+  const block = useNode(node);
   return renderBlock({
     attributes: {
       id: getId(node),
@@ -53,7 +39,7 @@ export const renderNode = (node: YNode) => {
     },
     node,
 
-    block: useNode(node),
+    block,
     children,
     content
   });

@@ -19,7 +19,7 @@ export class YNode extends Map<any> {
     if (props?.data) {
       this.set("data", new Map(Object.entries(props.data)));
     }
-    this.set("content", props?.content instanceof Array ? props.content : Array.from(props?.content || []));
+    this.set("content", props?.content instanceof Array ? props.content : Array.from(props?.content || [new YLeaf()]));
     this.set("children", props?.children instanceof Array ? props.children : Array.from(props?.children || []));
   }
   data = (): YMap<any> => this.get("data");

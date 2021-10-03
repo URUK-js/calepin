@@ -29,7 +29,21 @@ test("delet deep", () => {
   deleteText(editor, { mode: "backward" });
   expect(editor.doc.string()).toBe("hello edy");
 });
-
+test("delete backward at start of leaf should delete the start of the prev leaf ", () => {
+  const value = [
+    {
+      type: "paragraph",
+      content: [
+        { text: "delete ", bold: true },
+        { text: "backward", italic: true }
+      ],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 0 } });
+  deleteText(editor, { mode: "backward" });
+  expect(editor.doc.string()).toBe("deletebackward");
+});
 test("should fail silently", () => {
   const value = [
     {

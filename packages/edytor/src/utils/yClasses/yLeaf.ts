@@ -15,17 +15,18 @@ export class YLeaf extends Map<any> {
 
   constructor(props?: YLeafProps) {
     super();
-
     this.set("id", props?.id || nanoid());
     this.set("text", new Text(props?.text || ""));
+    if (props) {
+      const { id, text, data, ...marks } = props;
 
-    if (props?.data) {
-      this.set("data", new Map(Object.entries(props.data)));
-    }
-    if (props?.marks) {
-      props.marks.forEach((mark) => {
-        this.set(mark, true);
-      });
+      this.set("text", new Text(text || ""));
+      data && this.set("data", new Map(Object.entries(data)));
+
+      marks &&
+        Object.keys(marks).forEach((mark) => {
+          this.set(mark, marks[mark]);
+        });
     }
   }
 

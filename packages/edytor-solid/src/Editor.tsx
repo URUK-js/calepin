@@ -1,6 +1,6 @@
 import { createSignal, createMemo, onMount, onCleanup } from "solid-js";
 import { renderLeaves as renderLeafDefault, renderBlock as renderBlockDefault, renderChildren } from "./components";
-import { useHistory, EditorContext, useEditor, useNode, useSelectionListener } from "./hooks";
+import { useHistory, EditorContext, useEditor, useNode, useSelectionListener, useMap } from "./hooks";
 import {
   EditorProps,
   onDragOver,
@@ -41,7 +41,7 @@ export const Editor = ({
   onMount(() => doc.children.observeDeep(onChangeObserver));
   onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
   const undoManager = useHistory(doc);
-  const config = useNode(doc.config);
+  const config = useMap(doc.config);
 
   const editor = createMemo<EditorType>(() => ({
     editorId,

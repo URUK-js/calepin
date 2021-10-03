@@ -4,28 +4,30 @@ import { leafLength } from "./leaves";
 
 import { YLeaf } from "./yClasses";
 
-const getLeaf = (editor: Editor, anchorNode: HTMLElement): [HTMLElement, YLeaf, number[]] => {
+const getLeaf = (editor: Editor, anchorNode: HTMLElement): [YLeaf, number[]] => {
   let leaf;
   let node = anchorNode;
   let i = 0;
   while (!leaf && node?.id !== editor.editorId && node && i < 100) {
-    // leaf = editor.ID_TO_MAP.get(node);
-    console.log(node.id);
     leaf = editor.ID_TO_NODE.get(node.id);
     node = node.parentElement;
     i++;
   }
   if (!leaf) return undefined;
-
-  return [node, leaf, getPath(leaf)];
+  console.log(
+    { anchorNode, leaf: leaf.toJSON(), parent: anchorNode.parentElement },
+    editor.ID_TO_NODE.values(),
+    editor.ID_TO_NODE.keys()
+  );
+  return [leaf, getPath(leaf)];
 };
 
 export const getRange = (editor: Editor, selection: Selection): EdytorSelection => {
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed, rangeCount } = selection;
 
   if (focusNode === null) return;
-  const [node1, leaf1, path1] = getLeaf(editor, anchorNode as HTMLElement);
-  const [node2, leaf2, path2] = getLeaf(editor, focusNode as HTMLElement);
+  const [leaf1, path1] = getLeaf(editor, anchorNode as HTMLElement);
+  const [leaf2, path2] = getLeaf(editor, focusNode as HTMLElement);
   if (!leaf1) return;
   const equalPaths = path1.join("") === path2.join("");
   const isFollowing = equalPaths ? anchorOffset < focusOffset : path1.join() < path2.join();
@@ -60,13 +62,13 @@ export const getRange = (editor: Editor, selection: Selection): EdytorSelection 
     boundingRect: range && range.getBoundingClientRect(),
     selection,
     edges: {
-      start: start.offset === 0
-      // end: end.offset === leafLength(end.leaf)
+      start: start.offset === 0,
+      end: end.offset === leafLength(end.leaf)
     },
     type: isCollapsed ? "collapsed" : equalPaths ? "singlenode" : "multinodes",
     editorOffset: editor.cursor().getEditorOffset(selection)
   } as EdytorSelection;
 
-  // console.log({ edytorSelection });
+  console.log({ edytorSelection });
   return edytorSelection;
 };

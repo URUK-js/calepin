@@ -1,11 +1,11 @@
 import { createMemo, createSignal } from "solid-js";
-import { useEditor, useNode } from "edytor-solid";
+import { useEditor, useMap } from "edytor-solid";
 import Toggle from "./Toggle";
 import { HooverMenu } from "../HooverMenu";
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
-  const config = useNode(editor.config);
+  const config = useMap(editor.config);
 
   const count = createMemo(() => {
     let blocks = 0;

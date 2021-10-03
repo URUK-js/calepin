@@ -14,6 +14,22 @@ test("delete one back", () => {
   expect(editor.doc.string()).toBe("hell");
 });
 
+test("delete formward end of leaf should delete the start of the next ", () => {
+  const value = [
+    {
+      type: "paragraph",
+      content: [
+        { text: "hello", bold: true },
+        { text: " edytor", italic: true }
+      ],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 5 } });
+  deleteText(editor, { mode: "forward" });
+  expect(editor.doc.string()).toBe("helloedytor");
+});
+
 test("delet deep", () => {
   const value = [
     {

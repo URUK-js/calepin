@@ -97,3 +97,22 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
     selection: () => makeSelectionFromProgrammaticOperation(doc, selection)
   } as Editor;
 };
+
+export const removeIds = (doc) => {
+  const newValue = [...doc];
+  const traverse = (node) => {
+    delete node.id;
+    if (!node.text) {
+      const array = (node.content || []).concat(node.children || []);
+      for (let i = 0; i < array.length; i++) {
+        traverse(array[i]);
+      }
+    }
+  };
+
+  for (let i = 0; i < newValue.length; i++) {
+    traverse(newValue[i]);
+  }
+
+  return newValue;
+};

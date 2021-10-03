@@ -10,7 +10,7 @@ test("delete hello", () => {
     }
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 }, end: { path: [0, 0], offset: 5 } });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   expect(editor.doc.string()).toBe("");
 });
 
@@ -26,7 +26,7 @@ test("delet deep", () => {
     }
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 5 } });
-  deleteText(editor, { mode: "backward" });
+  deleteText(editor, { mode: "forward" });
   expect(editor.doc.string()).toBe("hello");
   expect(editor.toJSON()).toStrictEqual([
     {

@@ -14,8 +14,8 @@ export type jsonNode = {
   children?: jsonNode[];
 };
 
-const getContent = ({ text, data, ...marks }: jsonLeaf): YLeaf => {
-  return new YLeaf({ text, data, marks: Object.keys(marks) });
+const getContent = (leaf: jsonLeaf): YLeaf => {
+  return new YLeaf(leaf);
 };
 const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
   return new YNode(type, { ...props, children: children.map(getChildren), content: content.map(getContent) });
