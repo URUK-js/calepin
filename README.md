@@ -3,64 +3,82 @@
 
 ## Datastructure
 
-```
-const datastructure = {
-  data: {},
-  children: [
-    //// <== this is a the trunk
-    {
-      type: "paragraph", //// <== this is a node
-      content: [
-        // <== a node can have leaves
-
-        { text: "Bold text", bold: true, data: { aribtrary: "data" } }, // <== this is a leaf
-        {
-          type: "inline",
-          content: [{ text: "Inline with text", data: { aribtrary: "data" } }] // <== this is a fruit be let's call it a leaf too
-        }
-      ],
-      children: [
-        // <== a node can have branches leading to new nodes
-        {
-          type: "paragraph",
-          content: [{ text: "Lorem ipsum dolor sit" }]
-        },
-        {
-          type: "paragraph",
-          content: [{ text: "Lorem ipsum dolor sit" }]
-        }
-      ]
-    }
-  ]
-};
-
+```jsx
+<editor>
+  <node>
+    <leaf>text</leaf>
+    <node>
+      <leaf>text</leaf>
+    </node>
+  </node>
+  <node>
+    <leaf>text</leaf>
+  </node>
+</editor>
 ```
 
-## Why another text editor ?
+```json
+[
+ {
+   type: "paragraph",
+   content: [
+     {
+       text: "text"
+     }
+   ],
+   children: [
+     {
+       type: "paragraph",
+       content: [
+         {
+           bold: true,
+           text: "text"
+         }
+       ],
+       children: []
+     }
+   ]
+ },
+ {
+   type: "paragraph",
+   data: {},
+   content: [
+     {
+       text: "text"
+     }
+   ],
+   children: []
+ }
+];
 
-For the past few years i've tested all rich text editor the js ecosystem have to offer. Yet, I found none to be have all the functionnality I looked for. Here is the list of thing Edytor aims to acheive.
+```
 
-- Enable real time collaboration out of the box.
-- Offline editing by default
-- Edytor should be as simple as possible in it conception. Mainly only relying on the "before input event"
-- Allowing any kind of blocks to be render at any depth.
-- Void block and inline blocks have to be handled.
-- JSON as fallback data structure
-- Performance driven: Edytor should be able to render a large amount of block without dropping performances. 5000 blocks is our goal.
-- Drag and drop should be enabled by default
-- It should work on mobile
-- It should work with any kind of grammar corrector.
+## Why another editor ?
 
-## How to achieve this ?
+There is tons of js libraries or frameworks for rich content editing. None of them has been built, from the ground up to be collaborative. Moreover some are very good at text editing (prosemirror, quill) and some are good at building things like website (grapejs, slate in a way).
 
-### Performances
+Edytor is a general purpose collaborative editor, it's good out of the box at realtime text editing and can be easily extend with your own logic and components to become a website editor or simply a more features rich editor.
 
-Edytor takes inspiration in the amazing slate.js framework. Yet builded for React performance and implementation are hazardous.
+In short Edytor wants to provide the same core functionalities as the Notion's editor :
 
-We think that throwing away the VDOM and building an editor for frameworks like Solid.js or Svelte is the way toward a very performant editor.
+- realtime collaboration
+- offline editing
+- drag and drop
+- nested children
+- presence indicator
+- shared history undo redo
+- custom text formatting
+- blocks extensibility
+- clean json output
 
-But handling thousands of nodes is not something any framework can help with. We need to figure out a way to virtualize / paginate the editor.
+## How does it works ?
 
-### Colaboration
+Edytor is using Yjs to store and update the tree data. Thanks to this amazing library it can provide offline and online realtime edition and automatic conflict resolution. No need to build a complex server to handle an O^n operations conflicts possibilities.
 
-This is simple: YJS is our friend. Despite Edytor accept JSON as initial value, a YDoc is our main datastructure.
+## Performances
+
+Edytor takes inspiration in the amazing Slate.js framework. Yet builded for React, Slate performances and implementation are hazardous and full of gotchas.
+
+We think that throwing away the VDOM and building an editor for frameworks like Solid or Svelte is the way toward a very performant editor.
+
+Beside that we try to make the api as simple, maintainable, and performant as possible so Edytor can handle thousand of nodes without lagging.
