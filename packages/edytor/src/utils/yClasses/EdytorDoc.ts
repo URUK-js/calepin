@@ -14,10 +14,10 @@ export type jsonNode = {
   children?: jsonNode[];
 };
 
-const getContent = (leaf: jsonLeaf): YLeaf => {
+export const getContent = (leaf: jsonLeaf): YLeaf => {
   return new YLeaf(leaf);
 };
-const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
+export const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
   return new YNode(type, { ...props, children: children.map(getChildren), content: content.map(getContent) });
 };
 export class EdytorDoc extends Doc {

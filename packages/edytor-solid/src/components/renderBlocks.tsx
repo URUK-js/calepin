@@ -5,25 +5,25 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
     switch (block().type) {
       case "block-quote":
         return (
-          <blockquote ref={ref} {...attributes}>
-            {content}
-            {children}
-          </blockquote>
+          <div ref={ref} {...attributes}>
+            <blockquote>{content}</blockquote>
+            <div className="childrenContainer">{children}</div>
+          </div>
         );
       case "heading":
         return (
-          <h1 ref={ref} {...attributes}>
-            {content}
-            {children}
-          </h1>
+          <div ref={ref} {...attributes}>
+            <h1> {content}</h1>
+            <div className="childrenContainer">{children}</div>
+          </div>
         );
 
       default:
         return (
-          <p ref={ref} {...attributes}>
-            {content}
-            {children}
-          </p>
+          <div ref={ref} {...attributes}>
+            <p>{content}</p>
+            <div className="childrenContainer">{children}</div>
+          </div>
         );
     }
   })();

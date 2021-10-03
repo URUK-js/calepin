@@ -91,3 +91,7 @@ blockquote {
 [data-edytor-editor] mark.yellow {
   @apply bg-yellow-100 text-yellow-400;
 }
+
+.childrenContainer {
+  padding-left: 20px;
+}

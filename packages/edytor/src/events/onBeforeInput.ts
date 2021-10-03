@@ -11,6 +11,7 @@ const getDataTransfer = (e: InputEvent) => e.dataTransfer.getData("text/plain");
 
 export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: InputEvent) => {
   prevent(e);
+  console.log(e);
 
   const editorDiv = e.target as HTMLDivElement;
 

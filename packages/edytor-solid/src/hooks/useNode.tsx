@@ -4,6 +4,8 @@ import { useEditor } from ".";
 
 const extractMap = (node: YMap<any>) => {
   let json = {};
+  console.log({ node });
+  if (!node) return json;
   const keys = Array.from(node.keys());
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];

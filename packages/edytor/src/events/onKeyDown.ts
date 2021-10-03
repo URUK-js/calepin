@@ -1,8 +1,12 @@
 import { Editor } from "../types";
 import isHotkey, { toKeyCode } from "is-hotkey";
-import { formatText, formatTextOperation } from "../operations";
+import { formatText, formatTextOperation, nestNode } from "../operations";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    nestNode(editor);
+  }
   if (e.metaKey) {
     if (e.key === "z" && e.metaKey) {
       e.preventDefault();

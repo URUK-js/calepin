@@ -2,7 +2,7 @@ import { nanoid } from "..";
 import { Map, Array } from "yjs";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf } from ".";
-import { EdytorDoc } from "./EdytorDoc";
+import { EdytorDoc, getContent, getChildren } from "./EdytorDoc";
 export type YNodeProps = {
   data?: any;
   content?: YLeaf[] | YArray<YLeaf>;

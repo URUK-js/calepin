@@ -14,7 +14,7 @@ export const renderContent = (content: YArray<YLeaf>): JSXElement => {
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const { renderLeaf } = useEditor();
-
+  console.log({ leaf: node });
   const leaf = useNode(node);
   return renderLeaf({
     text: useText(leafText(node)),
@@ -38,7 +38,6 @@ export const renderNode = (node: YNode) => {
       "data-edytor-block": "true"
     },
     node,
-
     block,
     children,
     content
