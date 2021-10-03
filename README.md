@@ -3,7 +3,7 @@
 
 ## Datastructure
 
-```jsx
+```html
 <editor>
   <node>
     <leaf>text</leaf>
@@ -20,34 +20,33 @@
 ```json
 [
  {
-   type: "paragraph",
-   content: [
+   "type": "paragraph",
+   "content": [
      {
-       text: "text"
+       "text": "text"
      }
    ],
-   children: [
+   "children": [
      {
-       type: "paragraph",
-       content: [
+       "type": "paragraph",
+       "content": [
          {
-           bold: true,
-           text: "text"
+           "bold": true,
+           "text": "text"
          }
        ],
-       children: []
+       "children": []
      }
    ]
  },
  {
-   type: "paragraph",
-   data: {},
-   content: [
+   "type": "paragraph",
+   "content": [
      {
-       text: "text"
+       "text": "text"
      }
    ],
-   children: []
+   "children": []
  }
 ];
 
