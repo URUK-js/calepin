@@ -25,38 +25,39 @@ export const nestNode = (editor: Editor) => {
       break;
     }
     case "multinodes": {
-      console.log("hello", end.offset);
       let length = 0;
       let newNodes = [];
-      const startPathString = start.path.join(",");
-      const endPathString = end.path.join(",");
+      const startPathString = start.path.slice(0, start.path.length - 1).join("");
+      const endPathString = end.path.slice(0, start.path.length - 1).join("");
       editor.doc.traverse(
         (node, isText) => {
           if (!isText) {
-            const path = getPath(node);
-            if (
-              path.length === startPath.length &&
-              (path.join("") <= endPathString || path.join("") >= startPathString)
-            ) {
-              console.log(path, startPath);
-              length++;
-              const jsonNode = node.toJSON();
-              newNodes.push(
-                new YNode(jsonNode.type, {
-                  ...jsonNode,
-                  children: jsonNode.children.map(getChildren),
-                  content: jsonNode.content.map(getContent)
-                })
-              );
+            const path = getPath(node).join("");
+
+            if (path.length === startPath.length) {
+              if (path <= endPathString && path >= startPathString) {
+                length++;
+                const jsonNode = node.toJSON();
+                newNodes.push(
+                  new YNode(jsonNode.type, {
+                    ...jsonNode,
+                    children: jsonNode.children.map(getChildren),
+                    content: jsonNode.content.map(getContent)
+                  })
+                );
+              }
             }
           }
         },
         { start: start.path[0], end: end.path[0] + 1 }
       );
+      if (!prevNode) return;
+
       const prevChildren = prevNode.get("children");
+
       startContainer.delete(index, length);
       prevChildren.insert(prevChildren.length, newNodes);
-      console.log(length);
+      break;
     }
   }
 };

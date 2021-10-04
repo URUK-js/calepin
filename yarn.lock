@@ -9346,6 +9346,11 @@ solid-refresh@^0.2.2:
   resolved "https://registry.yarnpkg.com/solid-refresh/-/solid-refresh-0.2.2.tgz#c4200cab2fb7e55dc6b2ec5df510b9428646ff59"
   integrity sha512-oQN3pUJ8fBd4ldMxZVqK7S4PGzAn1yx1B5bRRfANoxoqmHyY2QLfzrOzXsYnAkhh272K+W24oKgFWlmdUZ6HtQ==
 
+solid-transition-group@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/solid-transition-group/-/solid-transition-group-0.0.8.tgz#56c0eb7fd7079ecc945f3d52b5376184e3985d45"
+  integrity sha512-5cS/Ircfs/Y0J00oEToL+MWd9V07KgQlw+qRD8kpd6azb2Ri5SjXg/ocqT8U8Wgdx1VQPx45HyopQN+UumkVGQ==
+
 sort-keys@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/sort-keys/-/sort-keys-2.0.0.tgz#658535584861ec97d730d6cf41822e1f56684128"

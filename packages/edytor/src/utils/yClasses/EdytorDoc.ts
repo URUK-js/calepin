@@ -55,6 +55,18 @@ export class EdytorDoc extends Doc {
     }
     return node;
   };
+  getContainerAtPath = ([start, ...path]: number[]): YArray<any> => {
+    let container = this.children;
+    for (let i = 0; i < path.length; i++) {
+      const index = path[i];
+      if (container.toArray) {
+        container = container.get(index).get("children");
+      } else {
+        container = undefined;
+      }
+    }
+    return container;
+  };
   traverse = (
     cb: (node: YMap<any>, isText: boolean, path: number[]) => void,
     opts?: {

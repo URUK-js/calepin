@@ -22,7 +22,7 @@ type deleteTextOpts = {
 };
 export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) => {
   const { start, end, type, length, edges } = selection || editor.selection();
-  console.log(editor.selection());
+
   switch (type) {
     case "collapsed": {
       if (mode === "backward" && edges.start) {

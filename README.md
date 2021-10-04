@@ -102,6 +102,8 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ✅ demo in solid
 
+⚽ cursor positioning and repositioning
+
 ⚽ demo in svelte
 
 ⚽ format text

@@ -29,6 +29,7 @@
     "edytor-solid": "*",
     "phosphor-solid": "^1.1.4",
     "solid-js": "^1.1.1",
+    "solid-transition-group": "^0.0.8",
     "ts-jest": "^27.0.5",
     "yjs": "^13.5.12"
   }

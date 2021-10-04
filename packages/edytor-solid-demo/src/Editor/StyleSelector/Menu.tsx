@@ -51,7 +51,10 @@ const Menu = ({}) => {
               e.target.style.display = "none";
             }
           }}
-          ref={ref}
+          ref={(r) => {
+            r.style.display = "none";
+            ref = r;
+          }}
           className={` w-56 z-10 grid bg-white origin-top-right  shadow fixed right-2 top-12 items-center ${
             open() ? " scale-100 opacity-100" : "scale-90 opacity-0"
           } transition-all  `}

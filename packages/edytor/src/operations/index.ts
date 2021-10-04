@@ -6,3 +6,4 @@ export * from "./removeEmptyText";
 export * from "./splitLeaf";
 export * from "./splitNode";
 export * from "./nestNode";
+export * from "./moveNode";

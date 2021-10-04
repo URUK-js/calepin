@@ -1,6 +1,20 @@
 import { nestNode } from "../../..";
 import { makeEditorFixture, removeIds } from "../../fixture/editorFixture";
 
+const s = /* HTML */ `
+  <editor>
+    <node>
+      <leaf>text</leaf>
+      <node>
+        <leaf>text</leaf>
+      </node>
+    </node>
+    <node>
+      <leaf>text</leaf>
+    </node>
+  </editor>
+`;
+
 test("nest at 0 depth with prev node", () => {
   const value = [
     {
