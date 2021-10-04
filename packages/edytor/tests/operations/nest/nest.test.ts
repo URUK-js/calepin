@@ -1,4 +1,4 @@
-import { nestNode } from "../../../src";
+import { nestNode } from "../../..";
 import { makeEditorFixture, removeIds } from "../../fixture/editorFixture";
 
 test("nest at 0 depth with prev node", () => {

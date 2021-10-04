@@ -1,7 +1,6 @@
-import * as Y from "yjs";
-import { YArray, YMap, YText } from "yjs/dist/src/internals";
+import { YArray, YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
-import { deleteText, insertNode } from ".";
+import { deleteText } from ".";
 import { YNode, YLeaf } from "..";
 import {
   leafNodeContent,
