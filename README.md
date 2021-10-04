@@ -81,3 +81,19 @@ Edytor takes inspiration in the amazing Slate.js framework. Yet builded for Reac
 We think that throwing away the VDOM and building an editor for frameworks like Solid or Svelte is the way toward a very performant editor.
 
 Beside that we try to make the api as simple, maintainable, and performant as possible so Edytor can handle thousand of nodes without lagging.
+
+## Roadmap
+
+✅ YJS datastructure
+✅ insert text
+✅ delete text forward and backward
+✅ split nodes with enter
+✅ nest nodes with tab
+✅ merge nodes on delete at start/end
+⚽ un-nest nodes on delete at start/end when nested
+✅ extensive selection listener
+✅ demo in solid
+⚽ demo in svelte
+⚽ format text
+⚽ move nodes
+⚽ dnd
