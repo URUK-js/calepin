@@ -69,11 +69,10 @@ export const Editor = ({
   return (
     <EditorContext value={editor}>
       {renderBefore && renderBefore()}
-
       <div
         {...props(useEditor(), config())}
         onDrop={[onDrop, useEditor()]}
-        onMouseMove={[onMouseMove, editor]}
+        // onMouseMove={[onMouseMove, editor]}
         onDragOver={[onDragOver, editor]}
         onDragStart={[onDragOver, editor]}
         className={className}
@@ -90,7 +89,7 @@ export const Editor = ({
         onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
         onKeyDown={[onKeyDown, editor]}
       >
-        <div id="dndIndicator" contentEditable={false}></div>
+        <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg" contentEditable={false} />
         {renderChildren(doc.children)}
       </div>
       {renderAfter && renderAfter()}

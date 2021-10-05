@@ -49,7 +49,10 @@ test("move to reorder", () => {
     }
   ];
   const editor = makeEditorFixture(value);
-  moveNode(editor, { from: { path: [1] }, to: { path: [0] } });
+  moveNode({
+    from: { container: editor.doc.getNodeAtPath([1]).parent, at: 1 },
+    to: { container: editor.doc.children, at: 0 }
+  });
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 
@@ -103,8 +106,12 @@ test("move to nest", () => {
   ];
   const editor = makeEditorFixture(value);
 
-  moveNode(editor, { from: { path: [1] }, to: { path: [0, 0] } });
+  // moveNode({ from: { path: [1] }, to: { path: [0, 0] } });
 
+  moveNode({
+    from: { container: editor.doc.getNodeAtPath([1]).parent, at: 1 },
+    to: { container: editor.doc.getNodeAtPath([0]).get("children"), at: 0 }
+  });
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 
@@ -151,7 +158,11 @@ test("move nested to unnest", () => {
     }
   ];
   const editor = makeEditorFixture(value);
-  moveNode(editor, { from: { path: [0, 0] }, to: { path: [1] } });
+
+  moveNode({
+    from: { container: editor.doc.getNodeAtPath([0, 0]).parent, at: 0 },
+    to: { container: editor.doc.children, at: 1 }
+  });
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 
@@ -198,6 +209,11 @@ test("move nested to unnest deep", () => {
     }
   ];
   const editor = makeEditorFixture(value);
-  moveNode(editor, { from: { path: [0, 0, 0] }, to: { path: [1] } });
+  // moveNode({ from: { path: [0, 0, 0] }, to: { path: [1] } });
+
+  moveNode({
+    from: { container: editor.doc.getNodeAtPath([0, 0, 0]).parent, at: 0 },
+    to: { container: editor.doc.children, at: 1 }
+  });
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });

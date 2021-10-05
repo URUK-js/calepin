@@ -15,7 +15,7 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
         return (
           <div ref={ref} {...attributes} className="relative">
             {handle()}
-            <h1> {content}</h1>
+            <h1>{content}</h1>
             <div className="childrenContainer">{children}</div>
           </div>
         );

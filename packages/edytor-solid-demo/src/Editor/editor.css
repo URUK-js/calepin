@@ -27,30 +27,30 @@
 }
 
 h1 {
-  @apply text-5xl font-extrabold leading-normal  pt-2 pb-2 relative;
+  @apply text-5xl font-extrabold leading-normal  pt-5 pb-5 relative;
 }
 h2 {
-  @apply text-4xl font-extrabold leading-normal  pt-2 pb-2 relative;
+  @apply text-4xl font-extrabold leading-normal  pt-5 pb-5 relative;
 }
 h3 {
-  @apply text-3xl font-extrabold leading-normal   pt-2 pb-2 relative;
+  @apply text-3xl font-extrabold leading-normal   pt-5 pb-5 relative;
 }
 h4 {
-  @apply text-2xl font-bold  leading-normal  pt-2 pb-2 relative;
+  @apply text-2xl font-bold  leading-normal  pt-5 pb-5 relative;
 }
 h5 {
-  @apply text-xl font-bold   leading-normal  pt-2 pb-2 relative;
+  @apply text-xl font-bold   leading-normal  pt-5 pb-5 relative;
 }
 h6 {
-  @apply text-base font-bold  leading-normal  pt-2 pb-2 relative;
+  @apply text-base font-bold  leading-normal  pt-5 pb-5 relative;
 }
 
 p {
-  @apply text-base font-normal leading-relaxed mt-0 mb-0 relative pt-3 pb-3;
+  @apply text-base font-normal leading-relaxed mt-0 mb-0 relative pt-5 pb-5;
 }
 
 blockquote {
-  @apply border-l-2 text-gray-700 border-gray-400 pl-4 mt-0 mb-0 relative  pt-3 pb-3;
+  @apply border-l-2 text-gray-700 border-gray-400 pl-4 mt-0 mb-0 relative  pt-5 pb-5;
 }
 
 [data-edytor-editor][data-small-text="true"] h1 {
@@ -100,7 +100,20 @@ blockquote {
   position: absolute;
   height: 2px;
   border-radius: 10px;
-  background: cyan;
-  box-shadow: 0 4px 6px -1px cyan;
+
+  opacity: 0;
+
   transition: all 100ms ease-in;
+}
+
+[data-edytor-handle] {
+  opacity: 0;
+  transition: all 100ms ease-in;
+  cursor: grab;
+}
+*:hover > [data-edytor-handle] {
+  opacity: 1;
+}
+[data-edytor-handle]:active {
+  cursor: grabbing;
 }

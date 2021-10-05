@@ -4,8 +4,6 @@ import { getPath, YNode } from "../utils";
 type hoveredNode = {
   hoveredNode?: YNode | undefined;
   hoveredElement?: HTMLElement | undefined;
-  prevElement?: HTMLElement | undefined;
-  prevNode?: YNode | undefined;
 };
 
 const getHoveredNode = (editor: Editor, target: HTMLElement): hoveredNode => {
@@ -22,54 +20,36 @@ const getHoveredNode = (editor: Editor, target: HTMLElement): hoveredNode => {
   }
   if (!hoveredNode) return {};
 
-  const nodePath = getPath(hoveredNode);
-  let prevNode;
-  const getPrev = () => {
-    let stop;
-    editor.doc.traverse(
-      (node, isText) => {
-        if (!isText) {
-          if (node === hoveredNode) {
-            stop = true;
-          } else if (!stop) {
-            prevNode = node;
-          }
-        }
-      },
-      { start: nodePath.slice().reverse()[0] - 1, end: nodePath.slice().reverse()[0] + 1 }
-    );
-  };
-  getPrev();
-  const prevElement = prevNode && document.getElementById(prevNode.get("id"));
-
-  return { hoveredElement: element, hoveredNode, prevElement, prevNode };
+  return { hoveredElement: element, hoveredNode };
 };
 
 export const onMouseMove = (editor: Editor, e: MouseEvent) => {
-  const { hoveredElement, hoveredNode, prevElement, prevNode } = getHoveredNode(editor, e.target);
-
-  if (!hoveredNode || !hoveredElement) return;
-  const rectHovered = hoveredElement.getBoundingClientRect();
-  const rectPrev = prevElement?.getBoundingClientRect();
-  const isOnTop = e.y < rectHovered.top + rectHovered.height / 2;
-  const rect = isOnTop ? (prevElement ? rectPrev : rectHovered) : rectHovered;
-  const isIncrement = e.x > rect.left + rect.width / 4;
-
-  const top = prevElement ? rect.top + rect.height : isOnTop ? rect.top : rect.top + rect.height;
+  const { hoveredElement, hoveredNode } = getHoveredNode(editor, e.target);
   const dndIndicator = document.getElementById("dndIndicator");
-  const deltaX = isIncrement ? 30 : 0;
+
+  if (!hoveredNode || !hoveredElement || !dndIndicator) return;
+  const rectHovered = hoveredElement.getBoundingClientRect();
+  const isOnTop = e.y < rectHovered.top + rectHovered.height / 2;
+  const rect = rectHovered;
+  const isNested = !isOnTop && e.x > rect.left + rect.width / 4;
+
+  const top = isOnTop ? rect.top : rect.top + rect.height;
+  const deltaX = isNested ? 30 : 0;
 
   dndIndicator.style.width = `${rect.width - deltaX}px`;
   dndIndicator.style.top = `${top}px`;
   dndIndicator.style.left = `${rect.left + deltaX}px`;
 
-  let path = isOnTop ? (prevElement ? getPath(prevNode) : [0]) : getPath(hoveredNode);
-  const [index, ...p] = path.slice().reverse();
-  const newPath = [...p, index + 1];
+  let path = getPath(hoveredNode);
+  let [index] = path.slice().reverse();
 
-  if (isIncrement) {
-    path.push(0);
-  }
-  dndIndicator.textContent = path.toString();
-  return path;
+  index = index + (isOnTop ? 0 : 1);
+  if (index === -1) index = 0;
+  const dropData = {
+    container: isNested ? hoveredNode.get("children") : path.length === 1 ? editor.doc.children : hoveredNode.parent,
+    at: isNested ? 0 : index
+  };
+
+  dndIndicator.textContent = `${hoveredNode.get("id")} ${dropData.at}`;
+  return dropData;
 };
