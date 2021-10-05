@@ -1,7 +1,7 @@
 import { UndoManager } from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { Cursor, EdytorDoc } from ".";
-import { jsonNode, YLeaf } from "./utils";
+import { Dropper, jsonNode, YLeaf } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
@@ -47,6 +47,7 @@ export interface EditorProps extends Record<any, any> {
 
 export interface Editor {
   editorId: string;
+  dropper: Dropper;
   hotkeys?: HotKeys[];
   selection: () => EdytorSelection | undefined;
   cursor: () => Cursor | undefined;

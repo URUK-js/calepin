@@ -2,30 +2,8 @@ import { YArray, YMap } from "yjs/dist/src/internals";
 import { mergeLeafs } from "../operations";
 import { Editor } from "../types";
 import { getIndex, getNode } from "./common";
-import { leafLength, leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
-import { EdytorDoc, YLeaf, YNode } from "./yClasses";
-
-export class NodeHarvest {
-  nodes: { [id: string]: { parent: YArray<YMap<any>>; indexes: number[] } };
-  constructor() {
-    this.nodes = {};
-  }
-  reap = (node) => {
-    // si le noeud est vide
-    console.log(isNodeContentEmpty(node));
-    if (!isNodeContentEmpty(node)) return;
-    // const id = leafNodeId(leaf);
-    // if (!this.leaves[id]) {
-    //   this.leaves[id] = {
-    //     parent: leafNodeContent(leaf),
-    //     indexes: []
-    //   };
-    // }
-
-    // this.leaves[id].indexes.push(getIndex(leaf));
-  };
-  burn = () => {};
-}
+import { leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
+import { EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
   const { start } = editor.selection();
@@ -33,7 +11,6 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
   let stop = false;
 
   editor.doc.traverse((node, isText) => {
-    console.log(node);
     if (isText) {
       if (node === start.leaf) {
         stop = true;
@@ -126,3 +103,12 @@ export const isNodeContentEmpty = (node) =>
     .toArray()
     .map(leafString)
     .join("").length === 0;
+
+export const copyNode = (node: YNode) => {
+  const jsonNode = node.toJSON();
+  return new YNode(jsonNode.type, {
+    ...jsonNode,
+    children: jsonNode.children.map(getChildren),
+    content: jsonNode.content.map(getContent)
+  });
+};

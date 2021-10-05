@@ -12,6 +12,7 @@ import {
   EdytorDoc,
   EdytorSelection
 } from "edytor";
+import { Dropper, onMouseMove } from "edytor/src";
 
 export const Editor = ({
   value,
@@ -36,7 +37,7 @@ export const Editor = ({
   const doc = new EdytorDoc(value);
 
   const onChangeObserver = () => {
-    console.log(doc.children.toJSON());
+    // console.log(doc.children.toJSON());
   };
   onMount(() => doc.children.observeDeep(onChangeObserver));
   onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
@@ -45,6 +46,7 @@ export const Editor = ({
 
   const editor = createMemo<EditorType>(() => ({
     editorId,
+    dropper: new Dropper(),
     selection,
     cursor,
     hotkeys,
@@ -67,9 +69,11 @@ export const Editor = ({
   return (
     <EditorContext value={editor}>
       {renderBefore && renderBefore()}
+
       <div
         {...props(useEditor(), config())}
         onDrop={[onDrop, useEditor()]}
+        onMouseMove={[onMouseMove, editor]}
         onDragOver={[onDragOver, editor]}
         onDragStart={[onDragOver, editor]}
         className={className}
@@ -86,6 +90,7 @@ export const Editor = ({
         onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
         onKeyDown={[onKeyDown, editor]}
       >
+        <div id="dndIndicator" contentEditable={false}></div>
         {renderChildren(doc.children)}
       </div>
       {renderAfter && renderAfter()}

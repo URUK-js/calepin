@@ -51,10 +51,10 @@ export const splitNode = (editor: Editor) => {
   let doSplit = !((edges.start && type === "collapsed") || (edges.end && type === "collapsed"));
 
   if (edges.start && !edges.end && type === "collapsed") {
-    return node.parent.insert(indexOfNode, [new YNode("paragraph")]);
+    return (node.parent as YArray<any>).insert(indexOfNode, [new YNode("paragraph")]);
   }
   if (edges.end && type === "collapsed") {
-    return node.parent.insert(indexOfNode + 1, [new YNode("paragraph")]);
+    return (node.parent as YArray<any>).insert(indexOfNode + 1, [new YNode("paragraph")]);
   }
 
   switch (type) {

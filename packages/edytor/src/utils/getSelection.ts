@@ -14,11 +14,7 @@ const getLeaf = (editor: Editor, anchorNode: HTMLElement): [YLeaf, number[]] => 
     i++;
   }
   if (!leaf) return undefined;
-  console.log(
-    { anchorNode, leaf: leaf.toJSON(), parent: anchorNode.parentElement },
-    editor.ID_TO_NODE.values(),
-    editor.ID_TO_NODE.keys()
-  );
+
   return [leaf, getPath(leaf)];
 };
 

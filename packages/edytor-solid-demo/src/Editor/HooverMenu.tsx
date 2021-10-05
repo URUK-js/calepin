@@ -16,7 +16,7 @@ export const HooverMenu = ({}) => {
   const selection = useSelectionChange((s: EdytorSelection) => {
     if (!ref) return;
     if (!s.boundingRect || s.type === "collapsed") {
-      ref.style.transform = `scale(0)`;
+      ref.style.transform = `scale(0.9)`;
       ref.style.opacity = "0";
     } else {
       ref.style.opacity = "1";

@@ -3,6 +3,7 @@ import { useNode, useText, useChildren, useEditor } from "../hooks";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf, YNode } from "edytor";
 import { getId, leafText } from "edytor/src";
+import { renderHandle } from "./renderHandle";
 
 export const renderChildren = (children: YArray<YNode>): JSXElement => {
   return mapArray(useChildren(children), renderNode);
@@ -14,10 +15,11 @@ export const renderContent = (content: YArray<YLeaf>): JSXElement => {
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const { renderLeaf } = useEditor();
-  console.log({ leaf: node });
+
   const leaf = useNode(node);
   return renderLeaf({
     text: useText(leafText(node)),
+
     attributes: {
       id: getId(node),
       "data-edytor-element": "true",
@@ -38,6 +40,7 @@ export const renderNode = (node: YNode) => {
       "data-edytor-block": "true"
     },
     node,
+    handle: renderHandle(node),
     block,
     children,
     content

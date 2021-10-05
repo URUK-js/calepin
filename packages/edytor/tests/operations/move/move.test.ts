@@ -102,7 +102,9 @@ test("move to nest", () => {
     }
   ];
   const editor = makeEditorFixture(value);
+
   moveNode(editor, { from: { path: [1] }, to: { path: [0, 0] } });
+
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 

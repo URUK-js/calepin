@@ -4,7 +4,7 @@ import { useEditor } from ".";
 
 const extractMap = (node: YMap<any>) => {
   let json = {};
-  console.log({ node });
+
   if (!node) return json;
   const keys = Array.from(node.keys());
   for (let i = 0; i < keys.length; i++) {
@@ -19,17 +19,12 @@ export const useNode = (node: YMap<any>) => {
   const editor = useEditor();
   const [value, setValue] = createSignal(extractMap(node));
   const observer = () => {
-    console.log("observe");
     setValue(extractMap(node));
   };
 
   onMount(() => {
-    console.log(editor);
     editor.ID_TO_NODE.set(node.get("id"), node);
     node.observe(observer);
-    // console.log(ref);
-    // const observer = new IntersectionObserver(onVisibilityChange, { threshold: 0, root: null, rootMargin: "20%" });
-    // ref && observer.observe(ref());
   });
   onCleanup(() => {
     node?.unobserve(observer);
