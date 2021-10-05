@@ -6,6 +6,7 @@ export class Dropper {
   from;
   to;
   node;
+  startPath;
   editor: Editor;
 
   constructor(editor) {
@@ -25,6 +26,7 @@ export class Dropper {
       container: node.parent,
       at: getIndex(node)
     };
+    this.startPath = getPath(node);
     e.dataTransfer?.setDragImage(element, e.offsetX, e.offsetY);
     document.addEventListener("mousemove", this.onDrag);
     document.addEventListener("mouseup", this.dragEnd);
@@ -72,12 +74,20 @@ export class Dropper {
     const top = isOnTop ? rect.top : rect.top + rect.height;
     const deltaX = isNested ? 30 : 0;
 
+    let path = getPath(hoveredNode);
+
+    let [index, ...startOfPath] = path.slice().reverse();
+
+    if (this.startPath.join("") === startOfPath.join("")) {
+      return;
+      // this.to= undefined
+    }
+
     dndIndicator.style.width = `${rect.width - deltaX}px`;
     dndIndicator.style.top = `${top}px`;
     dndIndicator.style.left = `${rect.left + deltaX}px`;
 
-    let path = getPath(hoveredNode);
-    let [index] = path.slice().reverse();
+    console.log(this.startPath, startOfPath);
 
     index = index + (isOnTop ? 0 : 1);
     if (index === -1) index = 0;
@@ -89,7 +99,5 @@ export class Dropper {
         : hoveredNode.parent,
       at: isNested ? 0 : index
     };
-
-    //   dndIndicator.textContent = `${hoveredNode.get("id")} ${dropData.at}`;
   };
 }
