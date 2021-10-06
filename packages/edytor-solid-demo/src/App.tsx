@@ -6,10 +6,12 @@ import "@fontsource/playfair-display";
 import StyleSelector from "./Editor/StyleSelector/Menu";
 import { initialValue } from "./Editor/initialValue";
 import "./Editor/editor.css";
+import { renderHandle } from "./Handle";
 const App: Component = () => {
   return (
     <div>
       <Editor
+        renderHandle={renderHandle}
         hotkeys={[
           { operation: "formatText", keys: "mod+b", data: { format: "bold" } },
           { operation: "formatText", keys: "mod+i", data: { format: "italic" } },

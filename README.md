@@ -80,6 +80,8 @@ Edytor takes inspiration in the amazing Slate.js framework. Yet builded for Reac
 
 We think that throwing away the VDOM and building an editor for frameworks like Solid or Svelte is the way toward a very performant editor.
 
+YJS listener combine with reactives framework allow us to perform true leaf level incremental updates which is for performances.
+
 Beside that we try to make the api as simple, maintainable, and performant as possible so Edytor can handle thousand of nodes without lagging.
 
 ## Roadmap
@@ -108,6 +110,6 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ⚽ format text
 
-⚽ move nodes
+✅ move nodes
 
-⚽ dnd
+✅ dnd

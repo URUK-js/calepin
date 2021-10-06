@@ -9,9 +9,6 @@ export class Dropper {
   startPath;
   editor: Editor;
 
-  constructor(editor) {
-    this.editor = editor;
-  }
   startDrag = ([editor, node], e: DragEvent) => {
     if (!this.editor) this.editor = editor;
     this.node = node;
@@ -34,15 +31,12 @@ export class Dropper {
   dragEnd = () => {
     const element = document.getElementById(this.node.get("id")) as HTMLElement;
     if (element) element.style.opacity = "1";
-
     document.body.style.cursor = "auto";
     document.removeEventListener("mousemove", this.onDrag);
     document.removeEventListener("mouseup", this.dragEnd);
-
     moveNode({ from: this.from, to: this.to });
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "0";
-    // setDragging(false);
   };
 
   getHoveredNode = (editor: Editor, target: HTMLElement) => {
@@ -65,7 +59,7 @@ export class Dropper {
     const { hoveredElement, hoveredNode } = this.getHoveredNode(this.editor, e.target as HTMLElement);
     const dndIndicator = document.getElementById("dndIndicator");
 
-    if (!hoveredNode || !hoveredElement || !dndIndicator) return;
+    if (!hoveredNode || !hoveredElement || !dndIndicator || hoveredNode === this.node) return;
     const rectHovered = hoveredElement.getBoundingClientRect();
     const isOnTop = e.y < rectHovered.top + rectHovered.height / 2;
     const rect = rectHovered;
@@ -86,8 +80,6 @@ export class Dropper {
     dndIndicator.style.width = `${rect.width - deltaX}px`;
     dndIndicator.style.top = `${top}px`;
     dndIndicator.style.left = `${rect.left + deltaX}px`;
-
-    console.log(this.startPath, startOfPath);
 
     index = index + (isOnTop ? 0 : 1);
     if (index === -1) index = 0;

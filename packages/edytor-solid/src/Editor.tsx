@@ -12,10 +12,11 @@ import {
   EdytorDoc,
   EdytorSelection
 } from "edytor";
-import { Dropper, onMouseMove } from "edytor/src";
+import { Dropper } from "edytor/src";
 
 export const Editor = ({
   value,
+  renderHandle = () => null,
   renderBlock = renderBlockDefault,
   renderLeaf = renderLeafDefault,
   spellcheck = false,
@@ -50,6 +51,7 @@ export const Editor = ({
     selection,
     cursor,
     hotkeys,
+    renderHandle,
     renderBlock,
     renderLeaf,
     undoManager,

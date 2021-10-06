@@ -1,20 +1,17 @@
-import { createSignal } from "solid-js";
-import { onMouseMove } from "edytor";
+import { YNode } from "edytor/src";
 import { useEditor } from "../hooks";
-
-export const renderHandle = (node) => {
-  // const [dragging, setDragging] = createSignal();
+export const renderHandle = (node: YNode) => {
   const editor = useEditor();
   return (
-    <div
-      data-edytor-handle
-      className={` z-10  absolute top-0  select-none`}
-      contentEditable={false}
-      draggable={true}
-      onDragStart={[editor.dropper.startDrag, [editor, node]]}
-      style={{ left: "-40px" }}
-    >
-      °°°
-    </div>
+    editor.renderHandle &&
+    editor.renderHandle({
+      node,
+      attributes: {
+        "data-edytor-handle": "true",
+        contentEditable: false,
+        draggable: true,
+        onDragStart: [editor.dropper.startDrag, [editor, node]]
+      }
+    })
   );
 };

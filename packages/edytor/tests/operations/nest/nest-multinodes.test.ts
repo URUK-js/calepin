@@ -171,8 +171,6 @@ test("nest multinodes nested", () => {
     end: { path: [0, 2, 0], offset: 1 }
   });
 
-  console.log(editor.doc.getNodeAtPath([0, 1]).toJSON());
-  console.log(editor.doc.getNodeAtPath([0, 2]).toJSON());
   nestNode(editor);
 
   console.log(JSON.stringify(removeIds(editor.toJSON()), null, 3));

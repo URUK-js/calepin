@@ -1,7 +1,7 @@
 import { UndoManager } from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { Cursor, EdytorDoc } from ".";
-import { Dropper, jsonNode, YLeaf } from "./utils";
+import { Dropper, jsonNode, YLeaf, YNode } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
@@ -25,6 +25,15 @@ export type renderBlockProps = {
   attributes: attributes;
   children: children;
   block: block;
+};
+export type renderHandleProps = {
+  attributes: {
+    "data-edytor-handle": "true";
+    contentEditable: false;
+    onDragStart: any;
+    draggable: boolean;
+  };
+  node: YNode;
 };
 
 interface HotKeys {
@@ -53,6 +62,7 @@ export interface Editor {
   cursor: () => Cursor | undefined;
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
   renderLeaf: ({ attributes, string, leaf }: renderLeafProps) => any;
+  renderHandle: (({ node, attributes }: renderHandleProps) => any) | undefined;
   undoManager: UndoManager;
   editorRef: Accessor<HTMLDivElement | undefined>;
   toUpdate: () => Uint8Array;

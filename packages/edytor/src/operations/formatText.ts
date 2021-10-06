@@ -2,6 +2,7 @@ import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import * as Y from "yjs";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
+import { isLeafEmpty, leafLength } from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -80,25 +81,23 @@ export const formatAtEqualPath = ({ format, start, end, data = {} }: formatAtEqu
 
 export const formatText = (editor: Editor, { format, ...data }: formatTextOperation) => {
   let newPath = 0;
-
   const { start, end, type, length } = editor.selection();
-  console.log(editor.selection());
-  editor.doc().transact(() => {
+
+  editor.doc.transact(() => {
     switch (type) {
       case "collapsed": {
-        const branch = start.leaf.parent as YMap<any>;
-        const node = leafObject?.parent as YArray<any>;
-        const isMarkActive = branch.has(format);
+        const branch = start.leaf as YMap<any>;
+        const isMarkActive = start.leaf.has(format);
+        const container = start.leaf.parent as YArray<any>;
 
-        if (isMarkActive && start.leaf.length === 0) {
+        if (isMarkActive && isLeafEmpty(start.leaf)) {
           branch.delete(format);
-          newPath = node.toArray().indexOf(branch);
+          newPath = container.toArray().indexOf(branch);
         } else {
-          if (start.leaf.length === 0) {
+          if (isLeafEmpty(start.leaf)) {
             isMarkActive ? branch.delete(format) : branch.set(format, true);
           } else {
-            splitLeaf(editor, { yText: start.leaf, at: start });
-
+            splitLeaf(editor, { yText: start.leaf.get("text"), at: start });
             const newChild = new Y.Map();
             newChild.set("text", new Y.Text(""));
             newChild.set(format, true);
@@ -107,16 +106,17 @@ export const formatText = (editor: Editor, { format, ...data }: formatTextOperat
 
             if (isMarkActive) newChild.delete(format);
 
-            node.insert(start.path.slice().reverse()[0] + 1, [newChild]);
+            container.insert(start.path.slice().reverse()[0] + 1, [newChild]);
 
-            if (start.leaf.length === 0) {
-              node.delete(start.path.slice().reverse()[0]);
+            if (isLeafEmpty(start.leaf)) {
+              container.delete(start.path.slice().reverse()[0]);
             }
-            newPath = node.toArray().indexOf(newChild);
+            newPath = container.toArray().indexOf(newChild);
           }
         }
-        mergeLeafs(editor, node);
-        return newPath;
+        mergeLeafs(container);
+        break;
+        // return newPath;
       }
       case "singlenode": {
         const newText = formatAtEqualPath({ format, start, end, length, data });
