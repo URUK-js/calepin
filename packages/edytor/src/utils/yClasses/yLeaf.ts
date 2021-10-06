@@ -6,7 +6,6 @@ import { YNode } from ".";
 export type YLeafProps = {
   data?: any;
   text?: string;
-  marks?: string[];
   id?: string;
 };
 

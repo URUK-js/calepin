@@ -33,24 +33,24 @@ export const HooverMenu = ({}) => {
   const icons = [
     {
       Icon: TextBolder,
-      format: "bold"
+      mark: { bold: true }
     },
-    { Icon: TextUnderline, format: "underline" },
-    { Icon: TextItalic, format: "italic" },
-    { Icon: TextStrikethrough, format: "strikethrough" },
-    { Icon: CodeSimple, format: "code" },
-    { Icon: HighlighterCircle, format: "highlight", color: "blue" }
+    { Icon: TextUnderline, mark: { underline: true } },
+    { Icon: TextItalic, mark: { italic: true } },
+    { Icon: TextStrikethrough, mark: { strikethrough: true } },
+    { Icon: CodeSimple, mark: { code: true } },
+    { Icon: HighlighterCircle, mark: { highlight: "bg-blue" } }
   ];
 
   return (
     <>
       <div className="shadow-lg absolute bg-white z-10 overflow-hidden rounded-md h-8  origin-bottom-left" ref={ref}>
         <For each={icons}>
-          {({ Icon, ...data }) => {
+          {({ Icon, mark }) => {
             return (
               <button
                 onClick={() => {
-                  formatText(editor, { range: selection(), ...data });
+                  formatText(editor, mark);
                 }}
                 className="p-1 h-full hover:bg-gray-100 "
               >

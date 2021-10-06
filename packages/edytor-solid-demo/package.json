@@ -13,14 +13,11 @@
     "serve": "vite preview"
   },
   "devDependencies": {
-    "@types/faker": "^5.5.8",
-    "@types/jest": "^27.0.2",
     "autoprefixer": "^10.3.5",
     "jest": "^27.2.1",
     "postcss": "^8.3.7",
     "tailwindcss": "^2.2.15",
     "vite": "^2.5.1",
-    "ts-jest": "^27.0.5",
     "vite-plugin-solid": "^2.0.3"
   },
   "dependencies": {
@@ -28,6 +25,7 @@
     "@fontsource/playfair-display": "^4.5.0",
     "@fontsource/space-mono": "^4.5.0",
     "edytor-solid": "*",
+    "edytor": "*",
     "phosphor-solid": "^1.1.4",
     "solid-js": "^1.1.1",
     "yjs": "^13.5.12"

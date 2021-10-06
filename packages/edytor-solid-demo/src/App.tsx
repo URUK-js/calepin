@@ -13,12 +13,12 @@ const App: Component = () => {
       <Editor
         renderHandle={renderHandle}
         hotkeys={[
-          { operation: "formatText", keys: "mod+b", data: { format: "bold" } },
-          { operation: "formatText", keys: "mod+i", data: { format: "italic" } },
-          { operation: "formatText", keys: "mod+u", data: { format: "underline" } },
-          { operation: "formatText", keys: "mod+shift+c", data: { format: "code" } },
-          { operation: "formatText", keys: "mod+shift+x", data: { format: "strikethrough" } },
-          { operation: "formatText", keys: "mod+shift+h", data: { format: "highlight", color: "purple" } }
+          { operation: "formatText", keys: "mod+b", mark: { bold: true } },
+          { operation: "formatText", keys: "mod+i", mark: { italic: true } },
+          { operation: "formatText", keys: "mod+u", mark: { underline: true } },
+          { operation: "formatText", keys: "mod+shift+c", mark: { code: true } },
+          { operation: "formatText", keys: "mod+shift+x", mark: { strikethrough: true } },
+          { operation: "formatText", keys: "mod+shift+h", mark: { highlight: true } }
         ]}
         value={initialValue()}
         props={(_, config) => ({

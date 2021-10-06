@@ -18,7 +18,7 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
     }
 
     for (let i = 0; i < editor.hotkeys.length; i++) {
-      const { keys, operation, data } = editor.hotkeys[i];
+      const { keys, operation, mark } = editor.hotkeys[i];
       if (isHotkey(keys, e)) {
         e.preventDefault();
         e.stopPropagation();
@@ -27,7 +27,7 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
         }
         switch (operation) {
           case "formatText": {
-            return formatText(editor, data as formatTextOperation);
+            return formatText(editor, mark);
           }
         }
         break;

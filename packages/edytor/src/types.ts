@@ -5,11 +5,12 @@ import { Dropper, jsonNode, YLeaf, YNode } from "./utils";
 
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
-export type attributes = Accessor<{
-  "data-edytor-path": number[];
-  "data-edytor-block"?: boolean;
-  "data-edytor-leaf"?: boolean;
-}>;
+export type attributes = {
+  id: string;
+  "data-edytor-block"?: string;
+  "data-edytor-element": "true";
+  "data-edytor-leaf"?: string;
+};
 export type children = any;
 export type block = Accessor<Record<any, any>>;
 export type leaf = Accessor<Record<any, any>>;
@@ -39,7 +40,7 @@ export type renderHandleProps = {
 interface HotKeys {
   operation: ((editor: Editor) => void) | "formatText" | "wrapInlines";
   keys: string;
-  data: Record<any, any>;
+  mark: Record<string, any>;
 }
 export interface EditorProps extends Record<any, any> {
   value: jsonNode[];
@@ -68,7 +69,7 @@ export interface Editor {
   toUpdate: () => Uint8Array;
   doc: EdytorDoc;
   config: YMap<any>;
-  toJSON: () => Value;
+  toJSON: () => jsonNode[];
   ID_TO_NODE: Map<string, YMap<any>>;
   ID_TO_MAP: WeakMap<any, any>;
   MAP_TO_ID: WeakMap<any, any>;

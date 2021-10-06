@@ -1,486 +1,477 @@
-// import { toYJS, formatText } from "../../";
+import { formatText } from "../../..";
+import { Value } from "../../../src";
+import { makeEditorFixture, removeIds } from "../../fixture/editorFixture";
 
-test("ok", () => {
-  expect(true).toBe(true);
+test("format range at same path", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        }
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
+        },
+        {
+          text: "Rem",
+          bold: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        }
+      ]
+    }
+  ];
+
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { bold: true });
+  console.log(JSON.stringify(removeIds(editor.toJSON()), null, 3));
+
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
-// test("format range at same path", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           }
-//         ]
-//       }
-//     ]
-//   };
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
-//           },
-//           {
-//             text: "Rem",
-//             bold: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
+test("format range  at same path 2", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: "Coucou",
+          bold: true
+        }
+      ]
+    }
+  ];
 
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
+        },
+        {
+          text: "Rem",
+          bold: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: "Coucou",
+          bold: true
+        }
+      ]
+    }
+  ];
 
-// test("format range  at same path 2", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: "Coucou",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { bold: true });
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
-//           },
-//           {
-//             text: "Rem",
-//             bold: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: "Coucou",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
 
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+test("format range  at same path without remaining text", () => {
+  const initialValue = [
+    {
+      children: [],
+      type: "paragraph",
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem"
+        }
+      ]
+    }
+  ];
 
-// test("format range  at same path without remaining text", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem"
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const expectedValue = [
+    {
+      children: [],
+      type: "paragraph",
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
+        },
+        {
+          text: "Rem",
+          bold: true
+        }
+      ]
+    }
+  ];
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. "
-//           },
-//           {
-//             text: "Rem",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { bold: true });
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
 
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+test("format at same path with already formated text", () => {
+  const initialValue = [
+    {
+      children: [],
+      type: "paragraph",
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-// test("format at same path with already formated text", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          italic: true
+        },
+        {
+          text: "Rem",
+          bold: true,
+          italic: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             italic: true
-//           },
-//           {
-//             text: "Rem",
-//             bold: true,
-//             italic: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { bold: true });
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
 
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
-// test("partial unformat at range", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+test("partial unformat at range", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             italic: true
-//           },
-//           {
-//             text: "Rem"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "italic", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          italic: true
+        },
+        {
+          text: "Rem"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-// test("format at same path and then unformat", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { italic: true });
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
 
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 0], offset: 57 }, end: { path: [0, 0], offset: 60 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "bold", range: { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 3 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
+test("format at same path and then unformat", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        }
+      ]
+    }
+  ];
 
-//   expect(doc.toJSON()).toStrictEqual(initialValue);
-// });
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { bold: true });
 
-// test("partial unformat at range", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const editor2 = makeEditorFixture(editor.toJSON(), {
+    start: { path: [0, 1], offset: 0 },
+    end: { path: [0, 1], offset: 3 }
+  });
+  formatText(editor2, { bold: true });
+  console.log(removeIds(editor2.toJSON()));
+  expect(removeIds(editor2.toJSON())).toStrictEqual(initialValue);
+});
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem",
-//             italic: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "italic", range: { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 3 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+test("partial unformat at range", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
 
-// test("partial unformat at range", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem",
+          italic: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             italic: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "italic", range: { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 3 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 1], offset: 0 },
+    end: { path: [0, 1], offset: 3 }
+  });
+  formatText(editor, { italic: true });
+  console.log(removeIds(editor.toJSON()));
 
-// test("partial unformat at range", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             code: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem",
-//             italic: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             code: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "italic", range: { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 3 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+test("partial unformat at range", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-// test("partial unformat at range", () => {
-//   const initialValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             code: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          italic: true
+        }
+      ]
+    }
+  ];
 
-//   const expectedValue = {
-//     children: [
-//       {
-//         type: "paragraph",
-//         children: [
-//           {
-//             text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-//             bold: true
-//           },
-//           {
-//             text: "Rem",
-//             italic: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             code: true
-//           },
-//           {
-//             text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
-//             bold: true
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   const doc = toYJS(initialValue).getMap("document");
-//   formatText(
-//     { toYJS: () => doc },
-//     { format: "italic", range: { start: { path: [0, 1], offset: 0 }, end: { path: [0, 1], offset: 3 } } }
-//   );
-//   console.log(JSON.stringify(doc.toJSON(), null, 3));
-//   expect(doc.toJSON()).toStrictEqual(expectedValue);
-// });
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 1], offset: 0 },
+    end: { path: [0, 1], offset: 3 }
+  });
+  formatText(editor, { italic: true });
+
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
+
+test("partial unformat at range", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          code: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem",
+          italic: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          code: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 1], offset: 0 },
+    end: { path: [0, 1], offset: 3 }
+  });
+  formatText(editor, { italic: true });
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
+
+test("partial unformat at range", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          code: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem",
+          italic: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo"
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          code: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 1], offset: 0 },
+    end: { path: [0, 1], offset: 3 }
+  });
+  formatText(editor, { italic: true });
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});

@@ -2,7 +2,16 @@ import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import * as Y from "yjs";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
-import { isLeafEmpty, leafLength } from "../utils";
+import {
+  deleteLeafText,
+  getIndex,
+  isLeafEmpty,
+  leafLength,
+  leafNodeChildren,
+  leafNodeContent,
+  leafText,
+  YLeaf
+} from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -28,58 +37,57 @@ export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
   });
 };
 
-export const formatAtEqualPath = ({ format, start, end, data = {} }: formatAtEqualPathOperation) => {
+export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPathOperation) => {
   const length = end.offset - start.offset;
   const leaf = start.leaf;
+  const text = leafText(leaf);
 
-  const branch = leaf.parent as YMap<any>;
-  const node = branch?.parent as YArray<YMap<any>>;
-  const content = leaf.toString();
-  const index = start.path.slice().reverse()[0] + 1;
+  const content = text.toString();
+  const index = getIndex(leaf);
 
-  const isMarkActive = branch.has(format);
-  const hasMarks = Array.from(branch.keys()).some((key) => key !== "text");
+  const isMarkActive = leaf.has(format);
 
-  if (isMarkActive && leaf.length === length) {
-    branch.delete(format);
-    return leaf;
+  if (isMarkActive && leafLength(leaf) === length) {
+    leaf.delete(format);
   } else {
-    const remainingText = content.substring(end.offset, leaf.length);
-    if (remainingText.length == 0 && leaf.length === end.offset - start.offset) {
-      leaf.parent.set(format, true);
-      return leaf;
+    const remainingText = content.substring(end.offset, leafLength(leaf));
+    if (remainingText.length == 0 && leafLength(leaf) === end.offset - start.offset) {
+      leaf.set(format, value);
     } else {
-      leaf.delete(start.offset, leaf.length);
+      console.log("hello");
+      deleteLeafText(leaf, start.offset, leafLength(leaf));
 
-      const formatedLeaf = new Y.Text(content.substring(start.offset, end.offset));
+      const formatedLeaf = new YLeaf({
+        ...leaf.toJSON(),
+        id: undefined,
+        [format]: value,
+        text: content.substring(start.offset, end.offset)
+      });
+      console.log(remainingText);
 
-      const formatedBranch = new Y.Map();
-      formatedBranch.set("text", formatedLeaf);
-      formatedBranch.set(format, true);
-      let newBranches = [formatedBranch];
+      let newLeaves = [formatedLeaf];
 
       if (remainingText.length > 0) {
-        const nonFormatedBranch = new Y.Map();
-        nonFormatedBranch.set("text", new Y.Text(remainingText));
-        newBranches.push(nonFormatedBranch);
+        newLeaves.push(new YLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
-      Object.keys(data).forEach((key) => {
-        newBranches.forEach((branch) => {
-          branch.set(key, data[key]);
-        });
-      });
-      applyMarksFromParent(branch, newBranches);
+      // Object.keys(data).forEach((key) => {
+      //   newBranches.forEach((branch) => {
+      //     branch.set(key, data[key]);
+      //   });
+      // });
 
       if (isMarkActive) {
-        formatedBranch.delete(format);
+        formatedLeaf.delete(format);
       }
-      newBranches.length && node.insert(index, newBranches);
+      newLeaves.length && leafNodeContent(leaf).insert(index + 1, newLeaves);
       return formatedLeaf;
     }
   }
 };
 
-export const formatText = (editor: Editor, { format, ...data }: formatTextOperation) => {
+export const formatText = (editor: Editor, mark: Record<string, any>) => {
+  const [[format, value]] = Object.entries(mark);
+  console.log(format);
   let newPath = 0;
   const { start, end, type, length } = editor.selection();
 
@@ -95,12 +103,12 @@ export const formatText = (editor: Editor, { format, ...data }: formatTextOperat
           newPath = container.toArray().indexOf(branch);
         } else {
           if (isLeafEmpty(start.leaf)) {
-            isMarkActive ? branch.delete(format) : branch.set(format, true);
+            isMarkActive ? branch.delete(format) : branch.set(format, value);
           } else {
             splitLeaf(editor, { yText: start.leaf.get("text"), at: start });
             const newChild = new Y.Map();
             newChild.set("text", new Y.Text(""));
-            newChild.set(format, true);
+            newChild.set(format, value);
 
             applyMarksFromParent(branch, [newChild]);
 
@@ -119,9 +127,10 @@ export const formatText = (editor: Editor, { format, ...data }: formatTextOperat
         // return newPath;
       }
       case "singlenode": {
-        const newText = formatAtEqualPath({ format, start, end, length, data });
-        mergeLeafs(editor, start.leaf.parent?.parent);
-        newPath = start.leaf.parent?.parent.toArray().indexOf(newText.parent);
+        const newText = formatAtEqualPath({ format, value, start, end, length });
+        mergeLeafs(leafNodeContent(start.leaf));
+
+        // newPath = start.leaf.parent?.parent.toArray().indexOf(newText.parent);
         break;
       }
       case "multinodes": {

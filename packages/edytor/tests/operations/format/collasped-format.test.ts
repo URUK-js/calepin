@@ -35,7 +35,7 @@ test("format at same path", () => {
   ];
 
   const editor = makeEditorFixture(initialValue, { start: { path: [0, 0], offset: 57 } });
-  formatText(editor, { format: "bold" });
+  formatText(editor, { bold: true });
   console.log(removeIds(editor.toJSON()), null, 3);
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
@@ -74,7 +74,7 @@ test("format at same path", () => {
   ];
 
   const editor = makeEditorFixture(initialValue, { start: { path: [0, 1], offset: 0 } });
-  formatText(editor, { format: "bold" });
+  formatText(editor, { bold: true });
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 
@@ -125,7 +125,7 @@ test("format at same path", () => {
   ];
 
   const editor = makeEditorFixture(initialValue, { start: { path: [0, 1], offset: 1 } });
-  formatText(editor, { format: "bold" });
+  formatText(editor, { bold: true });
 
   console.log(removeIds(editor.toJSON()), null, 3);
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
@@ -178,7 +178,7 @@ test("format at path and merge around", () => {
   ];
 
   const editor = makeEditorFixture(initialValue, { start: { path: [0, 2], offset: 0 } });
-  formatText(editor, { format: "bold" });
+  formatText(editor, { bold: true });
   console.log(removeIds(editor.toJSON()), null, 3);
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
@@ -223,7 +223,7 @@ test("format at same path", () => {
   ];
 
   const editor = makeEditorFixture(initialValue, { start: { path: [0, 1], offset: 0 } });
-  formatText(editor, { format: "bold" });
+  formatText(editor, { bold: true });
   console.log(removeIds(editor.toJSON()), null, 3);
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
