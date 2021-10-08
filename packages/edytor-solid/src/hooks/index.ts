@@ -5,4 +5,3 @@ export * from "./useNode";
 export * from "./useMap";
 export * from "./useText";
 export * from "./useSelection";
-export * from "./useSelectionListener";

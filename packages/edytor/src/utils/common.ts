@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { YMap } from "yjs/dist/src/internals";
-export const nanoid = customAlphabet("346789ABCDEFGHJKLMNPQRTUV-WXYabcdefghijkmnpqrtwxyz", 20);
+export const nanoid = () => "y-" + customAlphabet("346789ABCDEFGHJKLMNPQRTUV-WXYabcdefghijkmnpqrtwxyz", 20)();
 
 type YNode = YMap<any>;
 

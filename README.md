@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="20%" src="logo.png" alt="Sublime's custom image"/>
+</p>
+
 > Warning
 > this a work in progress wich is absolutly not ready for production
 

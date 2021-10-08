@@ -1,17 +1,13 @@
-import { YText } from "yjs/dist/src/internals";
-import { Editor, Position, EdytorSelection } from "../types";
+import { Editor } from "../types";
 import { deleteLeafText, getPath, insertTextInLeaf, leafLength, LeavesHarvest, replaceLeafText, YLeaf } from "../utils";
 
 export type insertTextOperation = {
-  at?: Position;
-  range?: EdytorSelection;
   text: string | null;
-  yText?: YText;
 };
 export const insertText = (editor: Editor, { text }: insertTextOperation) => {
   if (!text || text === null || !text.length) return;
 
-  const { start, end, type, length } = editor.selection();
+  const { start, end, type, length } = editor.selection;
   if (type === "notInDoc") return console.error("Path is not in document space");
 
   switch (type) {

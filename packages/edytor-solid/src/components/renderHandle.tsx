@@ -10,7 +10,7 @@ export const renderHandle = (node: YNode) => {
         "data-edytor-handle": "true",
         contentEditable: false,
         draggable: true,
-        onDragStart: [editor.dropper.startDrag, [editor, node]]
+        onDragStart: [editor.dropper.startDrag, node]
       }
     })
   );

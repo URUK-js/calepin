@@ -21,30 +21,27 @@ type deleteTextOpts = {
   selection?: EdytorSelection;
 };
 export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) => {
-  const { start, end, type, length, edges } = selection || editor.selection();
+  const { start, end, type, length, edges } = selection || editor.selection;
 
   switch (type) {
     case "collapsed": {
-      if (mode === "backward" && edges.start) {
+      if (mode === "backward" && edges.startNode) {
+        return mergeContentWithPrevLeaf(editor);
+      }
+      if (mode === "backward" && edges.startLeaf) {
         const index = getIndex(start.leaf);
-        if (index === 0) {
-          return mergeContentWithPrevLeaf(editor);
-        } else {
-          const prevLeaf = leafNodeContent(start.leaf).get(index - 1);
-          return deleteLeafText(prevLeaf, leafLength(prevLeaf) - 1, length || 1);
-        }
+
+        const prevLeaf = leafNodeContent(start.leaf).get(index - 1);
+        return deleteLeafText(prevLeaf, leafLength(prevLeaf) - 1, length || 1);
       }
 
-      if (mode === "forward" && edges.end) {
+      if (mode === "forward" && edges.endNode) {
+        return mergeContentWithNextLeaf(editor);
+      }
+      if (mode === "forward" && edges.endLeaf) {
         const index = getIndex(start.leaf);
-        if (
-          index === leafNodeContentLength(start.leaf) - 1 ||
-          start.offset === leafNodeContentStringLength(start.leaf)
-        ) {
-          return mergeContentWithNextLeaf(editor);
-        } else {
-          return deleteLeafText(leafNodeContent(start.leaf).get(index + 1), 0, length || 1);
-        }
+
+        return deleteLeafText(leafNodeContent(start.leaf).get(index + 1), 0, length || 1);
       }
 
       deleteLeafText(start.leaf, start.offset + (mode === "backward" ? -length || -1 : length), length || 1);

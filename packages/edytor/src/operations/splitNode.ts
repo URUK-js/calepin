@@ -21,7 +21,7 @@ export type splitNodeOperation = {
 };
 
 export const splitNode = (editor: Editor) => {
-  const { start, end, type, length, edges } = editor.selection();
+  const { start, end, type, length, edges } = editor.selection;
 
   const leaf = start.leaf;
   const leafContent = leafNodeContent(start.leaf);
@@ -48,12 +48,12 @@ export const splitNode = (editor: Editor) => {
     leafContent.delete(indexOfLeaf + 1, leafNodeContentLength(start.leaf) - indexOfLeaf - 1);
   };
 
-  let doSplit = !((edges.start && type === "collapsed") || (edges.end && type === "collapsed"));
+  let doSplit = (!edges.startNode || !edges.endNode) && type === "collapsed";
 
-  if (edges.start && !edges.end && type === "collapsed") {
+  if (edges.startNode && type === "collapsed") {
     return (node.parent as YArray<any>).insert(indexOfNode, [new YNode("paragraph")]);
   }
-  if (edges.end && type === "collapsed") {
+  if (edges.endNode && type === "collapsed") {
     return (node.parent as YArray<any>).insert(indexOfNode + 1, [new YNode("paragraph")]);
   }
 

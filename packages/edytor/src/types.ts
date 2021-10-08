@@ -1,8 +1,9 @@
 import { UndoManager } from "yjs";
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { Cursor, EdytorDoc } from ".";
-import { Dropper, jsonNode, YLeaf, YNode } from "./utils";
+import { Dropper, EdytorSelection, jsonNode, YLeaf, YNode } from "./utils";
 
+export { EdytorSelection };
 type Accessor<T> = () => T;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
 export type attributes = {
@@ -59,7 +60,7 @@ export interface Editor {
   editorId: string;
   dropper: Dropper;
   hotkeys?: HotKeys[];
-  selection: () => EdytorSelection | undefined;
+  selection: EdytorSelection;
   cursor: () => Cursor | undefined;
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
   renderLeaf: ({ attributes, string, leaf }: renderLeafProps) => any;
@@ -97,24 +98,11 @@ export type onBeforeInputData = [any, (editor: Editor) => void, Editor];
 
 export type Position = {
   path: number[];
-  node?: Node;
+  node: YNode;
+  nodeHtml: HTMLElement;
   offset: number;
   leaf: YLeaf;
-};
-export type EdytorSelection = {
-  start: Position;
-  end: Position;
-  arePathsEquals: boolean;
-  editorOffset: number;
-  length: number;
-  range?: Range;
-  boundingRect?: DOMRect;
-  edges: {
-    start: boolean;
-    end: boolean;
-  };
-  selection?: Selection;
-  type?: "multinodes" | "collapsed" | "singlenode" | "notInDoc";
+  nodeRect: DOMRect;
 };
 
 export interface ContentTree {

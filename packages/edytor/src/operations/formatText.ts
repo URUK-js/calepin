@@ -2,16 +2,7 @@ import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import * as Y from "yjs";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
-import {
-  deleteLeafText,
-  getIndex,
-  isLeafEmpty,
-  leafLength,
-  leafNodeChildren,
-  leafNodeContent,
-  leafText,
-  YLeaf
-} from "../utils";
+import { deleteLeafText, getIndex, isLeafEmpty, leafLength, leafNodeContent, leafText, YLeaf } from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -89,7 +80,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
   const [[format, value]] = Object.entries(mark);
   console.log(format);
   let newPath = 0;
-  const { start, end, type, length } = editor.selection();
+  const { start, end, type, length } = editor.selection;
 
   editor.doc.transact(() => {
     switch (type) {

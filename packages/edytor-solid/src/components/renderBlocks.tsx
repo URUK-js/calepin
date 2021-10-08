@@ -8,7 +8,7 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
           <div ref={ref} {...attributes} className="relative">
             {handle()}
             <blockquote>{content}</blockquote>
-            <div className="childrenContainer">{children}</div>
+            {children}
           </div>
         );
       case "heading":
@@ -16,7 +16,7 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
           <div ref={ref} {...attributes} className="relative">
             {handle()}
             <h1>{content}</h1>
-            <div className="childrenContainer">{children}</div>
+            {children}
           </div>
         );
 
@@ -25,7 +25,7 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
           <div ref={ref} {...attributes} className="relative">
             {handle()}
             <p>{content}</p>
-            <div className="childrenContainer">{children}</div>
+            {children}
           </div>
         );
     }

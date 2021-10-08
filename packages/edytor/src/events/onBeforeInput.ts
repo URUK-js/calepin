@@ -15,7 +15,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
 
   const editorDiv = e.target as HTMLDivElement;
 
-  const { editorOffset, selection, start, length } = editor.selection();
+  const { editorOffset, selection, start, length } = editor.selection;
   const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed } = selection;
   const rangeLength = selection.getRangeAt(0)?.toString()?.length;
 

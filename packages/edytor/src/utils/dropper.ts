@@ -1,16 +1,23 @@
-import { Editor } from "..";
 import { moveNode } from "../operations";
 import { getIndex, getPath } from "./common";
+import { EdytorDoc } from "./yClasses";
 
 export class Dropper {
   from;
   to;
   node;
   startPath;
-  editor: Editor;
 
-  startDrag = ([editor, node], e: DragEvent) => {
-    if (!this.editor) this.editor = editor;
+  doc: EdytorDoc;
+  editorId: string;
+  ID_TO_NODE: Map<any, any>;
+
+  constructor(doc: EdytorDoc, editorId: string, ID_TO_NODE: Map<any, any>) {
+    this.doc = doc;
+    this.editorId = editorId;
+    this.ID_TO_NODE = ID_TO_NODE;
+  }
+  startDrag = (node, e: DragEvent) => {
     this.node = node;
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "1";
@@ -39,13 +46,13 @@ export class Dropper {
     dndIndicator.style.opacity = "0";
   };
 
-  getHoveredNode = (editor: Editor, target: HTMLElement) => {
+  getHoveredNode = (target: HTMLElement) => {
     let hoveredNode;
     let element = target;
     let i = 0;
-    while (!hoveredNode && element?.id !== editor.editorId && element && i < 100) {
+    while (!hoveredNode && element?.id !== this.editorId && element && i < 100) {
       if (element.hasAttribute("data-edytor-block")) {
-        hoveredNode = editor.ID_TO_NODE.get(element.id);
+        hoveredNode = this.ID_TO_NODE.get(element.id);
         break;
       }
       element = element.parentElement;
@@ -56,7 +63,7 @@ export class Dropper {
     return { hoveredElement: element, hoveredNode };
   };
   onDrag = (e: MouseEvent) => {
-    const { hoveredElement, hoveredNode } = this.getHoveredNode(this.editor, e.target as HTMLElement);
+    const { hoveredElement, hoveredNode } = this.getHoveredNode(e.target as HTMLElement);
     const dndIndicator = document.getElementById("dndIndicator");
 
     if (!hoveredNode || !hoveredElement || !dndIndicator || hoveredNode === this.node) return;
@@ -84,11 +91,7 @@ export class Dropper {
     index = index + (isOnTop ? 0 : 1);
     if (index === -1) index = 0;
     this.to = {
-      container: isNested
-        ? hoveredNode.get("children")
-        : path.length === 1
-        ? this.editor.doc.children
-        : hoveredNode.parent,
+      container: isNested ? hoveredNode.get("children") : path.length === 1 ? this.doc.children : hoveredNode.parent,
       at: isNested ? 0 : index
     };
   };

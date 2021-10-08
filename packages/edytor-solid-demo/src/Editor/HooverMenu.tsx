@@ -13,17 +13,20 @@ import { EdytorSelection, formatText } from "edytor/src";
 export const HooverMenu = ({}) => {
   let ref = undefined as undefined | HTMLDivElement;
   const editor = useEditor();
-  const selection = useSelectionChange((s: EdytorSelection) => {
+  useSelectionChange((s: EdytorSelection) => {
+    console.log(s);
     if (!ref) return;
-    if (!s.boundingRect || s.type === "collapsed") {
+    if (!s.boundingRect || s.type === "collapsed" || !s.focused) {
       ref.style.transform = `scale(0.9)`;
       ref.style.opacity = "0";
+      ref.style.pointerEvents = "none";
     } else {
       ref.style.opacity = "1";
       ref.style.transform = `scale(1)`;
       ref.style.top = `${s.boundingRect.top + window.pageYOffset - ref.offsetHeight - 5}px`;
       ref.style.left = `${s.boundingRect.left + window.pageXOffset - ref.offsetWidth / 2 + s.boundingRect.width / 2}px`;
       ref.style.transition = `opacity 0.2s, transform 0s ease-in-out`;
+      ref.style.pointerEvents = "all";
       setTimeout(() => {
         ref.style.transition = `opacity 0.2s, transform 0.2s ease-in-out`;
       }, 200);

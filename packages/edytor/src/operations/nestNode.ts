@@ -1,7 +1,7 @@
 import { Editor, getNode, getNodeContainer, getPath, YNode, getChildren, getContent } from "..";
 
 export const nestNode = (editor: Editor) => {
-  const { start, type, end } = editor.selection();
+  const { start, type, end } = editor.selection;
 
   const startNode = getNode(start.leaf);
   const startJsonNode = startNode.toJSON();

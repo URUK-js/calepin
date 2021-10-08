@@ -94,7 +94,7 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
       return doc;
     },
     toUpdate: () => encodeStateAsUpdateV2(doc),
-    selection: () => makeSelectionFromProgrammaticOperation(doc, selection)
+    selection: makeSelectionFromProgrammaticOperation(doc, selection)
   } as Editor;
 };
 

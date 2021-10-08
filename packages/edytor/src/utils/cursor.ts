@@ -2,7 +2,7 @@ import { EdytorSelection } from "../types";
 
 export class Cursor {
   container: HTMLDivElement;
-  selection: () => EdytorSelection;
+  selection: EdytorSelection;
   constructor({ container, selection }) {
     this.container = container;
     this.selection = selection;
@@ -79,10 +79,10 @@ export class Cursor {
   }
 
   set = (offset: number) => {
-    Cursor.setCurrentCursorPosition(offset, this.container, this.selection().selection);
+    Cursor.setCurrentCursorPosition(offset, this.container, this.selection.selection);
   };
   setRange = (offset: number, length) => {
-    const { range, selection } = this.selection();
+    const { range, selection } = this.selection;
     const { startNode, startOffset, endNode, endOffset } = this.getRangeBoundaries(offset, length);
     selection.removeAllRanges();
 

@@ -6,7 +6,7 @@ import { leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
 import { EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
-  const { start } = editor.selection();
+  const { start } = editor.selection;
   let prevLeaf;
   let stop = false;
 
@@ -34,7 +34,7 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
 };
 
 export const mergeContentWithNextLeaf = (editor: Editor) => {
-  const { start } = editor.selection();
+  const { start } = editor.selection;
   let nextLeaf;
   let stop = false;
 

@@ -6,7 +6,7 @@ import { YLeaf, YNode, getId, leafText } from "edytor";
 import { renderHandle } from "./renderHandle";
 
 export const renderChildren = (children: YArray<YNode>): JSXElement => {
-  return mapArray(useChildren(children), renderNode);
+  return <div data-edytor-children="true">{mapArray(useChildren(children), renderNode)}</div>;
 };
 
 export const renderContent = (content: YArray<YLeaf>): JSXElement => {

@@ -1,28 +1,28 @@
-[data-edytor-editor] * {
+[data-edytor] * {
   @apply transition-all;
 }
-[data-edytor-editor] {
+[data-edytor] {
   @apply mx-auto md:px-16 px-10 mt-10 transition-all;
   text-align: left;
   outline: none;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-[data-edytor-editor][data-font="mono"] * {
+[data-edytor][data-font="mono"] * {
   @apply font-mono;
 }
 
-[data-edytor-editor][data-font="serif"] * :not(.font-mono) {
+[data-edytor][data-font="serif"] * :not(.font-mono) {
   @apply font-serif;
 }
-[data-edytor-editor][data-font="sans"] * {
+[data-edytor][data-font="sans"] * {
   @apply font-sans;
 }
 
-[data-edytor-editor][data-full-width="false"] {
+[data-edytor][data-full-width="false"] {
   @apply max-w-5xl;
 }
-[data-edytor-editor][data-full-width="true"] {
+[data-edytor][data-full-width="true"] {
   @apply max-w-full  md:px-16 px-2;
 }
 
@@ -53,47 +53,50 @@ blockquote {
   @apply border-l-2 text-gray-700 border-gray-400 pl-4 mt-0 mb-0 relative  pt-3 pb-3;
 }
 
-[data-edytor-editor][data-small-text="true"] h1 {
+[data-edytor][data-small-text="true"] h1 {
   @apply text-3xl;
 }
-[data-edytor-editor][data-small-text="true"] h2 {
+[data-edytor][data-small-text="true"] h2 {
   @apply text-2xl;
 }
-[data-edytor-editor][data-small-text="true"] h3 {
+[data-edytor][data-small-text="true"] h3 {
   @apply text-xl;
 }
-[data-edytor-editor][data-small-text="true"] h4 {
+[data-edytor][data-small-text="true"] h4 {
   @apply text-lg;
 }
-[data-edytor-editor][data-small-text="true"] h5 {
+[data-edytor][data-small-text="true"] h5 {
   @apply text-base;
 }
-[data-edytor-editor][data-small-text="true"] h6 {
+[data-edytor][data-small-text="true"] h6 {
   @apply text-sm;
 }
-[data-edytor-editor][data-small-text="true"] p {
+[data-edytor][data-small-text="true"] p {
   @apply text-sm;
 }
-[data-edytor-editor][data-small-text="true"] blockquote {
+[data-edytor][data-small-text="true"] blockquote {
   @apply text-sm;
 }
 
-[data-edytor-editor] mark.red {
+[data-edytor] mark.red {
   @apply bg-red-100 text-red-400;
 }
 
-[data-edytor-editor] mark.blue {
+[data-edytor] mark.blue {
   @apply bg-blue-100 text-blue-400;
 }
-[data-edytor-editor] mark.purple {
+[data-edytor] mark.purple {
   @apply bg-purple-100 text-purple-400;
 }
-[data-edytor-editor] mark.yellow {
+[data-edytor] mark.yellow {
   @apply bg-yellow-100 text-yellow-400;
 }
 
-.childrenContainer {
+[data-edytor] [data-edytor-children] {
   padding-left: 20px;
+}
+[data-edytor] > [data-edytor-children] {
+  padding-left: 0px;
 }
 
 #dndIndicator {
@@ -105,11 +108,17 @@ blockquote {
 
   transition: all 100ms ease-in;
 }
-
+[data-edytor-block] {
+  position: relative;
+}
 [data-edytor-handle] {
   opacity: 0;
   transition: all 100ms ease-in;
   cursor: grab;
+  left: -30px;
+  top: 10px;
+  padding: 10px;
+  position: absolute;
 }
 *:hover > [data-edytor-handle] {
   opacity: 1;
