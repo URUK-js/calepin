@@ -42,7 +42,8 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
         start: start.offset === 0,
         end: end.offset === end.leaf.length()
       },
-      type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : "multinodes"
+      type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : "multinodes",
+      setPosition: () => null
     } as EdytorSelection;
   }
 };

@@ -101,6 +101,7 @@ export type Position = {
   node: YNode;
   nodeHtml: HTMLElement;
   offset: number;
+  leafHtml: HTMLElement;
   leaf: YLeaf;
   nodeRect: DOMRect;
 };

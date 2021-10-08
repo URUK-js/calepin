@@ -43,10 +43,10 @@ export const Editor = ({
   };
   onMount(() => doc.children.observeDeep(onChangeObserver));
   onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
-  const undoManager = useHistory(doc);
-  const config = useMap(doc.config);
   const ID_TO_NODE = new Map();
   const selection = new EdytorSelection(ID_TO_NODE, setSelection);
+  const config = useMap(doc.config);
+  const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
     dropper: new Dropper(doc, editorId, ID_TO_NODE),

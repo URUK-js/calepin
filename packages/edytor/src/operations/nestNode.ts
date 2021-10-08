@@ -1,7 +1,7 @@
 import { Editor, getNode, getNodeContainer, getPath, YNode, getChildren, getContent } from "..";
 
 export const nestNode = (editor: Editor) => {
-  const { start, type, end } = editor.selection;
+  const { start, type, end, setPosition } = editor.selection;
 
   const startNode = getNode(start.leaf);
   const startJsonNode = startNode.toJSON();
@@ -13,8 +13,10 @@ export const nestNode = (editor: Editor) => {
     case "singlenode":
     case "collapsed": {
       if (!prevNode) return;
+      const id = start.leaf.get("id");
       const prevChildren = prevNode.get("children");
       startContainer.delete(index);
+
       prevChildren.insert(prevChildren.length, [
         new YNode(startJsonNode.type, {
           ...startJsonNode,
@@ -22,11 +24,14 @@ export const nestNode = (editor: Editor) => {
           content: startJsonNode.content.map(getContent)
         })
       ]);
+
+      setPosition(id, { offset: start.offset });
       break;
     }
     case "multinodes": {
       let length = 0;
       let newNodes = [];
+      const id = start.leaf.get("id");
       const startPathString = start.path.slice(0, start.path.length - 1).join("");
       const endPathString = end.path.slice(0, start.path.length - 1).join("");
       editor.doc.traverse(
@@ -57,6 +62,7 @@ export const nestNode = (editor: Editor) => {
 
       startContainer.delete(index, length);
       prevChildren.insert(prevChildren.length, newNodes);
+      setPosition(id, { offset: start.offset });
       break;
     }
   }

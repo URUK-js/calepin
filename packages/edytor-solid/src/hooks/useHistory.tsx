@@ -1,9 +1,9 @@
-import { EdytorDoc } from "edytor/src";
+import { EdytorDoc, EdytorSelection } from "edytor/src";
 import { createMemo, onMount, onCleanup, Accessor } from "solid-js";
 import { UndoManager } from "yjs";
 import { YMap } from "yjs/dist/src/internals";
 // import { Cursor } from "../Cursor";
-export const useHistory = (doc: EdytorDoc) => {
+export const useHistory = (doc: EdytorDoc, selection: EdytorSelection) => {
   const undoManager = createMemo(
     (): UndoManager => {
       return new UndoManager(doc.children);
@@ -13,22 +13,16 @@ export const useHistory = (doc: EdytorDoc) => {
   onMount(() => {
     // this don't work very well
     undoManager().on("stack-item-added", (event: any) => {
-      // event.stackItem.meta.set("cursor-location", Cursor.getCurrentCursorPosition(editorRef()));
+      // selection.onChange();
+      event.stackItem.meta.set("cursor-location", {
+        leaf: selection.start.leaf.get("id"),
+        offset: selection.start.offset
+      });
     });
     undoManager().on("stack-item-popped", (event: any) => {
-      // console.log(event.stackItem);
-      // const insertions = event.stackItem.insertions.clients;
-      // let len = 0;
-      // insertions.forEach((insertion) => {
-      //   insertion.forEach((x) => {
-      //     console.log(x.len);
-      //     if (x.len) {
-      //       len += x.len;
-      //     }
-      //   });
-      // });
-      // console.log({ len });
-      // Cursor.setCurrentCursorPosition(event.stackItem.meta.get("cursor-location"), editorRef());
+      const { leaf, offset } = event.stackItem.meta.get("cursor-location");
+      console.log(leaf, event.stackItem.meta.get("cursor-location"));
+      selection.setPosition(leaf, { offset });
     });
   });
   onCleanup(() => {

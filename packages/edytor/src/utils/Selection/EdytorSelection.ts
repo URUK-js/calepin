@@ -57,15 +57,18 @@ export class EdytorSelection {
     this.observers = this.observers ? this.observers.filter((o) => o !== observer) : [];
   };
 
-  getLeaf = (anchorNode: HTMLElement): [YLeaf | undefined, YNode | undefined, number[]] => {
+  getLeaf = (anchorNode: HTMLElement): [YLeaf | undefined, YNode | undefined, number[], HTMLElement | undefined] => {
     let leaf;
     let node = anchorNode;
     while (!leaf && node !== this.container && node) {
       leaf = this.ID_TO_NODE.get(node.id);
-      node = node.parentElement;
+      if (!leaf) {
+        node = node.parentElement;
+      }
     }
-    if (!leaf) return [undefined, undefined, undefined];
-    return [leaf, leafNode(leaf), getPath(leaf)];
+    console.log(node);
+    if (!leaf) return [undefined, undefined, undefined, undefined];
+    return [leaf, leafNode(leaf), getPath(leaf), node];
   };
 
   getNodeBoundingRect = (node: YNode): { nodeRect: DOMRect; nodeHtml: HTMLElement } => {
@@ -78,8 +81,8 @@ export class EdytorSelection {
 
     console.log(focusNode);
     if (focusNode === null) return;
-    const [leaf1, node1, path1] = this.getLeaf(anchorNode as HTMLElement);
-    const [leaf2, node2, path2] = this.getLeaf(focusNode as HTMLElement);
+    const [leaf1, node1, path1, leafHtml1] = this.getLeaf(anchorNode as HTMLElement);
+    const [leaf2, node2, path2, leafHtml2] = this.getLeaf(focusNode as HTMLElement);
     if (!leaf1) return;
     const equalPaths = path1.join("") === path2.join("");
     const isFollowing = equalPaths ? anchorOffset < focusOffset : path1.join() < path2.join();
@@ -89,6 +92,7 @@ export class EdytorSelection {
       ...this.getNodeBoundingRect(isFollowing ? node1 : node2),
       node: isFollowing ? node1 : node2,
       path: isFollowing ? path1 : path2,
+      leafHtml: isFollowing ? leafHtml1 : leafHtml2,
       offset: isFollowing ? anchorOffset : focusOffset,
       leaf: isFollowing ? leaf1 : leaf2
     } as Position;
@@ -99,6 +103,7 @@ export class EdytorSelection {
           ...this.getNodeBoundingRect(!isFollowing ? node1 : node2),
           node: !isFollowing ? node1 : node2,
           path: !isFollowing ? path1 : path2,
+          leafHtml: !isFollowing ? leafHtml1 : leafHtml2,
           offset: !isFollowing ? anchorOffset : focusOffset,
           leaf: !isFollowing ? leaf1 : leaf2
         };
@@ -126,5 +131,22 @@ export class EdytorSelection {
       this.observers.forEach((o) => o(this));
     }
     console.log(this.edges);
+  };
+
+  setPosition = (id: string, { offset, delta }: { offset?: number; delta?: number }) => {
+    let node = this.container.querySelector(`#${id}`) as ChildNode;
+    console.log(id);
+
+    while (node && node.nodeType !== 3 && node?.firstChild) {
+      node = node.firstChild;
+    }
+    console.log(node);
+    const pos = offset || this.start.offset + delta;
+    this.range.setStart(node, pos);
+    this.range.setEnd(node, pos);
+    this.range.collapse(true);
+
+    this.selection.removeAllRanges();
+    this.selection.addRange(this.range);
   };
 }

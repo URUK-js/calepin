@@ -21,7 +21,7 @@ type deleteTextOpts = {
   selection?: EdytorSelection;
 };
 export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) => {
-  const { start, end, type, length, edges } = selection || editor.selection;
+  const { start, end, type, length, edges, setPosition } = selection || editor.selection;
 
   switch (type) {
     case "collapsed": {
@@ -45,6 +45,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       }
 
       deleteLeafText(start.leaf, start.offset + (mode === "backward" ? -length || -1 : length), length || 1);
+      setPosition(start.leaf.get("id"), { offset: start.offset + (mode === "backward" ? -length || -1 : length) });
       break;
     }
     case "singlenode": {
@@ -52,6 +53,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       if (hasChildren(getNode(start.leaf))) {
         leafNodeContent(start.leaf).insert(0, [new YLeaf()]);
       }
+      setPosition(start.leaf.get("id"), { offset: start.offset });
       break;
     }
     case "multinodes":
@@ -82,6 +84,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
           return burn();
         });
       }
+      setPosition(start.leaf.get("id"), { offset: start.offset });
       break;
   }
 };

@@ -7,18 +7,18 @@ export type insertTextOperation = {
 export const insertText = (editor: Editor, { text }: insertTextOperation) => {
   if (!text || text === null || !text.length) return;
 
-  const { start, end, type, length } = editor.selection;
+  const { start, end, type, length, setPosition } = editor.selection;
   if (type === "notInDoc") return console.error("Path is not in document space");
 
   switch (type) {
     case "collapsed": {
       insertTextInLeaf(start.leaf, start.offset, text);
-
+      setPosition(start.leaf.get("id"), { offset: start.offset + text.length });
       break;
     }
     case "singlenode": {
       replaceLeafText(start.leaf, start.offset, length, text);
-
+      setPosition(start.leaf.get("id"), { offset: start.offset + text.length });
       break;
     }
     case "multinodes": {
@@ -46,6 +46,7 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
         );
         burn();
       });
+      setPosition(start.leaf.get("id"), { offset: start.offset + text.length });
     }
   }
 };
