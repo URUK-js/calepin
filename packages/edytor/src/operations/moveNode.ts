@@ -24,4 +24,8 @@ export const moveNode = ({ from, to }: moveNodeOperation) => {
 
   to.container.insert(to.at, nodesCopies);
   from.container.delete(getIndex(firstNode), indexes.length);
+  return nodesCopies[0]
+    .get("content")
+    .get(0)
+    .get("id");
 };

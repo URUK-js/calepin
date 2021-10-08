@@ -66,20 +66,19 @@ export class EdytorSelection {
         node = node.parentElement;
       }
     }
-    console.log(node);
+
     if (!leaf) return [undefined, undefined, undefined, undefined];
     return [leaf, leafNode(leaf), getPath(leaf), node];
   };
 
-  getNodeBoundingRect = (node: YNode): { nodeRect: DOMRect; nodeHtml: HTMLElement } => {
+  getNodeBoundingRect = (node: YNode): { nodeHtml: HTMLElement } => {
     const nodeHtml = this.container.querySelector(`#${node.get("id")}`) as HTMLElement;
-    return { nodeHtml, nodeRect: nodeHtml.getBoundingClientRect() };
+    return { nodeHtml };
   };
   getRange = (): EdytorSelection => {
     const selection = window.getSelection();
     const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed, rangeCount } = selection;
 
-    console.log(focusNode);
     if (focusNode === null) return;
     const [leaf1, node1, path1, leafHtml1] = this.getLeaf(anchorNode as HTMLElement);
     const [leaf2, node2, path2, leafHtml2] = this.getLeaf(focusNode as HTMLElement);
@@ -111,7 +110,6 @@ export class EdytorSelection {
     this.arePathsEquals = equalPaths;
     this.length = range && range.toString()?.length;
     this.range = range;
-    this.boundingRect = range && range.getBoundingClientRect();
     this.selection = selection;
     this.edges = {
       startLeaf: this.start.offset === 0,
@@ -130,23 +128,25 @@ export class EdytorSelection {
     if (this.observers) {
       this.observers.forEach((o) => o(this));
     }
-    console.log(this.edges);
   };
 
   setPosition = (id: string, { offset, delta }: { offset?: number; delta?: number }) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
-    console.log(id);
 
     while (node && node.nodeType !== 3 && node?.firstChild) {
       node = node.firstChild;
     }
-    console.log(node);
-    const pos = offset || this.start.offset + delta;
+
+    const pos = offset || this.start?.offset + delta;
+    if (!this.range || !this.selection) {
+      this.range = document.createRange();
+      this.selection = window.getSelection();
+    }
     this.range.setStart(node, pos);
-    this.range.setEnd(node, pos);
+    // this.range.setEnd(node, pos);
     this.range.collapse(true);
 
-    this.selection.removeAllRanges();
-    this.selection.addRange(this.range);
+    this.selection?.removeAllRanges();
+    this.selection?.addRange(this.range);
   };
 }

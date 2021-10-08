@@ -1,4 +1,5 @@
 import { moveNode } from "../operations";
+import { EdytorSelection } from "../types";
 import { getIndex, getPath } from "./common";
 import { EdytorDoc } from "./yClasses";
 
@@ -11,10 +12,12 @@ export class Dropper {
   doc: EdytorDoc;
   editorId: string;
   ID_TO_NODE: Map<any, any>;
+  selection: EdytorSelection;
 
-  constructor(doc: EdytorDoc, editorId: string, ID_TO_NODE: Map<any, any>) {
+  constructor(doc: EdytorDoc, editorId: string, ID_TO_NODE: Map<any, any>, selection: EdytorSelection) {
     this.doc = doc;
     this.editorId = editorId;
+    this.selection = selection;
     this.ID_TO_NODE = ID_TO_NODE;
   }
   startDrag = (node, e: DragEvent) => {
@@ -41,9 +44,13 @@ export class Dropper {
     document.body.style.cursor = "auto";
     document.removeEventListener("mousemove", this.onDrag);
     document.removeEventListener("mouseup", this.dragEnd);
-    moveNode({ from: this.from, to: this.to });
+    const id = moveNode({ from: this.from, to: this.to });
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "0";
+    setTimeout(() => {
+      console.log(id);
+      this.selection.setPosition(id, { offset: 0 });
+    });
   };
 
   getHoveredNode = (target: HTMLElement) => {
@@ -85,7 +92,7 @@ export class Dropper {
     }
 
     dndIndicator.style.width = `${rect.width - deltaX}px`;
-    dndIndicator.style.top = `${top}px`;
+    dndIndicator.style.top = `${top + window.pageYOffset}px`;
     dndIndicator.style.left = `${rect.left + deltaX}px`;
 
     index = index + (isOnTop ? 0 : 1);

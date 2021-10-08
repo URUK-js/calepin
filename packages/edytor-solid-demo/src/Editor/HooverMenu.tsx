@@ -16,15 +16,16 @@ export const HooverMenu = ({}) => {
   useSelectionChange((s: EdytorSelection) => {
     console.log(s);
     if (!ref) return;
-    if (!s.boundingRect || s.type === "collapsed" || !s.focused) {
+    if (!s.range || s.type === "collapsed" || !s.focused) {
       ref.style.transform = `scale(0.9)`;
       ref.style.opacity = "0";
       ref.style.pointerEvents = "none";
     } else {
+      const { top, width, left } = s.range.getBoundingClientRect();
       ref.style.opacity = "1";
       ref.style.transform = `scale(1)`;
-      ref.style.top = `${s.boundingRect.top + window.pageYOffset - ref.offsetHeight - 5}px`;
-      ref.style.left = `${s.boundingRect.left + window.pageXOffset - ref.offsetWidth / 2 + s.boundingRect.width / 2}px`;
+      ref.style.top = `${top + window.pageYOffset - ref.offsetHeight - 5}px`;
+      ref.style.left = `${left + window.pageXOffset - ref.offsetWidth / 2 + width / 2}px`;
       ref.style.transition = `opacity 0.2s, transform 0s ease-in-out`;
       ref.style.pointerEvents = "all";
       setTimeout(() => {

@@ -49,7 +49,7 @@ export const Editor = ({
   const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
-    dropper: new Dropper(doc, editorId, ID_TO_NODE),
+    dropper: new Dropper(doc, editorId, ID_TO_NODE, selection),
     selection,
     cursor,
     hotkeys,

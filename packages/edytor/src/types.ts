@@ -103,7 +103,6 @@ export type Position = {
   offset: number;
   leafHtml: HTMLElement;
   leaf: YLeaf;
-  nodeRect: DOMRect;
 };
 
 export interface ContentTree {

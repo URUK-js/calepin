@@ -1,23 +1,40 @@
+import { EdytorSelection } from "edytor/src";
 import { useSelectionChange } from "..";
 
 export const SelectionIndicator = () => {
+  let currentNodeStart;
+  let currentNodeEnd;
+  let currentMode;
+  const hasChanged = (selection: EdytorSelection) => {
+    const changed = currentNodeStart !== selection.start.nodeHtml || currentNodeEnd !== selection.end.nodeHtml;
+    // currentMode !== selection.type;
+    if (changed) {
+      currentNodeStart = selection.start.nodeHtml;
+      currentNodeEnd = selection.end.nodeHtml;
+      // currentMode = selection.type;
+    }
+    return changed;
+  };
   useSelectionChange((selection) => {
     const indicator = document.getElementById("selectionIndicator");
 
     if (!indicator) return;
-    if (selection.focused && selection?.start?.nodeRect) {
+    if (selection.focused && selection?.start) {
+      if (!hasChanged(selection)) return;
+      console.log("hello");
+      const rectStart = selection.start.nodeHtml.getBoundingClientRect();
+      const rectEnd = selection.end.nodeHtml.getBoundingClientRect();
       indicator.style.opacity = "0.9";
-      indicator.style.top = selection.start.nodeRect.top + "px";
-      //   indicator.style.bottom = selection.end.nodeRect.bottom +  "px";
+      indicator.style.top = rectStart.y + window.pageYOffset + "px";
+      //   indicator.style.bottom = rectEnd.bottom +  "px";
       indicator.style.height =
         (selection.type === "collapsed"
-          ? selection.start.nodeRect.height -
-            selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight
-          : selection.end.nodeRect.bottom - selection.start.nodeRect.top) + "px";
+          ? rectStart.height - selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight
+          : rectEnd.bottom - rectStart.top) + "px";
 
-      indicator.style.left = Math.min(selection.end.nodeRect.left, selection.start.nodeRect.left) - 4 + "px";
+      indicator.style.left = Math.min(rectEnd.left, rectStart.left) - 4 + "px";
 
-      indicator.style.width = Math.max(selection.end.nodeRect.width, selection.start.nodeRect.width) + 8 + "px";
+      indicator.style.width = Math.max(rectEnd.width, rectStart.width) + 8 + "px";
     } else {
       indicator.style.opacity = "0";
     }
