@@ -73,6 +73,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
     );
   }
   node.parent.delete(getIndex(node));
+  return nextLeaf;
 };
 
 export const deleteNode = (node) => {

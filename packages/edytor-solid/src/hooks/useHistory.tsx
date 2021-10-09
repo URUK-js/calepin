@@ -20,8 +20,8 @@ export const useHistory = (doc: EdytorDoc, selection: EdytorSelection) => {
       // });
     });
     undoManager().on("stack-item-popped", (event: any) => {
-      const { leaf, offset } = event.stackItem.meta.get("cursor-location");
-      console.log(leaf, event.stackItem.meta.get("cursor-location"));
+      // const { leaf, offset } = event.stackItem.meta.get("cursor-location");
+      // console.log(leaf, event.stackItem.meta.get("cursor-location"));
       // selection.setPosition(leaf, { offset });
     });
   });

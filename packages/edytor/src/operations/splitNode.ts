@@ -78,6 +78,7 @@ export const splitNode = (editor: Editor) => {
 
       break;
     }
+    case "multileaves":
     case "multinodes": {
       deleteText(editor, { mode: "backward" });
       doSplit && split();

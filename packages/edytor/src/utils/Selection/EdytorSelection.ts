@@ -1,4 +1,5 @@
 import { Position } from "../..";
+import { createAbsolutePositionFromRelativePosition } from "../../../../../node_modules/yjs/dist/src";
 import { getIndex, getPath } from "../common";
 import { leafLength, leafNode, leafNodeContentLength } from "../leaves";
 import { YLeaf, YNode } from "../yClasses";
@@ -23,7 +24,7 @@ export class EdytorSelection {
   };
   selection?: Selection;
   focused: boolean;
-  type?: "multinodes" | "collapsed" | "singlenode" | "notInDoc";
+  type?: "multinodes" | "collapsed" | "singlenode" | "multileaves" | "notInDoc";
   constructor(ID_TO_NODE: Map<any, any>, onSelectionChange?: (selection: EdytorSelection) => void) {
     this.onSelectionChange = onSelectionChange;
     this.ID_TO_NODE = ID_TO_NODE;
@@ -57,9 +58,18 @@ export class EdytorSelection {
     this.observers = this.observers ? this.observers.filter((o) => o !== observer) : [];
   };
 
-  getLeaf = (anchorNode: HTMLElement): [YLeaf | undefined, YNode | undefined, number[], HTMLElement | undefined] => {
+  getLeaf = (
+    anchorNode: HTMLElement,
+    current: "anchorNode" | "focusNode"
+  ): [YLeaf | undefined, YNode | undefined, number[], HTMLElement | undefined] => {
+    if (this[current] && this[current].node === anchorNode) {
+      // serve cached result to avoid loops to getPath and node
+      return this[current].value;
+    }
+
     let leaf;
     let node = anchorNode;
+
     while (!leaf && node !== this.container && node) {
       leaf = this.ID_TO_NODE.get(node.id);
       if (!leaf) {
@@ -68,7 +78,9 @@ export class EdytorSelection {
     }
 
     if (!leaf) return [undefined, undefined, undefined, undefined];
-    return [leaf, leafNode(leaf), getPath(leaf), node];
+    const value = [leaf, leafNode(leaf), getPath(leaf), node];
+    this[current] = { value, node: anchorNode };
+    return value;
   };
 
   getNodeBoundingRect = (node: YNode): { nodeHtml: HTMLElement } => {
@@ -80,8 +92,8 @@ export class EdytorSelection {
     const { anchorNode, focusNode, anchorOffset, focusOffset, isCollapsed, rangeCount } = selection;
 
     if (focusNode === null) return;
-    const [leaf1, node1, path1, leafHtml1] = this.getLeaf(anchorNode as HTMLElement);
-    const [leaf2, node2, path2, leafHtml2] = this.getLeaf(focusNode as HTMLElement);
+    const [leaf1, node1, path1, leafHtml1] = this.getLeaf(anchorNode as HTMLElement, "anchorNode");
+    const [leaf2, node2, path2, leafHtml2] = this.getLeaf(focusNode as HTMLElement, "focusNode");
     if (!leaf1) return;
     const equalPaths = path1.join("") === path2.join("");
     const isFollowing = equalPaths ? anchorOffset < focusOffset : path1.join() < path2.join();
@@ -90,6 +102,9 @@ export class EdytorSelection {
     this.start = {
       ...this.getNodeBoundingRect(isFollowing ? node1 : node2),
       node: isFollowing ? node1 : node2,
+      leafId: (isFollowing ? leaf1 : leaf2).get("id"),
+      leafIndex: isFollowing ? path1[path1.length - 1] : path2[path2.length - 1],
+      nodeIndex: isFollowing ? path1[path1.length - 2] : path2[path2.length - 2],
       path: isFollowing ? path1 : path2,
       leafHtml: isFollowing ? leafHtml1 : leafHtml2,
       offset: isFollowing ? anchorOffset : focusOffset,
@@ -101,6 +116,9 @@ export class EdytorSelection {
       : {
           ...this.getNodeBoundingRect(!isFollowing ? node1 : node2),
           node: !isFollowing ? node1 : node2,
+          leafId: (!isFollowing ? leaf1 : leaf2).get("id"),
+          leafIndex: !isFollowing ? path1[path1.length - 1] : path2[path2.length - 1],
+          nodeIndex: !isFollowing ? path1[path1.length - 2] : path2[path2.length - 2],
           path: !isFollowing ? path1 : path2,
           leafHtml: !isFollowing ? leafHtml1 : leafHtml2,
           offset: !isFollowing ? anchorOffset : focusOffset,
@@ -119,7 +137,13 @@ export class EdytorSelection {
         this.end.offset === leafLength(this.end.leaf) &&
         getIndex(this.start.leaf) === leafNodeContentLength(this.end.leaf) - 1
     };
-    this.type = isCollapsed ? "collapsed" : equalPaths ? "singlenode" : "multinodes";
+    this.type = isCollapsed
+      ? "collapsed"
+      : equalPaths
+      ? "singlenode"
+      : this.start.node === this.end.node
+      ? "multileaves"
+      : "multinodes";
     this.onChange();
   };
 
@@ -130,7 +154,10 @@ export class EdytorSelection {
     }
   };
 
-  setPosition = (id: string, { offset, delta }: { offset?: number; delta?: number }) => {
+  setPosition = (
+    id: string,
+    { offset, delta, end }: { offset?: number; delta?: number; end?: number; select?: boolean }
+  ) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
 
     while (node && node.nodeType !== 3 && node?.firstChild) {
@@ -138,15 +165,27 @@ export class EdytorSelection {
     }
 
     const pos = offset || this.start?.offset + delta;
-    if (!this.range || !this.selection) {
+    const hasRange = this.range || this.selection;
+    if (!hasRange) {
       this.range = document.createRange();
       this.selection = window.getSelection();
     }
     this.range.setStart(node, pos);
-    // this.range.setEnd(node, pos);
-    this.range.collapse(true);
+    if (end) {
+      this.range.setEnd(node, end);
+    } else {
+      this.range.collapse(true);
+    }
 
-    this.selection?.removeAllRanges();
-    this.selection?.addRange(this.range);
+    if (!hasRange) {
+      this.selection?.removeAllRanges();
+      this.selection?.addRange(this.range);
+    }
+
+    this.start = {
+      ...this.start,
+      leafHtml: this.container.querySelector(`#${id}`),
+      offset: offset || this.start?.offset + delta
+    };
   };
 }

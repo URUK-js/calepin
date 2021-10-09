@@ -4,7 +4,7 @@ import { useSelectionChange } from "..";
 export const SelectionIndicator = () => {
   let currentNodeStart;
   let currentNodeEnd;
-  let currentMode;
+
   const hasChanged = (selection: EdytorSelection) => {
     const changed = currentNodeStart !== selection.start.nodeHtml || currentNodeEnd !== selection.end.nodeHtml;
     // currentMode !== selection.type;
@@ -20,15 +20,20 @@ export const SelectionIndicator = () => {
 
     if (!indicator) return;
     if (selection.focused && selection?.start) {
-      if (!hasChanged(selection)) return;
-      console.log("hello");
+      if (!hasChanged(selection)) {
+        indicator.style.height =
+          selection.start.nodeHtml.clientHeight -
+          selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight +
+          "px";
+      }
+
       const rectStart = selection.start.nodeHtml.getBoundingClientRect();
       const rectEnd = selection.end.nodeHtml.getBoundingClientRect();
       indicator.style.opacity = "0.9";
       indicator.style.top = rectStart.y + window.pageYOffset + "px";
       //   indicator.style.bottom = rectEnd.bottom +  "px";
       indicator.style.height =
-        (selection.type === "collapsed"
+        (selection.type !== "multinodes"
           ? rectStart.height - selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight
           : rectEnd.bottom - rectStart.top) + "px";
 
@@ -39,7 +44,6 @@ export const SelectionIndicator = () => {
       indicator.style.opacity = "0";
     }
   });
-
   return (
     <div id="selectionIndicator" className="z-0 bg-gray-100 rounded-sm absolute select-none " contentEditable={false} />
   );

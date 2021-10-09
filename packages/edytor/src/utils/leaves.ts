@@ -49,7 +49,6 @@ export const deleteLeafText = (leaf, index: number, length: number, shouldRemove
   shouldRemoveIfEmpty && removeIfEmpty(leaf);
 };
 export const insertTextInLeaf = (leaf, index: number, text) => {
-  console.log(leaf.toJSON());
   leafText(leaf).insert(index, text);
 };
 export const replaceLeafText = (leaf, start: number, length: number, text: string) => {

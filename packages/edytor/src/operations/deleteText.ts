@@ -1,11 +1,13 @@
 import { Editor, EdytorSelection } from "../types";
 import {
+  copyNode,
   deleteLeafText,
   getIndex,
   getNode,
   getPath,
   hasChildren,
   leafLength,
+  leafNodeChildrenLength,
   leafNodeContent,
   leafNodeContentLength,
   leafNodeContentStringLength,
@@ -15,6 +17,7 @@ import {
   mergeContentWithPrevLeaf,
   YLeaf
 } from "../utils";
+import { nestNode } from "./nestNode";
 
 type deleteTextOpts = {
   mode: "forward" | "backward" | "none";
@@ -26,22 +29,35 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
   switch (type) {
     case "collapsed": {
       if (mode === "backward" && edges.startNode) {
-        return mergeContentWithPrevLeaf(editor);
+        console.log(start.nodeIndex, leafNodeChildrenLength(start.leaf), start.path.length);
+        // unnest node if its the last of its parent and if he is nested
+        if (start.nodeIndex === start.node.parent.length - 1 && start.path.length > 1 && start.nodeIndex !== 0) {
+          console.log(start.leafId);
+          const node = copyNode(start.node);
+          start.node.parent.delete(start.nodeIndex);
+          start.node.parent.parent.parent.insert(getIndex(start.node.parent.parent) + 1, [node]);
+          setPosition(start.leafId, { offset: 0 });
+        } else {
+          // merge node with the prev one if it's not the last of its parent regardless of its nesting
+          mergeContentWithPrevLeaf(editor);
+          return setPosition(start.leafId, { offset: 0 });
+        }
       }
       if (mode === "backward" && edges.startLeaf) {
-        const index = getIndex(start.leaf);
-
-        const prevLeaf = leafNodeContent(start.leaf).get(index - 1);
-        return deleteLeafText(prevLeaf, leafLength(prevLeaf) - 1, length || 1);
+        // delete content in the prev leaf because we are at its edge start, and escape current leaf
+        const prevLeaf = leafNodeContent(start.leaf).get(start.leafIndex - 1);
+        deleteLeafText(prevLeaf, leafLength(prevLeaf) - 1, length || 1);
+        return setPosition(prevLeaf.get("id"), { offset: leafLength(prevLeaf) });
       }
 
       if (mode === "forward" && edges.endNode) {
+        // merge node with the next node because we are at edge end of it
         return mergeContentWithNextLeaf(editor);
       }
       if (mode === "forward" && edges.endLeaf) {
-        const index = getIndex(start.leaf);
-
-        return deleteLeafText(leafNodeContent(start.leaf).get(index + 1), 0, length || 1);
+        // delete content in the next leaf because we are at its edge end
+        const nextLeaf = leafNodeContent(start.leaf).get(start.leafIndex + 1);
+        return deleteLeafText(nextLeaf, 0, length || 1);
       }
 
       deleteLeafText(start.leaf, start.offset + (mode === "backward" ? -length || -1 : length), length || 1);
@@ -56,6 +72,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       setPosition(start.leaf.get("id"), { offset: start.offset });
       break;
     }
+    case "multileaves":
     case "multinodes":
       {
         const startPathString = start.path.join(",");

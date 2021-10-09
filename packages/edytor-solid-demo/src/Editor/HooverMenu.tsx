@@ -14,7 +14,6 @@ export const HooverMenu = ({}) => {
   let ref = undefined as undefined | HTMLDivElement;
   const editor = useEditor();
   useSelectionChange((s: EdytorSelection) => {
-    console.log(s);
     if (!ref) return;
     if (!s.range || s.type === "collapsed" || !s.focused) {
       ref.style.transform = `scale(0.9)`;

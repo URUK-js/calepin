@@ -28,6 +28,7 @@ export const nestNode = (editor: Editor) => {
       setPosition(id, { offset: start.offset });
       break;
     }
+    case "multileaves":
     case "multinodes": {
       let length = 0;
       let newNodes = [];

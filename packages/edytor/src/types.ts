@@ -99,7 +99,10 @@ export type onBeforeInputData = [any, (editor: Editor) => void, Editor];
 export type Position = {
   path: number[];
   node: YNode;
+  leafId: string;
   nodeHtml: HTMLElement;
+  nodeIndex: number;
+  leafIndex: number;
   offset: number;
   leafHtml: HTMLElement;
   leaf: YLeaf;

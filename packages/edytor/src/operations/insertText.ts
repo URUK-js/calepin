@@ -21,6 +21,7 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
       setPosition(start.leaf.get("id"), { offset: start.offset + text.length });
       break;
     }
+    case "multileaves":
     case "multinodes": {
       const startPathString = start.path.join(",");
       const endPathString = end.path.join(",");

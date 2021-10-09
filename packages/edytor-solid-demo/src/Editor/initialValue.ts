@@ -1,6 +1,6 @@
 const lorem =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam delectus velit laudantium officiis itaque eveniet, similique assumenda porro voluptatibus eos ducimus reiciendis saepe magnam illum perferendis quas asperiores animi rerum.";
-const HEADINGS = 200;
+const HEADINGS = 1;
 const PARAGRAPHS = 1;
 
 export const initialValue = () => {
@@ -14,15 +14,34 @@ export const initialValue = () => {
     for (let p = 0; p < PARAGRAPHS; p++) {
       v.push({
         type: "paragraph",
-        content: [{ text: lorem }, { text: "bold", highlight: true, color: "red" }]
+        content: [{ text: lorem }, { text: "bold", highlight: true, color: "red" }],
+        children: [
+          {
+            type: "paragraph",
+            content: [{ text: lorem }, { text: "bold", highlight: true, color: "red" }],
+            children: []
+          },
+          {
+            type: "paragraph",
+            content: [{ text: lorem }, { text: "bold", highlight: true, color: "red" }],
+            children: []
+          },
+          {
+            type: "paragraph",
+            content: [{ text: lorem }, { text: "bold", highlight: true, color: "red" }],
+            children: []
+          }
+        ]
       });
       v.push({
         type: "paragraph",
-        content: [{ text: lorem }, { text: "bold", highlight: true, color: "blue" }]
+        content: [{ text: lorem }, { text: "bold", highlight: true, color: "blue" }],
+        children: []
       });
       v.push({
         type: "paragraph",
-        content: [{ text: lorem }, { text: "bold", highlight: true, color: "yellow" }]
+        content: [{ text: lorem }, { text: "bold", highlight: true, color: "yellow" }],
+        children: []
       });
     }
   }
