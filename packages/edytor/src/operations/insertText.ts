@@ -45,7 +45,7 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
           },
           { start: start.path[0], end: end.path[0] + 1 }
         );
-        burn();
+        burn(editor);
       });
       setPosition(start.leaf.get("id"), { offset: start.offset + text.length });
     }

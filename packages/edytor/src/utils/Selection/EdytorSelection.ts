@@ -159,7 +159,7 @@ export class EdytorSelection {
     { offset, delta, end }: { offset?: number; delta?: number; end?: number; select?: boolean }
   ) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
-
+    console.log(node);
     while (node && node.nodeType !== 3 && node?.firstChild) {
       node = node.firstChild;
     }
@@ -177,10 +177,8 @@ export class EdytorSelection {
       this.range.collapse(true);
     }
 
-    if (!hasRange) {
-      this.selection?.removeAllRanges();
-      this.selection?.addRange(this.range);
-    }
+    this.selection?.removeAllRanges();
+    this.selection?.addRange(this.range);
 
     this.start = {
       ...this.start,

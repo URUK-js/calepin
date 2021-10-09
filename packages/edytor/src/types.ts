@@ -45,6 +45,7 @@ interface HotKeys {
 }
 export interface EditorProps extends Record<any, any> {
   value: jsonNode[];
+  defaultBlock?: string;
   spellcheck?: boolean;
   className?: string;
   id?: string;
@@ -58,6 +59,7 @@ export interface EditorProps extends Record<any, any> {
 
 export interface Editor {
   editorId: string;
+  defaultBlock: string;
   dropper: Dropper;
   hotkeys?: HotKeys[];
   selection: EdytorSelection;

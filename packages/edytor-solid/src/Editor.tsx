@@ -20,13 +20,13 @@ export const Editor = ({
   renderHandle = () => null,
   renderBlock = renderBlockDefault,
   renderLeaf = renderLeafDefault,
-  spellcheck = false,
+  spellcheck = true,
   onChange = () => null,
   renderBefore,
   hotkeys,
+  defaultBlock = "paragraph",
   renderAfter,
-  className = "sltye-editor",
-  id = "sltye-editor",
+  className = "edytor",
   props
 }: EditorProps) => {
   let editorId = Math.random()
@@ -49,6 +49,7 @@ export const Editor = ({
   const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
+    defaultBlock,
     dropper: new Dropper(doc, editorId, ID_TO_NODE, selection),
     selection,
     cursor,

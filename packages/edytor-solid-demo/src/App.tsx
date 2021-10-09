@@ -11,6 +11,7 @@ const App: Component = () => {
   return (
     <div>
       <Editor
+        defaultBlock="blockquote"
         renderHandle={renderHandle}
         hotkeys={[
           { operation: "formatText", keys: "mod+b", mark: { bold: true } },

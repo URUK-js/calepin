@@ -98,7 +98,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
             },
             { start: start.path[0], end: end.path[0] + 1 }
           );
-          return burn();
+          return burn(editor);
         });
       }
       setPosition(start.leaf.get("id"), { offset: start.offset });

@@ -39,7 +39,7 @@ export const splitNode = (editor: Editor) => {
     const newParent = hasChildren(node) ? getNodeChildren(node) : (node.parent as YArray<any>);
     const newLeaf = new YLeaf({ ...leaf.toJSON(), id: undefined, text: rightText });
     newParent.insert(hasChildren(node) ? 0 : indexOfNode + 1, [
-      new YNode("paragraph", {
+      new YNode(editor.defaultBlock, {
         children: [],
         content: [newLeaf].concat(nextLeaves.map((leaf) => new YLeaf(leaf.toJSON())))
       })
@@ -47,13 +47,13 @@ export const splitNode = (editor: Editor) => {
     leafContent.delete(indexOfLeaf + 1, leafNodeContentLength(start.leaf) - indexOfLeaf - 1);
     setTimeout(() => {
       setPosition(newLeaf.get("id"), { offset: 0 });
-    });
+    }, 10);
   };
 
   let doSplit = (!edges.startNode || !edges.endNode) && type !== "multinodes";
 
   if ((edges.endNode || edges.startNode) && type === "collapsed") {
-    const newNode = new YNode("paragraph");
+    const newNode = new YNode(editor.defaultBlock);
     (node.parent as YArray<any>).insert(indexOfNode + (edges.endNode ? 1 : 0), [newNode]);
     return setTimeout(() => {
       setPosition(

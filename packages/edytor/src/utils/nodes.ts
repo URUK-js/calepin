@@ -76,7 +76,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
   return nextLeaf;
 };
 
-export const deleteNode = (node) => {
+export const deleteNode = (node, defaultBlock: string) => {
   if (isNodeEmpty(node)) {
     (node.parent as YArray<YNode>).delete(getIndex(node));
   } else if (isNodeContentEmpty(node)) {
@@ -89,7 +89,7 @@ export const deleteNode = (node) => {
     );
   }
   if (node.parent === (node.doc as EdytorDoc).children && (node.doc as EdytorDoc).children.length === 0) {
-    (node.parent as YArray<YNode>).insert(0, [new YNode("paragraph", { content: [new YLeaf()] })]);
+    (node.parent as YArray<YNode>).insert(0, [new YNode(defaultBlock, { content: [new YLeaf()] })]);
   }
 };
 

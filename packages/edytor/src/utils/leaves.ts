@@ -1,4 +1,5 @@
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
+import { Editor } from "../types";
 import { getIndex } from "./common";
 import { deleteNode, NodeHarvest } from "./nodes";
 import { YLeaf, YNode } from "./yClasses";
@@ -24,15 +25,12 @@ export class LeavesHarvest {
     this.leaves[id].indexes.push(getIndex(leaf));
   };
 
-  burn = () => {
-    // const { reap, burn } = new NodeHarvest();
+  burn = (editor: Editor) => {
     Object.values(this.leaves).forEach(({ shouldDeleteNode, content, node, indexes }, i) => {
       content.delete(indexes[0], indexes.length);
       if (content.length === 0 && !shouldDeleteNode) {
         content.insert(0, [new YLeaf()]);
-      } else if (shouldDeleteNode) return deleteNode(node);
-
-      // burn();
+      } else if (shouldDeleteNode) return deleteNode(node, editor?.defaultBlock);
     });
   };
 }
