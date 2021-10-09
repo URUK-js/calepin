@@ -44,6 +44,7 @@ interface HotKeys {
   mark: Record<string, any>;
 }
 export interface EditorProps extends Record<any, any> {
+  allowNesting: boolean;
   value: jsonNode[];
   defaultBlock?: string;
   spellcheck?: boolean;
@@ -58,6 +59,7 @@ export interface EditorProps extends Record<any, any> {
 }
 
 export interface Editor {
+  allowNesting: boolean;
   editorId: string;
   defaultBlock: string;
   dropper: Dropper;

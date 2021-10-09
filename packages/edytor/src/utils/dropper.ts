@@ -13,12 +13,20 @@ export class Dropper {
   editorId: string;
   ID_TO_NODE: Map<any, any>;
   selection: EdytorSelection;
+  allowNesting: boolean;
 
-  constructor(doc: EdytorDoc, editorId: string, ID_TO_NODE: Map<any, any>, selection: EdytorSelection) {
+  constructor(
+    doc: EdytorDoc,
+    editorId: string,
+    ID_TO_NODE: Map<any, any>,
+    selection: EdytorSelection,
+    allowNesting: boolean
+  ) {
     this.doc = doc;
     this.editorId = editorId;
     this.selection = selection;
     this.ID_TO_NODE = ID_TO_NODE;
+    this.allowNesting = allowNesting;
   }
   startDrag = (node, e: DragEvent) => {
     this.node = node;
@@ -77,7 +85,7 @@ export class Dropper {
     const rectHovered = hoveredElement.getBoundingClientRect();
     const isOnTop = e.y < rectHovered.top + rectHovered.height / 2;
     const rect = rectHovered;
-    const isNested = !isOnTop && e.x > rect.left + rect.width / 5;
+    const isNested = this.allowNesting && !isOnTop && e.x > rect.left + rect.width / 5;
 
     const top = isOnTop ? rect.top : rect.top + rect.height;
     const deltaX = isNested ? 30 : 0;

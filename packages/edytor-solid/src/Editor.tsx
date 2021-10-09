@@ -27,6 +27,7 @@ export const Editor = ({
   defaultBlock = "paragraph",
   renderAfter,
   className = "edytor",
+  allowNesting = true,
   props
 }: EditorProps) => {
   let editorId = Math.random()
@@ -49,8 +50,9 @@ export const Editor = ({
   const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
+    allowNesting,
     defaultBlock,
-    dropper: new Dropper(doc, editorId, ID_TO_NODE, selection),
+    dropper: new Dropper(doc, editorId, ID_TO_NODE, selection, allowNesting),
     selection,
     cursor,
     hotkeys,
