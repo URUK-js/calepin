@@ -13,7 +13,7 @@ export const renderBlock = ({ content, node, attributes, handle, children, block
         );
       case "heading":
         return (
-          <div contentEditable={true} ref={ref} {...attributes} className="relative">
+          <div contentEditable={false} ref={ref} {...attributes} className="relative">
             {handle()}
             <h1 contentEditable={true}>{content}</h1>
             {children}
