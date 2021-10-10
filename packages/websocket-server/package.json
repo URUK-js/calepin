@@ -30,7 +30,6 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "edytor": "^0.0.0",
-    "ioredis": "^4.27.10",
     "lib0": "^0.2.42",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
@@ -39,14 +38,11 @@
     "yjs": "^13.5.13"
   },
   "devDependencies": {
-    "@types/ioredis": "^4.27.6",
-    "@types/lodash.debounce": "^4.0.6",
     "@types/ws": "^8.2.0",
     "microbundle": "^0.14.0",
     "ts-node-dev": "^1.1.8",
     "tsc-watch": "^4.5.0",
     "tsdx": "^0.14.1",
-    "vite": "^2.6.5",
-    "vite-plugin-node": "^0.0.14"
+    "vite": "^2.6.5"
   }
 }
