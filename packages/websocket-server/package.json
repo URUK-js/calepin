@@ -34,7 +34,6 @@
     "lib0": "^0.2.42",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
-    "node-fetch": "^3.0.0",
     "ws": "^8.2.3",
     "y-protocols": "^1.0.5",
     "yjs": "^13.5.13"

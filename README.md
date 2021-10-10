@@ -102,17 +102,25 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ✅ merge nodes on delete at start/end
 
-⚽ un-nest nodes on delete at start/end when nested
+✅ un-nest nodes on delete when needed
 
 ✅ extensive selection listener
 
 ✅ demo in solid
 
-⚽ cursor positioning and repositioning
+✅ cursor positioning and repositioning
+
+⚽ web-socket server example
+
+⚽ realtime demo example
+
+⚽ realtime cursor positioning
+
+⚽ realtime awareness indicator
 
 ⚽ demo in svelte
 
-⚽ format text
+✅ format text
 
 ✅ move nodes
 
