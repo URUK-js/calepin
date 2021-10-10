@@ -92,7 +92,7 @@ blockquote {
   @apply bg-yellow-100 text-yellow-400;
 }
 
-[data-edytor] [data-edytor-children] {
+[data-edytor-block] > [data-edytor-block] {
   padding-left: 20px;
 }
 [data-edytor] > [data-edytor-children] {

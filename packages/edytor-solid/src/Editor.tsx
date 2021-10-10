@@ -12,12 +12,14 @@ import {
   EdytorDoc,
   EdytorSelection
 } from "edytor";
-import { Dropper } from "edytor/src";
+import { createWebRtcProvider, createWSProvider, Dropper } from "edytor/src";
 import { SelectionIndicator } from "./components/SelectionIndicator";
 
 export const Editor = ({
-  value,
+  initialValue,
   renderHandle = () => null,
+  blocks,
+  leafs,
   renderBlock = renderBlockDefault,
   renderLeaf = renderLeafDefault,
   spellcheck = true,
@@ -28,6 +30,8 @@ export const Editor = ({
   renderAfter,
   className = "edytor",
   allowNesting = true,
+  readOnly = false,
+  leaves,
   props
 }: EditorProps) => {
   let editorId = Math.random()
@@ -37,8 +41,7 @@ export const Editor = ({
   let [cursor, setCursor] = createSignal<Cursor>();
   let [_, setSelection] = createSignal<EdytorSelection | undefined>();
 
-  const doc = new EdytorDoc(value);
-
+  const doc = new EdytorDoc(initialValue.json);
   const onChangeObserver = () => {
     // console.log(doc.children.toJSON());
   };
@@ -50,11 +53,14 @@ export const Editor = ({
   const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
+    readOnly,
     allowNesting,
     defaultBlock,
     dropper: new Dropper(doc, editorId, ID_TO_NODE, selection, allowNesting),
     selection,
     cursor,
+    blocks,
+    leaves,
     hotkeys,
     renderHandle,
     renderBlock,
@@ -93,7 +99,7 @@ export const Editor = ({
         onDragStart={[onDragOver, editor]}
         onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
         onKeyDown={[onKeyDown, editor]}
-        contentEditable={true}
+        contentEditable={!readOnly}
       >
         <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
         <SelectionIndicator />

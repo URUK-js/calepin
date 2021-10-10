@@ -1,7 +1,7 @@
 import { YArray, YMap, YText } from "yjs/dist/src/internals";
 import { Editor } from "../types";
 import { getIndex } from "./common";
-import { deleteNode, NodeHarvest } from "./nodes";
+import { deleteNode } from "./nodes";
 import { YLeaf, YNode } from "./yClasses";
 
 export class LeavesHarvest {

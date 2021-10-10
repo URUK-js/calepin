@@ -11,6 +11,7 @@ export class EdytorSelection {
   ID_TO_NODE: Map<any, any>;
   start: Position;
   end: Position;
+  selectedText: string;
   arePathsEquals: boolean;
   editorOffset: number;
   length: number;
@@ -124,9 +125,9 @@ export class EdytorSelection {
           offset: !isFollowing ? anchorOffset : focusOffset,
           leaf: !isFollowing ? leaf1 : leaf2
         };
-
+    this.selectedText = range ? range.toString() : "";
     this.arePathsEquals = equalPaths;
-    this.length = range && range.toString()?.length;
+    this.length = this.selectedText.length;
     this.range = range;
     this.selection = selection;
     this.edges = {
@@ -159,7 +160,7 @@ export class EdytorSelection {
     { offset, delta, end }: { offset?: number; delta?: number; end?: number; select?: boolean }
   ) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
-    console.log(node);
+
     while (node && node.nodeType !== 3 && node?.firstChild) {
       node = node.firstChild;
     }

@@ -1,5 +1,5 @@
 import { useEditor, useSelectionChange } from "edytor-solid";
-import { For } from "solid-js";
+import { For, onMount } from "solid-js";
 import {
   TextBolder,
   TextItalic,
@@ -13,7 +13,7 @@ import { EdytorSelection, formatText } from "edytor/src";
 export const HooverMenu = ({}) => {
   let ref = undefined as undefined | HTMLDivElement;
   const editor = useEditor();
-  useSelectionChange((s: EdytorSelection) => {
+  const onSelectionChange = (s: EdytorSelection) => {
     if (!ref) return;
     if (!s.range || s.type === "collapsed" || !s.focused) {
       ref.style.transform = `scale(0.9)`;
@@ -31,6 +31,10 @@ export const HooverMenu = ({}) => {
         ref.style.transition = `opacity 0.2s, transform 0.2s ease-in-out`;
       }, 200);
     }
+  };
+  useSelectionChange(onSelectionChange);
+  onMount(() => {
+    onSelectionChange(editor.selection);
   });
 
   const icons = [

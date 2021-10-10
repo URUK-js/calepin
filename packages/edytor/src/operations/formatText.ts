@@ -1,17 +1,28 @@
-import { YArray, YMap, YText } from "yjs/dist/src/internals";
-import * as Y from "yjs";
+import { YMap, YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
-import { deleteLeafText, getIndex, isLeafEmpty, leafLength, leafNodeContent, leafText, YLeaf } from "../utils";
+import {
+  deleteLeafText,
+  getIndex,
+  getPath,
+  isLeafEmpty,
+  leafLength,
+  leafNodeContent,
+  leafString,
+  leafText,
+  YLeaf
+} from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
+  value: any;
   range?: EdytorSelection;
   format: string;
   yText?: YText;
 };
 export type formatAtEqualPathOperation = {
   format: string;
+  value: any;
   start: EdytorSelection["start"];
   end: EdytorSelection["end"];
   length: EdytorSelection["length"];
@@ -40,10 +51,12 @@ export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPa
 
   if (isMarkActive && leafLength(leaf) === length) {
     leaf.delete(format);
+    return leaf;
   } else {
     const remainingText = content.substring(end.offset, leafLength(leaf));
     if (remainingText.length == 0 && leafLength(leaf) === end.offset - start.offset) {
       leaf.set(format, value);
+      return leaf;
     } else {
       deleteLeafText(leaf, start.offset, leafLength(leaf));
 
@@ -73,7 +86,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
   const [[format, value]] = Object.entries(mark);
   console.log(format);
   let newPath = 0;
-  const { start, end, type, length, setPosition } = editor.selection;
+  const { start, end, type, length, setPosition, selectedText } = editor.selection;
 
   editor.doc.transact(() => {
     switch (type) {
@@ -110,11 +123,24 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
         // return newPath;
       }
       case "singlenode": {
-        const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
-        mergeLeafs(leafNodeContent(start.leaf));
-        console.log({ id: formatedLeaf.get("id") });
-        setTimeout(() => {
-          setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
+        editor.doc.transact(() => {
+          const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
+          mergeLeafs(leafNodeContent(start.leaf));
+
+          setTimeout(() => {
+            if (!formatedLeaf._item.deleted) {
+              setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
+            } else {
+              const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
+              const offset = leafText(remainingLeaf)
+                .toJSON()
+                .indexOf(selectedText);
+              setPosition(remainingLeaf.get("id"), {
+                offset,
+                end: offset + selectedText.length
+              });
+            }
+          });
         });
 
         break;
@@ -123,25 +149,39 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
       case "multinodes": {
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
+        let started = false;
+        let ended = false;
+
         editor.doc.traverse(
-          (branch, isText, path) => {
+          (leaf, isText) => {
             if (isText) {
-              const leaf = branch.get("text") as YText;
-              const node = leaf.parent?.parent as YArray<any>;
+              const path = getPath(leaf);
               const isStart = path.join(",") === startPathString;
-              const isEnd = path.join(",") === endPathString;
+              const isEnd = path.join(",") === getPath(end.leaf).join(",");
+              console.log({ isEnd }, endPathString, getPath(end.leaf).join(","), path.join(","));
+              if (isStart) {
+                started = true;
+              }
+
               const startOffset = isStart ? start.offset : 0;
-              const endOffset = isEnd ? end.offset : leaf.length;
-              formatAtEqualPath({
-                format,
-                start: { leaf, path, offset: startOffset },
-                end: { offset: endOffset },
-                value
-              });
-              mergeLeafs(editor, node);
+              const endOffset = isEnd ? end.offset : leafLength(leaf);
+              started &&
+                !ended &&
+                formatAtEqualPath({
+                  format,
+                  start: { leaf, offset: startOffset },
+                  end: { offset: endOffset },
+                  value
+                });
+              console.log({ ended });
+              if (isEnd) {
+                ended = true;
+              }
+
+              mergeLeafs(leafNodeContent(leaf));
             }
-          },
-          { start: start.path[0], end: end.path[0] + 1 }
+          }
+          // { start: start.path[0], end: end.path[0] + 1 }
         );
         break;
       }

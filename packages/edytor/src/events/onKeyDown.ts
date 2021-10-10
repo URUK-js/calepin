@@ -1,5 +1,5 @@
 import { Editor } from "../types";
-import isHotkey, { toKeyCode } from "is-hotkey";
+import isHotkey from "is-hotkey";
 import { formatText, nestNode } from "../operations";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {

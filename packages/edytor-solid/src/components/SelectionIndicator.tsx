@@ -21,10 +21,7 @@ export const SelectionIndicator = () => {
     if (!indicator) return;
     if (selection.focused && selection?.start) {
       if (!hasChanged(selection)) {
-        indicator.style.height =
-          selection.start.nodeHtml.clientHeight -
-          selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight +
-          "px";
+        indicator.style.height = selection.start.nodeHtml.clientHeight + "px";
       }
 
       const rectStart = selection.start.nodeHtml.getBoundingClientRect();
@@ -33,9 +30,7 @@ export const SelectionIndicator = () => {
       indicator.style.top = rectStart.y + window.pageYOffset + "px";
       //   indicator.style.bottom = rectEnd.bottom +  "px";
       indicator.style.height =
-        (selection.type !== "multinodes"
-          ? rectStart.height - selection.start.nodeHtml.querySelector("[data-edytor-children]")?.clientHeight
-          : rectEnd.bottom - rectStart.top) + "px";
+        (selection.type !== "multinodes" ? rectStart.height : rectEnd.bottom - rectStart.top) + "px";
 
       indicator.style.left = Math.min(rectEnd.left, rectStart.left) - 4 + "px";
 

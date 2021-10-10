@@ -1,0 +1,53 @@
+{
+  "name": "websocket-server",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "peers.press <a.derbey@gmail.com>",
+  "homepage": "https://github.com/arnaudDerbey/edytor#readme",
+  "license": "ISC",
+  "source": "app.ts",
+  "exports": "./dist/app.js",
+  "main": "./dist/app.js",
+  "module": "./dist/app.module.js",
+  "unpkg": "./dist/app.umd.js",
+  "directories": {
+    "test": "__tests__"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnaudDerbey/edytor.git"
+  },
+  "scripts": {
+    "dev-server": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/server.js\"",
+    "dev": "ts-node app.ts -T -D",
+    "build-server": " tsdx build --transpileOnly",
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "dev-server-2": "microbundle watch"
+  },
+  "bugs": {
+    "url": "https://github.com/arnaudDerbey/edytor/issues"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "edytor": "^0.0.0",
+    "ioredis": "^4.27.10",
+    "lib0": "^0.2.42",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
+    "node-fetch": "^3.0.0",
+    "ws": "^8.2.3",
+    "y-protocols": "^1.0.5",
+    "yjs": "^13.5.13"
+  },
+  "devDependencies": {
+    "@types/ioredis": "^4.27.6",
+    "@types/lodash.debounce": "^4.0.6",
+    "@types/ws": "^8.2.0",
+    "microbundle": "^0.14.0",
+    "ts-node-dev": "^1.1.8",
+    "tsc-watch": "^4.5.0",
+    "tsdx": "^0.14.1",
+    "vite": "^2.6.5",
+    "vite-plugin-node": "^0.0.14"
+  }
+}

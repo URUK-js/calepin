@@ -1,7 +1,7 @@
 import { EdytorDoc, EdytorSelection } from "edytor/src";
 import { createMemo, onMount, onCleanup, Accessor } from "solid-js";
 import { UndoManager } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
+
 // import { Cursor } from "../Cursor";
 export const useHistory = (doc: EdytorDoc, selection: EdytorSelection) => {
   const undoManager = createMemo(

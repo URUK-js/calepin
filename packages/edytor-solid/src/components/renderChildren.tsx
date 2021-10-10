@@ -1,47 +1,48 @@
-import { createMemo, JSXElement, mapArray, onCleanup, onMount } from "solid-js";
-import { useNode, useText, useChildren, useEditor } from "../hooks";
-import { YArray, YMap } from "yjs/dist/src/internals";
+import { JSXElement, mapArray, createMemo, createSignal } from "solid-js";
+import { Dynamic } from "solid-js/web";
+import { useNode, useText, useChildren, useEditor, useNodeObservation } from "../hooks";
+import { YArray } from "yjs/dist/src/internals";
 import { YLeaf, YNode, getId, leafText } from "edytor";
 
 import { renderHandle } from "./renderHandle";
 
-export const renderChildren = (children: YArray<YNode>): JSXElement => {
-  return <div data-edytor-children="true">{mapArray(useChildren(children), renderNode)}</div>;
-};
-
-export const renderContent = (content: YArray<YLeaf>): JSXElement => {
-  return mapArray(useChildren(content), renderLeaf);
-};
+export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node"): JSXElement =>
+  mapArray(useChildren(content), type === "leaf" ? renderLeaf : renderNode);
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
-  const { renderLeaf } = useEditor();
-
   const leaf = useNode(node);
-  return renderLeaf({
-    text: useText(leafText(node)),
-    attributes: {
-      id: getId(node),
-      "data-edytor-element": "true",
-      "data-edytor-leaf": "true"
-    },
-    leaf
+  const { leaves } = useEditor();
+  const content = createMemo(() => {
+    let leafNode = useText(leafText(node))();
+    Object.keys(leaf()).forEach((mark) => {
+      if (mark !== "data" && mark !== "text" && mark !== "id") {
+        const props = typeof leaves[mark] === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node };
+        leafNode = (
+          <Dynamic {...props} component={leaves[mark]}>
+            {leafNode}
+          </Dynamic>
+        );
+      }
+    });
+    return leafNode;
   });
+  return (
+    <span data-edytor-element data-edytor-leaf id={getId(node)}>
+      {content()}
+    </span>
+  );
 };
+
 export const renderNode = (node: YNode) => {
-  const { renderBlock } = useEditor();
-  const children = renderChildren(node.get("children"));
-  const content = renderContent(node.get("content"));
   const block = useNode(node);
-  return renderBlock({
-    attributes: {
-      id: getId(node),
-      "data-edytor-element": "true",
-      "data-edytor-block": "true"
-    },
-    node,
-    handle: renderHandle(node),
-    block,
-    children,
-    content
-  });
+  const { blocks, defaultBlock } = useEditor();
+  return (
+    <div data-edytor-element data-edytor-block id={getId(node)}>
+      {renderHandle(node)}
+      <Dynamic block={block} node={node} component={blocks[block().type || blocks[defaultBlock]]}>
+        {renderChildren(node.get("content"), "leaf")}
+      </Dynamic>
+      {renderChildren(node.get("children"), "node")}
+    </div>
+  );
 };

@@ -31,3 +31,18 @@ export const useNode = (node: YMap<any>) => {
   });
   return value;
 };
+export const useNodeObservation = (node: YMap<any>, observer) => {
+  const editor = useEditor();
+
+  const o = ({ currentTarget }) => {
+    observer(currentTarget);
+  };
+  onMount(() => {
+    editor.ID_TO_NODE.set(node.get("id"), node);
+    node.observe(o);
+    observer(node);
+  });
+  onCleanup(() => {
+    node?.unobserve(o);
+  });
+};

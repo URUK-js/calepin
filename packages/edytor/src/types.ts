@@ -1,5 +1,4 @@
-import { UndoManager } from "yjs";
-import { YArray, YMap, YText } from "yjs/dist/src/internals";
+import { YArray, YMap } from "yjs/dist/src/internals";
 import { Cursor, EdytorDoc } from ".";
 import { Dropper, EdytorSelection, jsonNode, YLeaf, YNode } from "./utils";
 
@@ -45,9 +44,13 @@ interface HotKeys {
 }
 export interface EditorProps extends Record<any, any> {
   allowNesting: boolean;
-  value: jsonNode[];
+  initialValue: {
+    json?: jsonNode[];
+    yarray?: YArray<any>;
+  };
   defaultBlock?: string;
   spellcheck?: boolean;
+  readOnly: boolean;
   className?: string;
   id?: string;
   hotkeys: HotKeys[];
@@ -60,6 +63,7 @@ export interface EditorProps extends Record<any, any> {
 
 export interface Editor {
   allowNesting: boolean;
+  readOnly: boolean;
   editorId: string;
   defaultBlock: string;
   dropper: Dropper;
@@ -69,7 +73,7 @@ export interface Editor {
   renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
   renderLeaf: ({ attributes, string, leaf }: renderLeafProps) => any;
   renderHandle: (({ node, attributes }: renderHandleProps) => any) | undefined;
-  undoManager: UndoManager;
+  undoManager: any;
   editorRef: Accessor<HTMLDivElement | undefined>;
   toUpdate: () => Uint8Array;
   doc: EdytorDoc;
