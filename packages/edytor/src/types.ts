@@ -1,6 +1,7 @@
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { EdytorDoc } from ".";
 import { Dropper, EdytorSelection, jsonNode, YNode } from "./utils";
+import * as awarenessProtocol from "y-protocols/awareness";
 
 export { EdytorSelection };
 type Accessor<T> = () => T;
@@ -51,6 +52,18 @@ export interface EditorProps extends Record<any, any> {
   initialValue: {
     json?: jsonNode[];
     yarray?: YArray<any>;
+  };
+  collaboration: {
+    awarenessId?: string;
+    awareness?: awarenessProtocol.Awareness;
+    url: "string";
+    room: string;
+    user?: {
+      color?: string;
+      name?: string;
+      id?: string | number;
+      picture?: string;
+    };
   };
   onMount?: (editor: Editor) => void;
   leaves: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
