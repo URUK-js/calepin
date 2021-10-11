@@ -1,6 +1,6 @@
 import { createMemo, onMount as onMountSolid, onCleanup } from "solid-js";
 import { renderChildren } from "./components";
-import { useHistory, EditorContext, useEditor, useNode, useMap } from "./hooks";
+import { useHistory, EditorContext, useEditor } from "./hooks";
 import {
   EditorProps,
   onDragOver,
@@ -10,11 +10,12 @@ import {
   Editor as EditorType,
   EdytorDoc,
   EdytorSelection
+  // createWSProvider
 } from "edytor";
 import { Dropper, nanoid } from "edytor/src";
+import { useYjsContext } from "./contexts/yjsContext";
 
 export const Editor = ({
-  initialValue,
   renderInner,
   renderHandle = () => null,
   blocks,
@@ -34,18 +35,19 @@ export const Editor = ({
   let editorId = nanoid();
   let editorRef = undefined as HTMLDivElement | undefined;
 
-  const doc = new EdytorDoc(initialValue.json);
+  const { doc, children, awareness, provider } = useYjsContext();
+
   const onChangeObserver = () => {
-    // console.log(doc.children.toJSON());
+    // console.log(children.toJSON());
   };
-  onMountSolid(() => doc.children.observeDeep(onChangeObserver));
-  onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
+  onMountSolid(() => children.observeDeep(onChangeObserver));
+  onCleanup(() => children.unobserveDeep(onChangeObserver));
 
   const selection = new EdytorSelection();
   const dropper = new Dropper();
 
-  const undoManager = useHistory(doc, selection);
-  const editor = createMemo<EditorType>(() => ({
+  const undoManager = useHistory(children, selection);
+  const editor = {
     editorId,
     readOnly,
     allowNesting,
@@ -59,11 +61,11 @@ export const Editor = ({
     undoManager,
     editorRef,
     doc,
-    children: doc.children,
-    toString: doc.string,
-    toJSON: doc.toJSON,
+    children,
+    // toString: doc.string,
+    toJSON: children.toJSON,
     ID_TO_NODE: new Map()
-  }))();
+  };
 
   return (
     <EditorContext value={editor}>
@@ -91,7 +93,7 @@ export const Editor = ({
       >
         {renderInner && renderInner()}
         <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
-        {renderChildren(doc.children, "node")}
+        {renderChildren(children, "root")}
       </div>
       {renderAfter && renderAfter()}
     </EditorContext>

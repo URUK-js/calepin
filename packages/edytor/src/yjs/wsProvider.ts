@@ -1,28 +1,18 @@
 import { Doc } from "yjs";
-// import { WebsocketProvider } from "y-websocket";
-import { EdytorDoc } from "../utils";
+import { WebsocketProvider } from "y-websocket";
 
-type WebrtcProviderOptions = {
-  signaling: Array<string>;
-  password: string | null;
-  awareness: any;
-  maxConns: number;
-  filterBcConns: boolean;
-  peerOpts: any;
-};
-export const createWSProvider = (doc: Doc, room = "hello", opts: WebrtcProviderOptions) => {
-  const fakeDoc = new EdytorDoc();
-  // const provider = new WebsocketProvider("ws://localhost:1234", room, fakeDoc);
-  // provider.on("status", ({ status }) => {
-  //   if (status === "connected") {
-  //     const isEmpty = Array.from(provider.awareness.getStates().values()).length === 1;
-  //     console.log(isEmpty, Array.from(provider.awareness.getStates().values()).length);
-  //     provider.awareness.setLocalStateField("connected", true);
-  //     if (isEmpty) {
-  //       // applyUpdateV2(fakeDoc, encodeStateAsUpdateV2(doc));
-  //     }
-  //   }
-  // });
-
-  // return provider.doc;
+export const createWSProvider = (room?) => {
+  return new Promise((res) => {
+    const doc = new Doc();
+    const dev = "ws://localhost:1234";
+    const prod = "ws://edytor-production.up.railway.app";
+    const provider = new WebsocketProvider(process.env.NODE_ENV === "production" ? prod : dev, room || "edytor", doc, {
+      connect: true
+    });
+    provider.on("status", ({ status }) => {
+      if (status === "connected") {
+        return res(provider);
+      }
+    });
+  });
 };

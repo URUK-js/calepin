@@ -29,7 +29,7 @@ export class LeavesHarvest {
     Object.values(this.leaves).forEach(({ shouldDeleteNode, content, node, indexes }, i) => {
       content.delete(indexes[0], indexes.length);
       if (content.length === 0 && !shouldDeleteNode) {
-        content.insert(0, [new YLeaf()]);
+        content.insert(0, [createLeaf()]);
       } else if (shouldDeleteNode) return deleteNode(node, editor?.defaultBlock);
     });
   };

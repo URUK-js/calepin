@@ -2,7 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import { useEditor, useMap } from "edytor-solid";
 import Toggle from "./Toggle";
 import { HooverMenu } from "../HooverMenu";
-import { leafString } from "edytor/src";
+import { leafString, traverse } from "edytor/src";
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
@@ -13,7 +13,7 @@ const Menu = ({}) => {
     let leafs = 0;
     let characters = 0;
 
-    editor.doc.traverse((node, isText) => {
+    traverse(editor, (node, isText) => {
       if (isText) {
         characters += leafString(node);
         leafs++;

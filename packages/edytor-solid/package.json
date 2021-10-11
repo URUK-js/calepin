@@ -8,7 +8,7 @@
   "author": "<a.derbey@gmail.com>",
   "homepage": "",
   "license": "MIT",
-  "main": "index.ts",
+  "main": "index.tsx",
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },

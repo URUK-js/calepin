@@ -1,9 +1,12 @@
 import { YArray, YMap } from "yjs/dist/src/internals";
-import { Cursor, EdytorDoc } from ".";
-import { Dropper, EdytorSelection, jsonNode, YLeaf, YNode } from "./utils";
+import { EdytorDoc } from ".";
+import { Dropper, EdytorSelection, jsonNode, YNode } from "./utils";
 
 export { EdytorSelection };
 type Accessor<T> = () => T;
+
+export type YLeaf = YMap<any>;
+
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
 export type attributes = {
   id: string;

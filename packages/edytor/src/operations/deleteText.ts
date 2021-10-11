@@ -15,6 +15,8 @@ import {
   LeavesHarvest,
   mergeContentWithNextLeaf,
   mergeContentWithPrevLeaf,
+  createLeaf,
+  traverse,
   YLeaf
 } from "../utils";
 import { nestNode } from "./nestNode";
@@ -67,7 +69,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
     case "singlenode": {
       deleteLeafText(start.leaf, start.offset, length, true);
       if (hasChildren(getNode(start.leaf))) {
-        leafNodeContent(start.leaf).insert(0, [new YLeaf()]);
+        leafNodeContent(start.leaf).insert(0, [createLeaf()]);
       }
       setPosition(start.leaf.get("id"), { offset: start.offset });
       break;
@@ -79,7 +81,8 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         const endPathString = end.path.join(",");
         editor.doc.transact(() => {
           const { reap, burn } = new LeavesHarvest();
-          editor.doc.traverse(
+          traverse(
+            editor,
             (leaf, isText) => {
               if (isText) {
                 const path = getPath(leaf);

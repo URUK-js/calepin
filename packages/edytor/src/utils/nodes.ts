@@ -1,16 +1,16 @@
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { mergeLeafs } from "../operations";
 import { Editor } from "../types";
-import { getIndex, getNode } from "./common";
+import { getIndex, getNode, traverse } from "./common";
 import { leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
-import { EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
+import { createLeaf, createNode, EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
   const { start } = editor.selection;
   let prevLeaf;
   let stop = false;
 
-  editor.doc.traverse((node, isText) => {
+  traverse(editor, (node, isText) => {
     if (isText) {
       if (node === start.leaf) {
         stop = true;
@@ -26,7 +26,7 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
     leafNodeContent(start.leaf)
       .toArray()
       .map((leaf: YLeaf) => {
-        return new YLeaf(leaf.toJSON());
+        return createLeaf(leaf.toJSON());
       })
   );
   mergeLeafs(leafNodeContent(prevLeaf));
@@ -56,7 +56,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
     leafNodeContent(nextLeaf)
       .toArray()
       .map((leaf: YLeaf) => {
-        return new YLeaf(leaf.toJSON());
+        return createLeaf(leaf.toJSON());
       })
   );
   mergeLeafs(leafNodeContent(start.leaf));
@@ -69,7 +69,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
       node
         .get("children")
         .toJSON()
-        .map((node) => new YNode(node.type, node))
+        .map((node) => createNode(node.type, node))
     );
   }
   node.parent.delete(getIndex(node));
@@ -85,11 +85,11 @@ export const deleteNode = (node, defaultBlock: string) => {
     node.parent.delete(index);
     node.parent.insert(
       index,
-      children.map(({ type, ...props }) => new YNode(type, props))
+      children.map(({ type, ...props }) => createNode(type, props))
     );
   }
-  if (node.parent === (node.doc as EdytorDoc).children && (node.doc as EdytorDoc).children.length === 0) {
-    (node.parent as YArray<YNode>).insert(0, [new YNode(defaultBlock, { content: [new YLeaf()] })]);
+  if (node.parent === (node.doc.getArray("children") && node.doc.getArray("children").length === 0)) {
+    (node.parent as YArray<YNode>).insert(0, [createNode(defaultBlock, { content: [createLeaf()] })]);
   }
 };
 
@@ -107,7 +107,7 @@ export const isNodeContentEmpty = (node) =>
 
 export const copyNode = (node: YNode) => {
   const jsonNode = node.toJSON();
-  return new YNode(jsonNode.type, {
+  return createNode(jsonNode.type, {
     ...jsonNode,
     children: jsonNode.children.map(getChildren),
     content: jsonNode.content.map(getContent)

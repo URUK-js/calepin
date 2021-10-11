@@ -103,7 +103,7 @@ export class Dropper {
     index = index + (isOnTop ? 0 : 1);
     if (index === -1) index = 0;
     this.to = {
-      container: isNested ? hoveredNode.get("children") : path.length === 1 ? this.doc.children : hoveredNode.parent,
+      container: isNested ? hoveredNode.get("children") : path.length === 1 ? this.editor.children : hoveredNode.parent,
       at: isNested ? 0 : index
     };
   };

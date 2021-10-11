@@ -1,12 +1,12 @@
-import { EdytorDoc, EdytorSelection } from "edytor/src";
-import { createMemo, onMount, onCleanup, Accessor } from "solid-js";
+import { EdytorSelection } from "edytor/src";
+import { createMemo, onMount, onCleanup } from "solid-js";
 import { UndoManager } from "yjs";
+import { YArray } from "yjs/dist/src/internals";
 
-// import { Cursor } from "../Cursor";
-export const useHistory = (doc: EdytorDoc, selection: EdytorSelection) => {
+export const useHistory = (children: YArray<any>, selection: EdytorSelection) => {
   const undoManager = createMemo(
     (): UndoManager => {
-      return new UndoManager(doc.children);
+      return new UndoManager(children);
     }
   );
 

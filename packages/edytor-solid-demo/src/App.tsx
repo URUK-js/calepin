@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import { Editor } from "edytor-solid";
+import Editor from "edytor-solid";
 import "@fontsource/noto-sans-hk";
 import "@fontsource/space-mono";
 import "@fontsource/playfair-display";

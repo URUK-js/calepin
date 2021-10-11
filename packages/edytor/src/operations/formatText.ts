@@ -1,7 +1,18 @@
 import { YMap, YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
-import { deleteLeafText, getIndex, getPath, isLeafEmpty, leafLength, leafNodeContent, leafText, YLeaf } from "../utils";
+import {
+  deleteLeafText,
+  getIndex,
+  getPath,
+  isLeafEmpty,
+  leafLength,
+  leafNodeContent,
+  leafText,
+  createLeaf,
+  traverse,
+  YLeaf
+} from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -50,7 +61,7 @@ export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPa
     } else {
       deleteLeafText(leaf, start.offset, leafLength(leaf));
 
-      const formatedLeaf = new YLeaf({
+      const formatedLeaf = createLeaf({
         ...leaf.toJSON(),
         id: undefined,
         [format]: value,
@@ -60,7 +71,7 @@ export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPa
       let newLeaves = [formatedLeaf];
 
       if (remainingText.length > 0) {
-        newLeaves.push(new YLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
+        newLeaves.push(createLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
 
       if (isMarkActive) {
@@ -93,7 +104,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
             isMarkActive ? start.leaf.delete(format) : start.leaf.set(format, value);
           } else {
             splitLeaf(editor, { yText: start.leaf.get("text"), at: start });
-            const newChild = new YLeaf({ text: "", [format]: value });
+            const newChild = createLeaf({ text: "", [format]: value });
             applyMarksFromParent(start.leaf, [newChild]);
 
             if (isMarkActive) newChild.delete(format);
@@ -145,7 +156,8 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
         let started = false;
         let ended = false;
 
-        editor.doc.traverse(
+        traverse(
+          editor,
           (leaf, isText) => {
             if (isText) {
               const path = getPath(leaf);

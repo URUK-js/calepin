@@ -12,10 +12,7 @@ const getDataTransfer = (e: any): string => e.dataTransfer.getData("text/plain")
 export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: InputEvent) => {
   prevent(e);
   // console.log(e);
-
-  const editorDiv = e.target as HTMLDivElement;
-
-  const { selection, start, length } = editor.selection;
+  const { start, length } = editor.selection;
 
   switch (e.inputType) {
     case "insertFromPaste":

@@ -6,8 +6,10 @@ import { YLeaf, YNode, getId, leafText } from "edytor";
 
 import { renderHandle } from "./renderHandle";
 
-export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node"): JSXElement =>
-  mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
+export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement => {
+  console.log("renderChildren", content.toJSON(), type);
+  return mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
+};
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const leaf = useNode(node);

@@ -2,7 +2,7 @@ import * as syncProtocol from "y-protocols/sync";
 import * as encoding from "lib0/encoding";
 import * as awarenessProtocol from "y-protocols/awareness";
 
-import { getChildren } from "edytor/dist";
+import { getChildren } from "./initialDocument";
 import { Doc } from "yjs";
 import * as mutex from "lib0/mutex";
 // import { get, pub, set, sub } from "./redis";
@@ -54,6 +54,21 @@ export class WSSharedDoc extends Doc {
     this.awareness = new awarenessProtocol.Awareness(this);
     this.awareness.setLocalState(null);
     this.mount = false;
+    if (!this.mount) {
+      this.mount = true;
+      console.log("this mount");
+      const array = this.getArray("children");
+      array.insert(
+        0,
+        [
+          {
+            type: "heading",
+            content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
+          }
+        ].map(getChildren)
+      );
+    } else {
+    }
     const awarenessChangeHandler = ({ added, updated, removed }: Changes, conn: Object | null) => {
       const changedClients = added.concat(updated, removed);
       if (conn !== null) {
@@ -75,24 +90,6 @@ export class WSSharedDoc extends Doc {
       this.conns.forEach((_, c) => {
         send(this, c, buff);
       });
-      if (!this.mount) {
-        this.mount = true;
-        const array = this.getArray("children");
-        array.insert(
-          0,
-          [
-            {
-              type: "heading",
-              content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
-            },
-            {
-              type: "paragraph",
-              content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }],
-              children: []
-            }
-          ].map(getChildren)
-        );
-      }
     };
     this.awareness.on("update", awarenessChangeHandler);
     this.on("update", updateHandler);

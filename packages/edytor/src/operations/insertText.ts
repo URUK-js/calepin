@@ -1,5 +1,14 @@
 import { Editor } from "../types";
-import { deleteLeafText, getPath, insertTextInLeaf, leafLength, LeavesHarvest, replaceLeafText, YLeaf } from "../utils";
+import {
+  deleteLeafText,
+  getPath,
+  insertTextInLeaf,
+  leafLength,
+  LeavesHarvest,
+  replaceLeafText,
+  traverse,
+  YLeaf
+} from "../utils";
 
 export type insertTextOperation = {
   text: string | null;
@@ -27,7 +36,8 @@ export const insertText = (editor: Editor, { text }: insertTextOperation) => {
       const endPathString = end.path.join(",");
       editor.doc.transact(() => {
         const { reap, burn } = new LeavesHarvest();
-        editor.doc.traverse(
+        traverse(
+          editor,
           (leaf, isText) => {
             if (isText) {
               const path = getPath(leaf);

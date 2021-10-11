@@ -6,8 +6,8 @@ test("ok", () => {
 });
 // test("new blank node", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YNode("paragraph"));
-//   const N = new YNode("paragraph");
+//   doc.getMap("test").set("newNode", createNode("paragraph"));
+//   const N = createNode("paragraph");
 //   const newNode = doc
 //     .getMap("test")
 //     .get("newNode")
@@ -23,7 +23,7 @@ test("ok", () => {
 // });
 // test("new node with data", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YNode("paragraph", { data: { comments: ["hello"] } }));
+//   doc.getMap("test").set("newNode", createNode("paragraph", { data: { comments: ["hello"] } }));
 
 //   const newNode = doc.getMap("test").get("newNode") as YNode;
 
@@ -41,15 +41,15 @@ test("ok", () => {
 // });
 // test("new leaf", () => {
 //   const doc = new EdytorDoc();
-//   doc.getMap("test").set("newLeaf", new YLeaf());
-//   const leaf = doc.getMap("test").get("newLeaf") as YLeaf;
+//   doc.getMap("test").set("createLeaf", createLeaf());
+//   const leaf = doc.getMap("test").get("createLeaf") as YLeaf;
 //   const nodeJSON = {
 //     text: ""
 //   };
 //   expect(
 //     doc
 //       .getMap("test")
-//       .get("newLeaf")
+//       .get("createLeaf")
 //       .toJSON()
 //   ).toStrictEqual(nodeJSON);
 //   expect(leaf).toHaveProperty("id");
@@ -66,7 +66,7 @@ test("ok", () => {
 // });
 // test("new leaf with text", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YLeaf({ text: "hello" }));
+//   doc.getMap("test").set("newNode", createLeaf({ text: "hello" }));
 //   const nodeJSON = {
 //     text: "hello"
 //   };
@@ -79,7 +79,7 @@ test("ok", () => {
 // });
 // test("new leaf with data", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YLeaf({ data: { comments: ["hello"] } }));
+//   doc.getMap("test").set("newNode", createLeaf({ data: { comments: ["hello"] } }));
 //   const nodeJSON = {
 //     data: { comments: ["hello"], responses: ["hola"] },
 //     text: ""
@@ -91,7 +91,7 @@ test("ok", () => {
 // });
 // test("new leaf with marks", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YLeaf({ marks: ["bold", "italic"] }));
+//   doc.getMap("test").set("newNode", createLeaf({ marks: ["bold", "italic"] }));
 //   const nodeJSON = {
 //     text: "",
 //     bold: true,
@@ -109,7 +109,7 @@ test("ok", () => {
 // test("new node with leaf", () => {
 //   const doc = new Y.Doc();
 
-//   doc.getMap("test").set("newNode", new YNode("paragraph", { content: [new YLeaf()] }));
+//   doc.getMap("test").set("newNode", createNode("paragraph", { content: [createLeaf()] }));
 //   const newNode = doc
 //     .getMap("test")
 //     .get("newNode")
@@ -127,7 +127,7 @@ test("ok", () => {
 // test("new node with Yarray of leaves", () => {
 //   const doc = new Y.Doc();
 
-//   doc.getMap("test").set("newNode", new YNode("paragraph", { content: Y.Array.from([new YLeaf()]) }));
+//   doc.getMap("test").set("newNode", createNode("paragraph", { content: Y.Array.from([createLeaf()]) }));
 //   const newNode = doc.getMap("test").get("newNode") as YNode;
 
 //   const nodeJSON = {
@@ -144,7 +144,7 @@ test("ok", () => {
 // });
 // test("new node with Yarray of children", () => {
 //   const doc = new Y.Doc();
-//   doc.getMap("test").set("newNode", new YNode("paragraph", { children: Y.Array.from([new YNode("paragraph")]) }));
+//   doc.getMap("test").set("newNode", createNode("paragraph", { children: Y.Array.from([createNode("paragraph")]) }));
 //   const newNode = doc
 //     .getMap("test")
 //     .get("newNode")
@@ -166,12 +166,12 @@ test("ok", () => {
 
 //   doc.getMap("test").set(
 //     "newNode",
-//     new YNode("paragraph", {
+//     createNode("paragraph", {
 //       children: [
-//         new YNode("paragraph", { content: [new YLeaf({ text: "Lorem " })] }),
-//         new YNode("paragraph", { content: [new YLeaf({ text: "ipsum " })] })
+//         createNode("paragraph", { content: [createLeaf({ text: "Lorem " })] }),
+//         createNode("paragraph", { content: [createLeaf({ text: "ipsum " })] })
 //       ],
-//       content: [new YLeaf({ text: "dolor " }), new YLeaf({ text: "sic" })]
+//       content: [createLeaf({ text: "dolor " }), createLeaf({ text: "sic" })]
 //     })
 //   );
 //   const text = "Lorem ipsum dolor sic";

@@ -1,4 +1,4 @@
-import { Editor, getIndex, getNodeContainer, getPath, YNode, getChildren, getContent } from "..";
+import { getIndex } from "..";
 import { YArray } from "../../../../node_modules/yjs/dist/src/internals";
 import { copyNode } from "../utils";
 

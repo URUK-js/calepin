@@ -1,15 +1,11 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "ESNext",
+    "module": "commonjs",
     "rootDir": "./",
     "outDir": "./build",
     "esModuleInterop": true,
-    "strict": true,
-    "noEmitOnError": false,
-    "noEmit": false,
-    "skipLibCheck": true,
-    "moduleResolution": "node"
+    "strict": true
   },
   "exclude": ["node_modules"],
   "ts-node": {

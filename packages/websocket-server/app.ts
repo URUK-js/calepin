@@ -3,9 +3,7 @@ env.config();
 import { setupWSConnection } from "./livecycle";
 import WebSocket from "ws";
 import http, { IncomingMessage } from "http";
-// import    jwt  from  "jsonwebtoken";
 
-const host = process.env.HOST || "localhost";
 const port = process.env.PORT || 1234;
 
 const server = http.createServer((request: IncomingMessage, response: any) => {
@@ -26,8 +24,8 @@ wss.on("connection", setupWSConnection);
 server.on("upgrade", (req: IncomingMessage, socket: any, head: any) => {
   // You may check auth of request here..
   const handleAuth = (ws: any) => {
-    const [token] = req.url?.split("=").reverse() as [string];
-    console.log({ token, url: req.url });
+    // const [token] = req.url?.split("=").reverse() as [string];
+    // console.log({ token, url: req.url });
     //        if (!token) {
     //          return res.end("Nothing to see here!");
     //        }
@@ -41,6 +39,6 @@ server.on("upgrade", (req: IncomingMessage, socket: any, head: any) => {
   wss.handleUpgrade(req, socket, head, handleAuth);
 });
 
-server.listen({ host, port });
+server.listen(port);
 
-console.log(`running at '${host}' on proutiprit ${port}`);
+console.log(`running at  on proutiprit ${port}`);

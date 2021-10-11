@@ -57,7 +57,7 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
     doc,
     children: doc.getArray("children"),
     toJSON: (): jsonNode[] => {
-      let array = doc.children.toJSON();
+      let array = doc.getArray("children").toJSON();
 
       const traverse = (node) => {
         if (!node.text) {
