@@ -1,17 +1,7 @@
 import { YMap, YText } from "yjs/dist/src/internals";
 import { Editor, Position, EdytorSelection } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
-import {
-  deleteLeafText,
-  getIndex,
-  getPath,
-  isLeafEmpty,
-  leafLength,
-  leafNodeContent,
-  leafString,
-  leafText,
-  YLeaf
-} from "../utils";
+import { deleteLeafText, getIndex, getPath, isLeafEmpty, leafLength, leafNodeContent, leafText, YLeaf } from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -126,23 +116,26 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
         editor.doc.transact(() => {
           const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
           mergeLeafs(leafNodeContent(start.leaf));
+          const isRemoved = formatedLeaf._item.deleted;
 
-          setTimeout(() => {
-            if (!formatedLeaf._item.deleted) {
+          if (!isRemoved) {
+            setPosition(start.leaf.get("id"), { offset: start.offset });
+            setTimeout(() => {
               setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
-            } else {
-              const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
-              const offset = leafText(remainingLeaf)
-                .toJSON()
-                .indexOf(selectedText);
+            });
+          } else {
+            const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
+            const offset = leafText(remainingLeaf)
+              .toJSON()
+              .indexOf(selectedText);
+            setTimeout(() => {
               setPosition(remainingLeaf.get("id"), {
                 offset,
                 end: offset + selectedText.length
               });
-            }
-          });
+            });
+          }
         });
-
         break;
       }
       case "multileaves":
@@ -180,8 +173,8 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
 
               mergeLeafs(leafNodeContent(leaf));
             }
-          }
-          // { start: start.path[0], end: end.path[0] + 1 }
+          },
+          { start: start.path[0], end: end.path[0] + 1 }
         );
         break;
       }

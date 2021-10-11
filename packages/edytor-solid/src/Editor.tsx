@@ -1,5 +1,5 @@
-import { createSignal, createMemo, onMount, onCleanup } from "solid-js";
-import { renderLeaves as renderLeafDefault, renderBlock as renderBlockDefault, renderChildren } from "./components";
+import { createMemo, onMount as onMountSolid, onCleanup } from "solid-js";
+import { renderChildren } from "./components";
 import { useHistory, EditorContext, useEditor, useNode, useMap } from "./hooks";
 import {
   EditorProps,
@@ -7,23 +7,21 @@ import {
   onDrop,
   onBeforeInput,
   onKeyDown,
-  Cursor,
   Editor as EditorType,
   EdytorDoc,
   EdytorSelection
 } from "edytor";
-import { createWebRtcProvider, createWSProvider, Dropper } from "edytor/src";
-import { SelectionIndicator } from "./components/SelectionIndicator";
+import { Dropper, nanoid } from "edytor/src";
 
 export const Editor = ({
   initialValue,
+  renderInner,
   renderHandle = () => null,
   blocks,
-  leafs,
-  renderBlock = renderBlockDefault,
-  renderLeaf = renderLeafDefault,
+  leaves,
   spellcheck = true,
   onChange = () => null,
+  onMount = () => null,
   renderBefore,
   hotkeys,
   defaultBlock = "paragraph",
@@ -31,67 +29,57 @@ export const Editor = ({
   className = "edytor",
   allowNesting = true,
   readOnly = false,
-  leaves,
   props
 }: EditorProps) => {
-  let editorId = Math.random()
-    .toString(36)
-    .substring(2, 9);
-  let [editorRef, setEditorRef] = createSignal<HTMLDivElement | undefined>();
-  let [cursor, setCursor] = createSignal<Cursor>();
-  let [_, setSelection] = createSignal<EdytorSelection | undefined>();
+  let editorId = nanoid();
+  let editorRef = undefined as HTMLDivElement | undefined;
 
   const doc = new EdytorDoc(initialValue.json);
   const onChangeObserver = () => {
     // console.log(doc.children.toJSON());
   };
-  onMount(() => doc.children.observeDeep(onChangeObserver));
+  onMountSolid(() => doc.children.observeDeep(onChangeObserver));
   onCleanup(() => doc.children.unobserveDeep(onChangeObserver));
-  const ID_TO_NODE = new Map();
-  const selection = new EdytorSelection(ID_TO_NODE, setSelection);
-  const config = useMap(doc.config);
+
+  const selection = new EdytorSelection();
+  const dropper = new Dropper();
+
   const undoManager = useHistory(doc, selection);
   const editor = createMemo<EditorType>(() => ({
     editorId,
     readOnly,
     allowNesting,
     defaultBlock,
-    dropper: new Dropper(doc, editorId, ID_TO_NODE, selection, allowNesting),
+    dropper,
     selection,
-    cursor,
     blocks,
     leaves,
     hotkeys,
     renderHandle,
-    renderBlock,
-    renderLeaf,
     undoManager,
     editorRef,
     doc,
     children: doc.children,
-    config: doc.config,
-    toUpdate: doc.toUpdate,
     toString: doc.string,
     toJSON: doc.toJSON,
-    ID_TO_NODE,
-    ID_TO_MAP: new WeakMap(),
-    MAP_TO_ID: new WeakMap()
+    ID_TO_NODE: new Map()
   }))();
 
   return (
     <EditorContext value={editor}>
       {renderBefore && renderBefore()}
       <div
-        {...props(useEditor(), config())}
+        {...props}
         className={className}
         id={editorId}
         spellcheck={spellcheck}
         data-edytor={editorId}
         data-gram={true}
         ref={(container) => {
-          selection.init(container);
-          setCursor(new Cursor({ container, selection }));
-          setEditorRef(container);
+          editorRef = container;
+          selection.init(editor, container);
+          dropper.init(editor, container);
+          onMount(editor);
         }}
         // onMouseMove={[onMouseMove, editor]}
         onDrop={[onDrop, useEditor()]}
@@ -101,10 +89,9 @@ export const Editor = ({
         onKeyDown={[onKeyDown, editor]}
         contentEditable={!readOnly}
       >
+        {renderInner && renderInner()}
         <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
-        <SelectionIndicator />
-
-        {renderChildren(doc.children)}
+        {renderChildren(doc.children, "node")}
       </div>
       {renderAfter && renderAfter()}
     </EditorContext>

@@ -7,8 +7,23 @@ type YNode = YMap<any>;
 export const getNode = (node): YNode => node?.parent?.parent as YNode;
 
 export const getIndex = (node: YNode): number => {
-  //this should be optimzed
-  return node.parent.toArray().indexOf(node);
+  let index = 0;
+  let stop = false;
+  let n = node.parent._start;
+  while (n !== null && !stop) {
+    if (n.countable && !n.deleted) {
+      const c = n.content.getContent();
+      for (let i = 0; i < c.length; i++) {
+        if (c[i] === node) {
+          stop = true;
+          break;
+        }
+        index++;
+      }
+    }
+    n = n.right;
+  }
+  return index;
 };
 
 export const getPath = (node: YNode): number[] => {

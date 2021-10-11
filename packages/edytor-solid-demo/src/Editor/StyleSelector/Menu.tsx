@@ -2,10 +2,11 @@ import { createMemo, createSignal } from "solid-js";
 import { useEditor, useMap } from "edytor-solid";
 import Toggle from "./Toggle";
 import { HooverMenu } from "../HooverMenu";
+import { leafString } from "edytor/src";
 const Menu = ({}) => {
   const [open, setOpen] = createSignal<boolean>(false);
   const editor = useEditor();
-  const config = useMap(editor.config);
+  const config = useMap(editor.doc.getMap("config"));
 
   const count = createMemo(() => {
     let blocks = 0;
@@ -14,7 +15,7 @@ const Menu = ({}) => {
 
     editor.doc.traverse((node, isText) => {
       if (isText) {
-        characters += node.string();
+        characters += leafString(node);
         leafs++;
       } else {
         blocks++;

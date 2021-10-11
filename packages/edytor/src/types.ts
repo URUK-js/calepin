@@ -44,10 +44,14 @@ interface HotKeys {
 }
 export interface EditorProps extends Record<any, any> {
   allowNesting: boolean;
+  children: any;
   initialValue: {
     json?: jsonNode[];
     yarray?: YArray<any>;
   };
+  onMount?: (editor: Editor) => void;
+  leaves: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+  blocks: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
   defaultBlock?: string;
   spellcheck?: boolean;
   readOnly: boolean;
@@ -66,24 +70,19 @@ export interface Editor {
   readOnly: boolean;
   editorId: string;
   defaultBlock: string;
+
   dropper: Dropper;
   hotkeys?: HotKeys[];
   selection: EdytorSelection;
-  cursor: () => Cursor | undefined;
-  renderBlock: ({ attributes, children, block }: renderBlockProps) => any;
-  renderLeaf: ({ attributes, string, leaf }: renderLeafProps) => any;
+  leaves: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+  blocks: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
   renderHandle: (({ node, attributes }: renderHandleProps) => any) | undefined;
   undoManager: any;
-  editorRef: Accessor<HTMLDivElement | undefined>;
-  toUpdate: () => Uint8Array;
+  editorRef: HTMLDivElement | undefined;
   doc: EdytorDoc;
-  config: YMap<any>;
+
   toJSON: () => jsonNode[];
   ID_TO_NODE: Map<string, YMap<any>>;
-  ID_TO_MAP: WeakMap<any, any>;
-  MAP_TO_ID: WeakMap<any, any>;
-  //
-
   children: YArray<any>;
 }
 

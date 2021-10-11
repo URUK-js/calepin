@@ -1,14 +1,11 @@
-import { Position } from "../..";
-import { createAbsolutePositionFromRelativePosition } from "../../../../../node_modules/yjs/dist/src";
-import { getIndex, getPath } from "../common";
-import { leafLength, leafNode, leafNodeContentLength } from "../leaves";
-import { YLeaf, YNode } from "../yClasses";
+import { Editor, Position } from "../types";
+import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength, YLeaf, YNode } from ".";
 
 export class EdytorSelection {
-  onSelectionChange?: (selection: EdytorSelection) => void;
+  editor: Editor;
   observers: ((selection: EdytorSelection) => void)[];
   container: HTMLDivElement;
-  ID_TO_NODE: Map<any, any>;
+
   start: Position;
   end: Position;
   selectedText: string;
@@ -26,13 +23,13 @@ export class EdytorSelection {
   selection?: Selection;
   focused: boolean;
   type?: "multinodes" | "collapsed" | "singlenode" | "multileaves" | "notInDoc";
-  constructor(ID_TO_NODE: Map<any, any>, onSelectionChange?: (selection: EdytorSelection) => void) {
-    this.onSelectionChange = onSelectionChange;
-    this.ID_TO_NODE = ID_TO_NODE;
-  }
-  init = (container) => {
-    this.container = container;
 
+  constructor() {
+    this.observers = [];
+  }
+  init = (editor: Editor, container) => {
+    this.container = container;
+    this.editor = editor;
     document.addEventListener("selectionchange", this.onSelection);
     this.container.addEventListener("focus", this.onFocus);
     this.container.addEventListener("blur", this.onBlur);
@@ -72,7 +69,7 @@ export class EdytorSelection {
     let node = anchorNode;
 
     while (!leaf && node !== this.container && node) {
-      leaf = this.ID_TO_NODE.get(node.id);
+      leaf = this.editor.ID_TO_NODE.get(node.id);
       if (!leaf) {
         node = node.parentElement;
       }
@@ -95,6 +92,7 @@ export class EdytorSelection {
     if (focusNode === null) return;
     const [leaf1, node1, path1, leafHtml1] = this.getLeaf(anchorNode as HTMLElement, "anchorNode");
     const [leaf2, node2, path2, leafHtml2] = this.getLeaf(focusNode as HTMLElement, "focusNode");
+
     if (!leaf1) return;
     const equalPaths = path1.join("") === path2.join("");
     const isFollowing = equalPaths ? anchorOffset < focusOffset : path1.join() < path2.join();
@@ -112,19 +110,20 @@ export class EdytorSelection {
       leaf: isFollowing ? leaf1 : leaf2
     } as Position;
 
-    this.end = isCollapsed
-      ? this.start
-      : {
-          ...this.getNodeBoundingRect(!isFollowing ? node1 : node2),
-          node: !isFollowing ? node1 : node2,
-          leafId: (!isFollowing ? leaf1 : leaf2).get("id"),
-          leafIndex: !isFollowing ? path1[path1.length - 1] : path2[path2.length - 1],
-          nodeIndex: !isFollowing ? path1[path1.length - 2] : path2[path2.length - 2],
-          path: !isFollowing ? path1 : path2,
-          leafHtml: !isFollowing ? leafHtml1 : leafHtml2,
-          offset: !isFollowing ? anchorOffset : focusOffset,
-          leaf: !isFollowing ? leaf1 : leaf2
-        };
+    this.end =
+      isCollapsed || node2 === null
+        ? this.start
+        : {
+            ...this.getNodeBoundingRect(!isFollowing ? node1 : node2),
+            node: !isFollowing ? node1 : node2,
+            leafId: (!isFollowing ? leaf1 : leaf2).get("id"),
+            leafIndex: !isFollowing ? path1[path1.length - 1] : path2[path2.length - 1],
+            nodeIndex: !isFollowing ? path1[path1.length - 2] : path2[path2.length - 2],
+            path: !isFollowing ? path1 : path2,
+            leafHtml: !isFollowing ? leafHtml1 : leafHtml2,
+            offset: !isFollowing ? anchorOffset : focusOffset,
+            leaf: !isFollowing ? leaf1 : leaf2
+          };
     this.selectedText = range ? range.toString() : "";
     this.arePathsEquals = equalPaths;
     this.length = this.selectedText.length;
@@ -149,10 +148,7 @@ export class EdytorSelection {
   };
 
   onChange = () => {
-    this.onSelectionChange && this.onSelectionChange(this);
-    if (this.observers) {
-      this.observers.forEach((o) => o(this));
-    }
+    this.observers.forEach((o) => o(this));
   };
 
   setPosition = (

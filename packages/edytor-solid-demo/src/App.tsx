@@ -7,6 +7,7 @@ import StyleSelector from "./Editor/StyleSelector/Menu";
 import { initialValue } from "./Editor/initialValue";
 import "./Editor/editor.css";
 import { renderHandle } from "./Handle";
+import { SelectionIndicator } from "./Editor/SelectionIndicator";
 
 const Paragraph = ({ children }) => {
   return <p>{children}</p>;
@@ -52,11 +53,14 @@ const App: Component = () => {
           { operation: "formatText", keys: "mod+shift+x", mark: { strikethrough: true } },
           { operation: "formatText", keys: "mod+shift+h", mark: { highlight: true } }
         ]}
-        props={(_, config) => ({
-          "data-font": config.font || "sans",
-          "data-full-width": !!config.fullWidth,
-          "data-small-text": !!config.smallText
-        })}
+        props={{ "data-font": "sans", "data-full-width": false, "data-small-text": true }}
+        renderInner={() => {
+          return (
+            <>
+              <SelectionIndicator />
+            </>
+          );
+        }}
         renderBefore={() => {
           return (
             <>

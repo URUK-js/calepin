@@ -1,5 +1,5 @@
 import { moveNode } from "../operations";
-import { EdytorSelection } from "../types";
+import { Editor, EdytorSelection } from "../types";
 import { getIndex, getPath } from "./common";
 import { EdytorDoc } from "./yClasses";
 
@@ -8,26 +8,23 @@ export class Dropper {
   to;
   node;
   startPath;
-
+  container: HTMLDivElement;
+  editor: Editor;
   doc: EdytorDoc;
   editorId: string;
   ID_TO_NODE: Map<any, any>;
   selection: EdytorSelection;
   allowNesting: boolean;
 
-  constructor(
-    doc: EdytorDoc,
-    editorId: string,
-    ID_TO_NODE: Map<any, any>,
-    selection: EdytorSelection,
-    allowNesting: boolean
-  ) {
-    this.doc = doc;
-    this.editorId = editorId;
-    this.selection = selection;
-    this.ID_TO_NODE = ID_TO_NODE;
-    this.allowNesting = allowNesting;
-  }
+  init = (editor, container) => {
+    this.editor = editor;
+    this.doc = editor.doc;
+    this.container = container;
+    this.editorId = editor.editorId;
+    this.selection = editor.selection;
+    this.ID_TO_NODE = editor.ID_TO_NODE;
+    this.allowNesting = editor.allowNesting;
+  };
   startDrag = (node, e: DragEvent) => {
     this.node = node;
     const dndIndicator = document.getElementById("dndIndicator");

@@ -106,7 +106,7 @@ blockquote {
 
   opacity: 0;
 
-  transition: all 100ms ease-in;
+  transition: all 20ms ease-in;
 }
 [data-edytor-block] {
   position: relative;

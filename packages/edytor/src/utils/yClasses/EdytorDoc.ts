@@ -1,4 +1,4 @@
-import { Doc, encodeStateAsUpdateV2 } from "yjs";
+import { Doc } from "yjs";
 import { YArray, YMap } from "yjs/dist/src/internals";
 import { YLeaf, YNode } from ".";
 import { getNodeContent, getNodeChildren } from "../nodes";
@@ -61,16 +61,6 @@ export class EdytorDoc extends Doc {
     } else {
       return this.getNodeAtPath(path.slice(1, path.length)).get("children");
     }
-    // let container = this.children;
-    // for (let i = 0; i < path.length; i++) {
-    //   const index = path[i];
-    //   if (container.toArray) {
-    //     container = container.get(index).get("children");
-    //   } else {
-    //     container = undefined;
-    //   }
-    // }
-    // return container;
   };
   traverse = (
     cb: (node: YMap<any>, isText: boolean, path: number[]) => void,
@@ -83,7 +73,6 @@ export class EdytorDoc extends Doc {
       if (node.has("text")) {
         cb(node, true, path);
       } else {
-        console.log();
         const array = getNodeContent(node)
           .toArray()
           //@ts-ignore
@@ -106,9 +95,7 @@ export class EdytorDoc extends Doc {
       config: this.config.toJSON()
     };
   };
-  toUpdate = () => {
-    return encodeStateAsUpdateV2(this);
-  };
+
   string = (): string => {
     let t = "";
     const array = this.children.toArray() as YNode[];

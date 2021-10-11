@@ -7,16 +7,18 @@ import { YLeaf, YNode, getId, leafText } from "edytor";
 import { renderHandle } from "./renderHandle";
 
 export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node"): JSXElement =>
-  mapArray(useChildren(content), type === "leaf" ? renderLeaf : renderNode);
+  mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const leaf = useNode(node);
   const { leaves } = useEditor();
   const content = createMemo(() => {
-    let leafNode = useText(leafText(node))();
-    Object.keys(leaf()).forEach((mark) => {
+    const l = leaf() as any;
+    let leafNode = useText(leafText(node))() as any;
+    if (!leafNode.length) leafNode = "\uFEFF";
+    Object.keys(l).forEach((mark) => {
       if (mark !== "data" && mark !== "text" && mark !== "id") {
-        const props = typeof leaves[mark] === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node };
+        const props = typeof leaves[mark] === "string" ? {} : { mark: { [mark]: l[mark] }, node };
         leafNode = (
           <Dynamic {...props} component={leaves[mark]}>
             {leafNode}
