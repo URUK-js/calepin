@@ -22,6 +22,9 @@ const App: Component = () => {
             <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
           )
         }}
+        collaboration={{
+          user: { name: "" }
+        }}
         spellcheck={false}
         renderHandle={renderHandle}
         props={{ "data-font": "sans", "data-full-width": false, "data-small-text": true }}

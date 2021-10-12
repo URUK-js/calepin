@@ -3,7 +3,7 @@ env.config();
 import { setupWSConnection } from "./server/livecycle";
 import WebSocket from "ws";
 import http, { IncomingMessage } from "http";
-import { handleAuth } from "./custom";
+import { handleAuth } from "./logic";
 const port = process.env.PORT || 1234;
 
 const server = http.createServer((request: IncomingMessage, response: any) => {

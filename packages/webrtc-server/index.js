@@ -1,7 +1,7 @@
 const ws = require("ws");
 const http = require("http");
 const map = require("lib0/map");
-
+const { handleAuth } = require("./logic");
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
 const wsReadyStateClosing = 2; // eslint-disable-line
@@ -79,18 +79,15 @@ const onconnection = (conn) => {
     subscribedTopics.clear();
     closed = true;
   });
-  console.log({ subscribedTopics });
+
   send(conn, { type: "connect" });
   conn.on(
     "message",
     /** @param {object} message */ (message) => {
-      console.log({ message });
-
       if (typeof message === "string") {
         message = JSON.parse(message);
       }
       if (message && message.type && !closed) {
-        console.log({ message });
         switch (message.type) {
           case "subscribe":
             /** @type {Array<string>} */ (message.topics || []).forEach((topicName) => {
@@ -129,14 +126,7 @@ const onconnection = (conn) => {
 wss.on("connection", onconnection);
 
 server.on("upgrade", (request, socket, head) => {
-  // You may check auth of request here..
-  /**
-   * @param {any} ws
-   */
-  const handleAuth = (ws) => {
-    wss.emit("connection", ws, request);
-  };
-  wss.handleUpgrade(request, socket, head, handleAuth);
+  wss.handleUpgrade(request, socket, head, (ws) => handleAuth(ws, request, () => wss.emit("connection", ws, request)));
 });
 
 server.listen(port);

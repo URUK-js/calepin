@@ -23,6 +23,7 @@ export const Editor = ({
   blocks = defaultBlocks,
   spellcheck = true,
   onChange = () => null,
+  collaboration,
   onMount = () => null,
   renderBefore,
   dnd = { active: false },
@@ -44,7 +45,7 @@ export const Editor = ({
   };
   onMountSolid(() => children.observeDeep(onChangeObserver));
   onCleanup(() => children.unobserveDeep(onChangeObserver));
-
+  collaboration.user.id = editorId;
   const selection = new EdytorSelection();
   const dropper = new Dropper();
   awareness?.setLocalStateField("user", {
@@ -55,6 +56,7 @@ export const Editor = ({
     editorId,
     dnd,
     readOnly,
+    collaboration,
     awareness,
     allowNesting,
     defaultBlock,

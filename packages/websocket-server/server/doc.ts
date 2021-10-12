@@ -15,7 +15,7 @@ import {
   CALLBACK_DEBOUNCE_WAIT,
   CALLBACK_DEBOUNCE_MAXWAIT
 } from "./vars";
-import { emptyValue, onDebouncedSave } from "../custom";
+import { emptyValue, onDebouncedSave } from "../logic";
 
 const updateHandler = (update: Uint8Array, origin: any, doc: WSSharedDoc) => {
   // pub.publishBuffer(doc.name, Buffer.from(update)); // do not await

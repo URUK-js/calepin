@@ -6,7 +6,7 @@ export const Cursors = () => {
   const editor = useEditor();
   const onUpdate = () => {
     const groups = Array.from(editor.awareness.getStates().values()).reduce((acc, { user, position }) => {
-      if (!position) return acc;
+      if (!position || user.id === editor.collaboration.user.id) return acc;
       if (!acc[position.node]) {
         acc[position.node] = [{ user, position }];
       } else {
@@ -25,7 +25,6 @@ export const Cursors = () => {
   });
 
   return mapArray(usersGroups, (group) => {
-    console.log(group);
     return <CursorGroup group={group} />;
   });
 };
@@ -34,12 +33,15 @@ const CursorGroup = ({ group }) => {
   const [{ position, user }] = group;
 
   const rect = document.getElementById(position.node)?.getBoundingClientRect();
-  return (
-    <img
-      style={{ top: rect?.top - 15 + "px", left: rect?.left - 20 + "px" }}
-      className=" w-8 z-10 select-none pointer-events-none transition-all bg-white p-1 shadow-sm rounded-full absolute  object-cover "
-      src={`https://avatars.dicebear.com/api/bottts/${user.id}.svg`}
-      alt=""
-    />
-  );
+  if (!rect) return null;
+  return group.map(({ user }, i) => {
+    return (
+      <img
+        style={{ top: rect?.top - 15 + "px", left: rect?.left - 20 + i * 20 + "px" }}
+        className=" w-8 z-10 select-none pointer-events-none transition-all bg-white p-1 shadow-sm rounded-full absolute  object-cover "
+        src={`https://avatars.dicebear.com/api/bottts/${user.id}.svg`}
+        alt=""
+      />
+    );
+  });
 };

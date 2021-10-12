@@ -25,10 +25,10 @@ export const HooverMenu = ({}) => {
       ref.style.transform = `scale(1)`;
       ref.style.top = `${top + window.pageYOffset - ref.offsetHeight - 5}px`;
       ref.style.left = `${left + window.pageXOffset - ref.offsetWidth / 2 + width / 2}px`;
-      ref.style.transition = `opacity 0.2s, transform 0s ease-in-out`;
+      ref.style.transition = `opacity 0.2s, transform 0s, left 0.2s,top 0.2s  ease-in-out`;
       ref.style.pointerEvents = "all";
       setTimeout(() => {
-        ref.style.transition = `opacity 0.2s, transform 0.2s ease-in-out`;
+        ref.style.transition = `opacity 0.2s, transform 0.2s, left 0.2s,top 0.2s ease-in-out`;
       }, 200);
     }
   };

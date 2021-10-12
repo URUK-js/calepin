@@ -5,7 +5,11 @@ export class EdytorSelection {
   editor: Editor;
   observers: ((selection: EdytorSelection) => void)[];
   container: HTMLDivElement;
-
+  collaborationPosition: {
+    node: string;
+    leaf: string;
+    offset: number;
+  };
   start: Position;
   end: Position;
   selectedText: string;
@@ -149,12 +153,15 @@ export class EdytorSelection {
 
   onChange = () => {
     this.observers.forEach((o) => o(this));
-    console.log(this.editor.awareness);
-    this.editor.awareness.setLocalStateField("position", {
-      node: this.start.node.get("id"),
-      leaf: this.start.leaf.get("id"),
-      offset: this.start.offset
-    });
+    // console.log(this.editor.awareness);
+    // if (this.collaborationPosition?.node !== this.start.node.get("id")) {
+    //   this.collaborationPosition = {
+    //     node: this.start.node.get("id"),
+    //     leaf: this.start.leaf.get("id"),
+    //     offset: this.start.offset
+    //   };
+    //   this.editor.awareness.setLocalStateField("position", this.collaborationPosition);
+    // }
   };
 
   setPosition = (

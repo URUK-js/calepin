@@ -1,3 +1,10 @@
+const Ref = () => {
+  return (
+    <span contentEditable={false}>
+      <b>I'M a ref bitch</b>
+    </span>
+  );
+};
 export const defaultLeaves = {
   bold: "strong",
   italic: "i",
@@ -6,5 +13,6 @@ export const defaultLeaves = {
   strikethrough: "del",
   highlight: "mark",
   inlinequote: "q",
-  keyboard: "kbd"
+  keyboard: "kbd",
+  reference: Ref
 };
