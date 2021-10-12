@@ -1,5 +1,5 @@
 import { createMemo, onMount as onMountSolid, onCleanup } from "solid-js";
-import { renderChildren } from "./components";
+import { renderChildren, defaultLeaves, defaultBlocks } from "./components";
 import { useHistory, EditorContext, useEditor } from "./hooks";
 import {
   EditorProps,
@@ -9,7 +9,8 @@ import {
   onKeyDown,
   Editor as EditorType,
   EdytorDoc,
-  EdytorSelection
+  EdytorSelection,
+  defaultHotkeys
   // createWSProvider
 } from "edytor";
 import { Dropper, nanoid } from "edytor/src";
@@ -18,13 +19,13 @@ import { useYjsContext } from "./contexts/yjsContext";
 export const Editor = ({
   renderInner,
   renderHandle = () => null,
-  blocks,
-  leaves,
+  leaves = defaultLeaves,
+  blocks = defaultBlocks,
   spellcheck = true,
   onChange = () => null,
   onMount = () => null,
   renderBefore,
-  hotkeys,
+  hotkeys = defaultHotkeys,
   defaultBlock = "paragraph",
   renderAfter,
   className = "edytor",

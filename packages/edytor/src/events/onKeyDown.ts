@@ -17,21 +17,32 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
       return editor.undoManager.redo();
     }
 
-    for (let i = 0; i < editor.hotkeys.length; i++) {
-      const { keys, operation, mark } = editor.hotkeys[i];
-      if (isHotkey(keys, e)) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof operation === "function") {
-          return operation(editor);
-        }
-        switch (operation) {
-          case "formatText": {
-            return formatText(editor, mark);
+    if (editor.hotkeys) {
+      for (let i = 0; i < editor.hotkeys.length; i++) {
+        const { keys, operation, mark } = editor.hotkeys[i];
+        if (isHotkey(keys, e)) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof operation === "function") {
+            return operation(editor);
           }
+          switch (operation) {
+            case "formatText": {
+              return formatText(editor, mark);
+            }
+          }
+          break;
         }
-        break;
       }
     }
   }
 };
+
+export const defaultHotkeys = [
+  { operation: "formatText", keys: "mod+b", mark: { bold: true } },
+  { operation: "formatText", keys: "mod+i", mark: { italic: true } },
+  { operation: "formatText", keys: "mod+u", mark: { underline: true } },
+  { operation: "formatText", keys: "mod+shift+c", mark: { code: true } },
+  { operation: "formatText", keys: "mod+shift+x", mark: { strikethrough: true } },
+  { operation: "formatText", keys: "mod+shift+h", mark: { highlight: true } }
+];

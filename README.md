@@ -54,6 +54,8 @@
  }
 ];
 
+
+
 ```
 
 ## Why another editor ?
@@ -100,7 +102,7 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ✅ nest nodes with tab
 
-✅ merge nodes on delete at start/end
+⚽ merge nodes on delete at start/end
 
 ✅ un-nest nodes on delete when needed
 
@@ -110,9 +112,9 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ✅ cursor positioning and repositioning
 
-⚽ web-socket server example
+✅ web-socket server example
 
-⚽ realtime demo example
+✅ realtime demo example
 
 ⚽ realtime cursor positioning
 

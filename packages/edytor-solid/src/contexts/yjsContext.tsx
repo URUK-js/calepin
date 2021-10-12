@@ -22,29 +22,29 @@ export const useYjsContext = (): YjsContextType => {
 export const YjsContextWrapper = ({ initialValue, renderChildren }: YjsContextWrapperProps) => {
   const [contextValue, setContextValue] = createSignal<YjsContextType>();
   onMount(() => {
-    // let doc, children;
-    // if (initialValue.yarray) {
-    //   children = initialValue.yarray;
-    //   doc = children.doc as Doc;
-    // } else {
-    //   doc = DocFromJson(initialValue.json!);
-    //   children = doc.getArray("children");
-    // }
-    // setContextValue({ doc, children, provider: undefined, awareness: undefined });
+    let doc, children;
+    if (initialValue.yarray) {
+      children = initialValue.yarray;
+      doc = children.doc as Doc;
+    } else {
+      doc = DocFromJson(initialValue.json!);
+      children = doc.getArray("children");
+    }
+    setContextValue({ doc, children, provider: undefined, awareness: undefined });
 
-    createWSProvider("aelalmeeazeaza").then((provider) => {
-      setContextValue({
-        doc: provider.doc,
-        children: provider.doc.getArray("children"),
-        provider,
-        awareness: provider.awareness
-      });
-    });
+    // createWSProvider("aelalmeeazeaza").then((provider) => {
+    //   setContextValue({
+    //     doc: provider.doc,
+    //     children: provider.doc.getArray("children"),
+    //     provider,
+    //     awareness: provider.awareness
+    //   });
+    // });
   });
 
   return (
-    <Show when={!!contextValue()} fallback={<div>Loading...</div>}>
-      {(value) => <YjsContext.Provider value={contextValue()}>{renderChildren()}</YjsContext.Provider>}
+    <Show when={contextValue()} fallback={<div>Loading...</div>}>
+      {(value) => <YjsContext.Provider value={value}>{renderChildren()}</YjsContext.Provider>}
     </Show>
   );
 };

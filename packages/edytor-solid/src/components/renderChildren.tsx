@@ -38,12 +38,14 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
 };
 
 export const renderNode = (node: YNode) => {
-  const block = useNode(node);
+  const block = useNode(node)();
   const { blocks, defaultBlock } = useEditor();
+  const component = blocks[block.type || blocks[defaultBlock]];
+  const props = typeof component === "string" ? {} : { block, node };
   return (
     <div data-edytor-element data-edytor-block id={getId(node)}>
       {renderHandle(node)}
-      <Dynamic block={block} node={node} component={blocks[block().type || blocks[defaultBlock]]}>
+      <Dynamic {...props} component={component}>
         {renderChildren(node.get("content"), "leaf")}
       </Dynamic>
       {renderChildren(node.get("children"), "node")}

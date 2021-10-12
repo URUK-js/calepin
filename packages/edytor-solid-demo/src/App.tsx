@@ -28,31 +28,10 @@ const App: Component = () => {
         initialValue={{
           json: initialValue()
         }}
-        leaves={{
-          bold: "strong",
-          italic: "i",
-          underline: "u",
-          code: "code",
-          strikethrough: Strike,
-          highlight: "mark"
-        }}
-        blocks={{
-          paragraph: Paragraph,
-          blockquote: Blockquote,
-          heading: Heading
-        }}
         spellcheck={false}
         readOnly={false}
         defaultBlock="paragraph"
         renderHandle={renderHandle}
-        hotkeys={[
-          { operation: "formatText", keys: "mod+b", mark: { bold: true } },
-          { operation: "formatText", keys: "mod+i", mark: { italic: true } },
-          { operation: "formatText", keys: "mod+u", mark: { underline: true } },
-          { operation: "formatText", keys: "mod+shift+c", mark: { code: true } },
-          { operation: "formatText", keys: "mod+shift+x", mark: { strikethrough: true } },
-          { operation: "formatText", keys: "mod+shift+h", mark: { highlight: true } }
-        ]}
         props={{ "data-font": "sans", "data-full-width": false, "data-small-text": true }}
         renderInner={() => {
           return (
