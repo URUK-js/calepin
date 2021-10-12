@@ -46,6 +46,14 @@ interface HotKeys {
   keys: string;
   mark: Record<string, any>;
 }
+type DNDProps = {
+  canNest?: (block: YMap<any>, path: number[]) => boolean;
+  active: boolean;
+  renderIndicator: () => any;
+  onExternalDrop?: (files) => any;
+  accept?: string[];
+  afterDrop?: (editor: Editor, from, to) => void;
+};
 export interface EditorProps extends Record<any, any> {
   allowNesting: boolean;
   children: any;
@@ -53,10 +61,12 @@ export interface EditorProps extends Record<any, any> {
     json?: jsonNode[];
     yarray?: YArray<any>;
   };
+  dnd?: DNDProps;
+
   collaboration: {
     awarenessId?: string;
     awareness?: awarenessProtocol.Awareness;
-    url: "string";
+    url: string;
     room: string;
     user?: {
       color?: string;
@@ -77,8 +87,6 @@ export interface EditorProps extends Record<any, any> {
   renderBefore?: () => any;
   renderAfter?: () => any;
   onChange?: (editor: Editor) => void;
-  renderBlock?: ({ attributes, children, block }: renderBlockProps) => any;
-  renderLeaf?: ({ attributes, string, leaf }: renderLeafProps) => any;
 }
 
 export interface Editor {
@@ -86,7 +94,8 @@ export interface Editor {
   readOnly: boolean;
   editorId: string;
   defaultBlock: string;
-
+  awareness?: awarenessProtocol.Awareness;
+  dnd?: DNDProps;
   dropper: Dropper;
   hotkeys?: HotKeys[];
   selection: EdytorSelection;

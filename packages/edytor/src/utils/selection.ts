@@ -149,6 +149,12 @@ export class EdytorSelection {
 
   onChange = () => {
     this.observers.forEach((o) => o(this));
+    console.log(this.editor.awareness);
+    this.editor.awareness.setLocalStateField("position", {
+      node: this.start.node.get("id"),
+      leaf: this.start.leaf.get("id"),
+      offset: this.start.offset
+    });
   };
 
   setPosition = (

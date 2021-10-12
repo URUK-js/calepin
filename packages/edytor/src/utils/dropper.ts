@@ -26,6 +26,7 @@ export class Dropper {
     this.allowNesting = editor.allowNesting;
   };
   startDrag = (node, e: DragEvent) => {
+    if (!this.editor.dnd.active) return;
     this.node = node;
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "1";
@@ -75,6 +76,7 @@ export class Dropper {
     return { hoveredElement: element, hoveredNode };
   };
   onDrag = (e: MouseEvent) => {
+    if (!this.editor.dnd.active) return;
     const { hoveredElement, hoveredNode } = this.getHoveredNode(e.target as HTMLElement);
     const dndIndicator = document.getElementById("dndIndicator");
 

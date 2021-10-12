@@ -27,8 +27,8 @@ export class EdytorDoc extends Doc {
   }
 }
 
-export const DocFromJson = (value: jsonNode[]) => {
-  const doc = new Doc();
+export const DocFromJson = (value: jsonNode[], initialDoc?: Doc) => {
+  const doc = initialDoc || new Doc();
   const array = doc.getArray("children");
   array.insert(0, value.map(getChildren));
   return doc;

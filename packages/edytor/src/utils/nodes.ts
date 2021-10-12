@@ -38,7 +38,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
   let nextLeaf;
   let stop = false;
 
-  editor.doc.traverse((node, isText) => {
+  traverse(editor, (node, isText) => {
     if (isText) {
       if (node === start.leaf) {
         stop = true;

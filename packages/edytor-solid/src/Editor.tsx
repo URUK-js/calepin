@@ -25,6 +25,7 @@ export const Editor = ({
   onChange = () => null,
   onMount = () => null,
   renderBefore,
+  dnd = { active: false },
   hotkeys = defaultHotkeys,
   defaultBlock = "paragraph",
   renderAfter,
@@ -46,11 +47,15 @@ export const Editor = ({
 
   const selection = new EdytorSelection();
   const dropper = new Dropper();
-
+  awareness?.setLocalStateField("user", {
+    id: editorId
+  });
   const undoManager = useHistory(children, selection);
   const editor = {
     editorId,
+    dnd,
     readOnly,
+    awareness,
     allowNesting,
     defaultBlock,
     dropper,
@@ -85,7 +90,7 @@ export const Editor = ({
           onMount(editor);
         }}
         // onMouseMove={[onMouseMove, editor]}
-        onDrop={[onDrop, useEditor()]}
+        onDrop={[onDrop, editor]}
         onDragOver={[onDragOver, editor]}
         onDragStart={[onDragOver, editor]}
         onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
@@ -93,7 +98,7 @@ export const Editor = ({
         contentEditable={!readOnly}
       >
         {renderInner && renderInner()}
-        <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
+        {dnd?.active && dnd.renderIndicator()}
         {renderChildren(children, "root")}
       </div>
       {renderAfter && renderAfter()}

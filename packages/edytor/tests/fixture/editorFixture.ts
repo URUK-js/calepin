@@ -1,6 +1,6 @@
 import { encodeStateAsUpdateV2 } from "yjs";
 import { Editor, EdytorDoc, jsonNode } from "../..";
-import { EdytorSelection } from "../../src";
+import { DocFromJson, EdytorSelection, getLeafAtPath } from "../../src";
 
 type partialSelection = {
   start: {
@@ -20,14 +20,14 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
 
   start = {
     ...start,
-    leaf: doc.getLeafAtPath(start.path)
+    leaf: getLeafAtPath({ children: doc.getArray("children") }, start.path)
   };
   const hasEnd = !!end;
   if (!hasEnd) end = start;
 
   end = {
     ...end,
-    leaf: doc.getLeafAtPath(end.path)
+    leaf: getLeafAtPath({ children: doc.getArray("children") }, end.path)
   };
   const equalPaths = start.path.join("") === end.path.join("");
   if (!start.leaf) {
@@ -50,7 +50,7 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
 
 export const makeEditorFixture = (value: jsonNode[], selection?: partialSelection): Editor => {
   if (!selection) selection = { start: { path: [0, 0], offset: 0 }, length: 0 };
-  const doc = new EdytorDoc(value);
+  const doc = DocFromJson(value);
 
   //@ts-ignore
   return {
@@ -58,43 +58,9 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
     children: doc.getArray("children"),
     toJSON: (): jsonNode[] => {
       let array = doc.getArray("children").toJSON();
-
-      const traverse = (node) => {
-        if (!node.text) {
-          const array = (node.content || []).concat(node.children || []);
-          for (let i = 0; i < array.length; i++) {
-            traverse(array[i]);
-          }
-        } else {
-          node.id = undefined;
-          delete node.id;
-        }
-      };
-
-      for (let i = 0; i < array.length; i++) {
-        traverse(array[i]);
-      }
-
       return array;
     },
-    removeIds: (doc) => {
-      const traverse = (node) => {
-        if (!node.text) {
-          const array = (node.content || []).concat(node.children || []);
-          for (let i = 0; i < array.length; i++) {
-            traverse(array[i]);
-          }
-        } else {
-          delete node.id;
-        }
-      };
 
-      for (let i = 0; i < doc.length; i++) {
-        traverse(doc[i]);
-      }
-      return doc;
-    },
-    toUpdate: () => encodeStateAsUpdateV2(doc),
     selection: makeSelectionFromProgrammaticOperation(doc, selection)
   } as Editor;
 };

@@ -1,15 +1,11 @@
 import * as syncProtocol from "y-protocols/sync";
 import * as encoding from "lib0/encoding";
 import * as awarenessProtocol from "y-protocols/awareness";
-
 import { messageListener } from "./messenger";
-
 // import { persistence } from "./persistence";
 import { send } from "./messenger";
 import { getYDoc } from "./doc";
-
 import { docs, pingTimeout, messageAwareness, messageSync } from "./vars";
-
 export const closeConn = (doc: any, conn: any) => {
   if (doc.conns.has(conn)) {
     const controlledIds = doc.conns.get(conn) as Set<number>;

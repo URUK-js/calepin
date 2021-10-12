@@ -1,15 +1,12 @@
-import { JSXElement, mapArray, createMemo, createSignal } from "solid-js";
+import { JSXElement, mapArray, createMemo } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { useNode, useText, useChildren, useEditor, useNodeObservation } from "../hooks";
 import { YArray } from "yjs/dist/src/internals";
 import { YLeaf, YNode, getId, leafText } from "edytor";
-
 import { renderHandle } from "./renderHandle";
 
-export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement => {
-  console.log("renderChildren", content.toJSON(), type);
-  return mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
-};
+export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement =>
+  mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const leaf = useNode(node);
@@ -38,7 +35,7 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
 };
 
 export const renderNode = (node: YNode) => {
-  const block = useNode(node)();
+  const block = useNode(node)() as { [key: string]: any; type: string };
   const { blocks, defaultBlock } = useEditor();
   const component = blocks[block.type || blocks[defaultBlock]];
   const props = typeof component === "string" ? {} : { block, node };

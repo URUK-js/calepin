@@ -1,0 +1,19 @@
+{
+  "name": "webrtc-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "peers.press",
+  "license": "MIT",
+  "scripts": {
+    "start-wrtc": "node index.js",
+    "dev-wrtc": "nodemon index.js"
+  },
+  "dependencies": {
+    "http": "^0.0.1-security",
+    "lib0": "^0.2.42",
+    "ws": "^8.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}

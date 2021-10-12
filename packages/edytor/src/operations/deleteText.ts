@@ -9,15 +9,11 @@ import {
   leafLength,
   leafNodeChildrenLength,
   leafNodeContent,
-  leafNodeContentLength,
-  leafNodeContentStringLength,
-  leafString,
   LeavesHarvest,
   mergeContentWithNextLeaf,
   mergeContentWithPrevLeaf,
   createLeaf,
-  traverse,
-  YLeaf
+  traverse
 } from "../utils";
 import { nestNode } from "./nestNode";
 
@@ -42,7 +38,9 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         } else {
           // merge node with the prev one if it's not the last of its parent regardless of its nesting
           mergeContentWithPrevLeaf(editor);
-          return setPosition(start.leafId, { offset: 0 });
+          start.node.parent.delete(start.nodeIndex);
+
+          // setPosition(start.leafId, { delta: -1 });
         }
       }
       if (mode === "backward" && edges.startLeaf) {

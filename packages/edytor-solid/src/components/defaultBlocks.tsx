@@ -1,5 +1,3 @@
-import { Editor, EditorProps } from "edytor/src";
-
 export const defaultBlocks = {
   paragraph: "p",
   blockquote: "blockquote",
@@ -17,4 +15,4 @@ export const defaultBlocks = {
   "unordered-list": "ul",
   "list-item": "li",
   "code-block": "pre"
-} as Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+};

@@ -8,19 +8,7 @@ import { initialValue } from "./Editor/initialValue";
 import "./Editor/editor.css";
 import { renderHandle } from "./Handle";
 import { SelectionIndicator } from "./Editor/SelectionIndicator";
-
-const Paragraph = ({ children }) => {
-  return <p>{children}</p>;
-};
-const Blockquote = ({ children }) => {
-  return <blockquote>{children}</blockquote>;
-};
-const Heading = ({ children }) => {
-  return <h1>{children}</h1>;
-};
-const Strike = ({ children }) => {
-  return <span style={{ "text-decoration": "line-through" }}>{children}</span>;
-};
+import { Cursors } from "./Cursors";
 const App: Component = () => {
   return (
     <div>
@@ -28,15 +16,20 @@ const App: Component = () => {
         initialValue={{
           json: initialValue()
         }}
+        dnd={{
+          active: true,
+          renderIndicator: () => (
+            <div id="dndIndicator" className="bg-yellow-400 bg-opacity-75 shadow-lg z-30" contentEditable={false} />
+          )
+        }}
         spellcheck={false}
-        readOnly={false}
-        defaultBlock="paragraph"
         renderHandle={renderHandle}
         props={{ "data-font": "sans", "data-full-width": false, "data-small-text": true }}
         renderInner={() => {
           return (
             <>
               <SelectionIndicator />
+              <Cursors />
             </>
           );
         }}
