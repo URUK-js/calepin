@@ -1,7 +1,7 @@
 {
-  "name": "websocket-server",
+  "name": "yjs-websocket-server",
   "version": "0.0.0",
-  "description": "> TODO: description",
+  "description": "Websocket server for edytor",
   "author": "peers.press <a.derbey@gmail.com>",
   "homepage": "https://github.com/arnaudDerbey/edytor#readme",
   "license": "ISC",
@@ -15,11 +15,8 @@
     "url": "git+https://github.com/arnaudDerbey/edytor.git"
   },
   "scripts": {
-    "dev-server": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/server.js\"",
-    "dev": "ts-node app.ts -T -D",
-    "build-server": " tsdx build --transpileOnly",
+    "dev": "ts-node-dev app.ts -T -D",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "dev-server-2": "microbundle watch",
     "build": "npx tsc",
     "start": "ts-node app.ts"
   },
@@ -40,10 +37,8 @@
   "devDependencies": {
     "@types/ioredis": "^4.27.6",
     "@types/ws": "^8.2.0",
-    "microbundle": "^0.14.0",
     "ts-node-dev": "^1.1.8",
     "tsc-watch": "^4.5.0",
-    "tsdx": "^0.14.1",
-    "vite": "^2.6.5"
+    "tsdx": "^0.14.1"
   }
 }

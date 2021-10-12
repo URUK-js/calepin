@@ -7,8 +7,8 @@ export const pingTimeout = 30000;
 // disable gc when using snapshots!
 export const gcEnabled = process.env.GC !== "false" && process.env.GC !== "0";
 
-export const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT as string) || 2000;
-export const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT as string) || 10000;
+export const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT as string) || 20000;
+export const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT as string) || 20000;
 
 export const persistenceDir = process.env.YPERSISTENCE;
 

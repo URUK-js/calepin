@@ -1,14 +1,11 @@
 import * as syncProtocol from "y-protocols/sync";
 import * as encoding from "lib0/encoding";
 import * as awarenessProtocol from "y-protocols/awareness";
-
-import { getChildren } from "./initialDocument";
 import { Doc } from "yjs";
 import * as mutex from "lib0/mutex";
 // import { get, pub, set, sub } from "./redis";
 import { send } from "./messenger";
-// import { nanoid } from "./utils";
-// import debounce from "lodash/debounce";
+import debounce from "lodash/debounce";
 
 import {
   messageSync,
@@ -18,11 +15,7 @@ import {
   CALLBACK_DEBOUNCE_WAIT,
   CALLBACK_DEBOUNCE_MAXWAIT
 } from "./vars";
-
-// const saveDoc = (doc: WSSharedDoc) => {
-//   const encoded = Y.encodeStateAsUpdateV2(doc);
-//   const state = Buffer.from(encoded).toString("base64");
-// };
+import { emptyValue, onDebouncedSave } from "../custom";
 
 const updateHandler = (update: Uint8Array, origin: any, doc: WSSharedDoc) => {
   // pub.publishBuffer(doc.name, Buffer.from(update)); // do not await
@@ -58,15 +51,7 @@ export class WSSharedDoc extends Doc {
       this.mount = true;
       console.log("this mount");
       const array = this.getArray("children");
-      array.insert(
-        0,
-        [
-          {
-            type: "heading",
-            content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
-          }
-        ].map(getChildren)
-      );
+      array.insert(0, emptyValue());
     } else {
     }
     const awarenessChangeHandler = ({ added, updated, removed }: Changes, conn: Object | null) => {
@@ -110,14 +95,17 @@ export class WSSharedDoc extends Doc {
       // saveDoc(this);
     });
 
-    // this.on("update", this.debounceSave);
+    this.on("update", this.debounceSave);
   }
-  // debounceSave = debounce(save, 25000, { maxWait: 25000, trailing: true });
+  debounceSave = debounce(onDebouncedSave, CALLBACK_DEBOUNCE_WAIT, {
+    maxWait: CALLBACK_DEBOUNCE_MAXWAIT,
+    trailing: true
+  });
 
   destroy() {
-    // this.debounceSave.cancel();
-    // this.off("update", this.debounceSave);
-    // save(null, null, this);
+    this.debounceSave.cancel();
+    this.off("update", this.debounceSave);
+    onDebouncedSave(null, null, this);
     super.destroy();
     // sub.unsubscribe(this.name);
   }
@@ -125,7 +113,6 @@ export class WSSharedDoc extends Doc {
 
 export const getYDoc = (docname: string, gc = true): any => {
   let memoryDoc = docs.get(docname);
-  console.log("getYDoc");
   if (memoryDoc === undefined) {
     const doc = new WSSharedDoc(docname);
     doc.gc = gc;
