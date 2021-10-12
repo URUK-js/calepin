@@ -6,7 +6,7 @@ export const createWebRtcProvider = (room = "hello", initialValue) => {
   return new Promise((res) => {
     const doc = new Doc();
     const provider = new WebrtcProvider(room, doc, {
-      signaling: ["ws://yjs-webrtc-production.up.railway.app"],
+      signaling: ["wss://yjs-webrtc-production.up.railway.app"],
       password: "hello"
     });
     provider.connect();
