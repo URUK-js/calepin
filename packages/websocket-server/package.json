@@ -17,13 +17,14 @@
   "scripts": {
     "dev": "ts-node-dev app.ts -T -D",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "npx tsc",
+    "build": "echo \"hello\" ",
     "start": "ts-node app.ts"
   },
   "bugs": {
     "url": "https://github.com/arnaudDerbey/edytor/issues"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.175",
     "dotenv": "^10.0.0",
     "edytor": "^0.0.4",
     "ioredis": "^4.27.11",
