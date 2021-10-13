@@ -116,9 +116,9 @@ Beside that we try to make the api as simple, maintainable, and performant as po
 
 ✅ realtime demo example
 
-⚽ realtime cursor positioning
+⚽ realtime cursor repositioning
 
-⚽ realtime awareness indicator
+✅ realtime awareness indicator
 
 ⚽ demo in svelte
 
