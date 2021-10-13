@@ -9,6 +9,10 @@ export const initialValue = () => {
       content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
     });
     v.push({
+      type: "code",
+      content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
+    });
+    v.push({
       type: "paragraph",
       content: [
         {

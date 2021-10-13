@@ -10,10 +10,14 @@ const prevent = (e: any) => {
 const getDataTransfer = (e: any): string => e.dataTransfer.getData("text/plain");
 
 export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: InputEvent) => {
-  prevent(e);
   // console.log(e);
   const { start, length } = editor.selection;
+  console.log(editor.selection, e.target, e.composedPath());
+  if (e.composedPath().some((el) => el.getAttribute && el.getAttribute("data-edytor-void") === "true")) {
+    return;
+  }
 
+  prevent(e);
   switch (e.inputType) {
     case "insertFromPaste":
     case "insertLineBreak":

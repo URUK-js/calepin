@@ -72,6 +72,7 @@ export const setLeafData = (leaf, data: object) => {
 
 export const removeIfEmpty = (leaf) => {
   if (isLeafEmpty(leaf)) {
+    console.log("isEmpty", leafNodeContent(leaf).toJSON());
     leafNodeContent(leaf).delete(getIndex(leaf));
     // if (leafNodeContentLength(leaf) === 0) {
     //   deleteNode(leafNode(leaf));

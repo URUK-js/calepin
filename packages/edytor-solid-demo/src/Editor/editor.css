@@ -1,5 +1,5 @@
 [data-edytor] * {
-  @apply transition-all;
+  /* @apply transition-all; */
 }
 [data-edytor] {
   @apply mx-auto md:px-16 px-10 mt-10 transition-all;
@@ -8,7 +8,7 @@
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-[data-edytor][data-font="mono"] * {
+/* [data-edytor][data-font="mono"] * {
   @apply font-mono;
 }
 
@@ -17,7 +17,7 @@
 }
 [data-edytor][data-font="sans"] * {
   @apply font-sans;
-}
+} */
 
 [data-edytor][data-full-width="false"] {
   @apply max-w-5xl;

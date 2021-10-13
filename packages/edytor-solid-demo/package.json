@@ -24,8 +24,11 @@
     "@fontsource/noto-sans-hk": "^4.5.1",
     "@fontsource/playfair-display": "^4.5.0",
     "@fontsource/space-mono": "^4.5.0",
-    "edytor-solid": "*",
+    "codemirror": "^5.63.3",
     "edytor": "*",
+    "edytor-solid": "*",
+    "monaco-editor": "^0.29.1",
+    "monaco-themes": "^0.3.3",
     "phosphor-solid": "^1.1.4",
     "solid-js": "^1.1.1",
     "yjs": "^13.5.12"

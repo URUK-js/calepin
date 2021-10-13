@@ -13,7 +13,8 @@ import {
   mergeContentWithNextLeaf,
   mergeContentWithPrevLeaf,
   createLeaf,
-  traverse
+  traverse,
+  isNodeContentEmpty
 } from "../utils";
 
 type deleteTextOpts = {
@@ -71,16 +72,17 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         return deleteLeafText(nextLeaf, 0, length || 1);
       }
 
+      // just delete text
       deleteLeafText(start.leaf, start.offset + (mode === "backward" ? -length || -1 : length), length || 1);
       setPosition(start.leaf.get("id"), { offset: start.offset + (mode === "backward" ? -length || -1 : length) });
       break;
     }
     case "singlenode": {
       deleteLeafText(start.leaf, start.offset, length, true);
-      if (hasChildren(getNode(start.leaf))) {
+      if (isNodeContentEmpty(start.node)) {
         leafNodeContent(start.leaf).insert(0, [createLeaf()]);
       }
-      setPosition(start.leaf.get("id"), { offset: start.offset });
+      setPosition(start.leafId, { offset: start.offset });
       break;
     }
     case "multileaves":
