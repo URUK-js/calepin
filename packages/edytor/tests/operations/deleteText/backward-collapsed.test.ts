@@ -270,3 +270,76 @@ test("delete to unnest", () => {
   console.log(JSON.stringify(editor.toJSON(), null, 3));
   expect(editor.toJSON()).toStrictEqual(expectedValue);
 });
+
+
+test("delete empty", () => {
+  const value = [
+    {
+      id: "1",
+      type: "paragraph",
+      content: [{ text: "hello edytor" }],
+      children: []
+    },
+    {
+      id: "2",
+      type: "paragraph",
+      content: [{ text: "" }],
+      children: [
+
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      content: [{ text: "hello edytor" }],
+      children: []
+    },
+
+  ];
+
+  const editor = makeEditorFixture(value, { start: { path: [1, 0], offset: 0 } });
+  deleteText(editor, { mode: "backward" });
+  console.log(JSON.stringify(editor.toJSON(), null, 3));
+  expect(editor.toJSON()).toStrictEqual(expectedValue);
+});
+test("delete at start of doc to do nothing", () => {
+  const value = [
+    {
+      id: "1",
+      type: "paragraph",
+      content: [{ text: "hello edytor" }],
+      children: []
+    },
+    {
+      id: "2",
+      type: "paragraph",
+      content: [{ text: "" }],
+      children: [
+
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      content: [{ text: "hello edytor" }],
+      children: []
+    },
+    {
+      type: "paragraph",
+      content: [{ text: "" }],
+      children: [
+
+      ]
+    }
+
+  ];
+
+  const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 0 } });
+  deleteText(editor, { mode: "backward" });
+  console.log(JSON.stringify(editor.toJSON(), null, 3));
+  expect(editor.toJSON()).toStrictEqual(expectedValue);
+});

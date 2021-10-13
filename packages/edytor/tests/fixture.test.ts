@@ -48,7 +48,9 @@ test("selection multileaves fixture", () => {
   expect(editor.selection.edges.startLeaf).toBe(true);
   expect(editor.selection.edges.endLeaf).toBe(true);
   expect(editor.selection.edges.startNode).toBe(true);
-  expect(editor.selection.edges.endNode).toBe(false);
+  expect(editor.selection.edges.endNode).toBe(true);
+  expect(editor.selection.edges.endDocument).toBe(true);
+  expect(editor.selection.edges.startDocument).toBe(true);
   expect(editor.selection.length).toBe(11);
   expect(editor.selection.type).toBe("multileaves");
 

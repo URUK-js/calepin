@@ -19,6 +19,8 @@ export class EdytorSelection {
   range?: Range;
   boundingRect?: DOMRect;
   edges: {
+    startDocument: boolean;
+    endDocument: boolean;
     startLeaf: boolean;
     startNode: boolean;
     endLeaf: boolean;
@@ -133,14 +135,19 @@ export class EdytorSelection {
     this.length = this.selectedText.length;
     this.range = range;
     this.selection = selection;
+    const startNode = this.start.offset === 0 && getIndex(this.start.leaf) === 0;
+    const endNode =
+      this.end.offset === leafLength(this.end.leaf) &&
+      getIndex(this.start.leaf) === leafNodeContentLength(this.end.leaf) - 1;
     this.edges = {
       startLeaf: this.start.offset === 0,
-      startNode: this.start.offset === 0 && getIndex(this.start.leaf) === 0,
       endLeaf: this.end.offset === leafLength(this.end.leaf),
-      endNode:
-        this.end.offset === leafLength(this.end.leaf) &&
-        getIndex(this.start.leaf) === leafNodeContentLength(this.end.leaf) - 1
+      startNode,
+      endNode,
+      startDocument: startNode && this.start.path.join("") === "00",
+      endDocument: false
     };
+
     this.type = isCollapsed
       ? "collapsed"
       : equalPaths

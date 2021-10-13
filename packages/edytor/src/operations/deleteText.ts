@@ -25,8 +25,9 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
 
   switch (type) {
     case "collapsed": {
+      console.log({ edges, start });
       if (mode === "backward" && edges.startNode) {
-        console.log(start.nodeIndex, leafNodeChildrenLength(start.leaf), start.path.length);
+        if (edges.startDocument) return;
 
         const node = copyNode(start.node);
         const children = start.node

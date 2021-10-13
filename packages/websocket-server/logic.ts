@@ -11,8 +11,7 @@ export const handleAuth = (ws: WebSocket, req: IncomingMessage, connect: () => v
 export const emptyValue = () => {
   return [
     {
-      type: "heading",
-      data: { level: 1 },
+      type: "heading-1",
       content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
     },
     {
