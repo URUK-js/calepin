@@ -1,5 +1,5 @@
-import { Editor, Position } from "../types";
-import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength, YLeaf, YNode } from ".";
+import { Editor, Position, YLeaf } from "../types";
+import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength, YNode } from ".";
 
 export class EdytorSelection {
   editor: Editor;
@@ -82,7 +82,7 @@ export class EdytorSelection {
     if (!leaf) return [undefined, undefined, undefined, undefined];
     const value = [leaf, leafNode(leaf), getPath(leaf), node];
     this[current] = { value, node: anchorNode };
-    return value;
+    return value as [YLeaf, YNode, number[], HTMLElement];
   };
 
   getNodeBoundingRect = (node: YNode): { nodeHtml: HTMLElement } => {

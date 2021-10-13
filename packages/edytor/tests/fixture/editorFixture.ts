@@ -1,6 +1,17 @@
-import { encodeStateAsUpdateV2 } from "yjs";
 import { Editor, EdytorDoc, jsonNode } from "../..";
-import { DocFromJson, EdytorSelection, getLeafAtPath } from "../../src";
+import {
+  DocFromJson,
+  EdytorSelection,
+  getIndex,
+  getLeafAtPath,
+  getPath,
+  leafLength,
+  leafNode,
+  leafNodeContentLength,
+  leafString,
+  toString,
+  traverse
+} from "../../src";
 
 type partialSelection = {
   start: {
@@ -17,32 +28,70 @@ type partialSelection = {
 
 const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: partialSelection): EdytorSelection => {
   let { start, end, length } = selection as EdytorSelection;
-
+  const startLeaf = getLeafAtPath({ children: doc.getArray("children") }, start.path);
+  const endLeaf = getLeafAtPath({ children: doc.getArray("children") }, end?.path || start.path);
+  if (!startLeaf) return { type: "notInDoc" };
   start = {
     ...start,
-    leaf: getLeafAtPath({ children: doc.getArray("children") }, start.path)
+    leaf: startLeaf,
+    node: leafNode(startLeaf),
+    leafId: startLeaf.get("id"),
+    leafIndex: getIndex(startLeaf),
+    nodeIndex: getIndex(leafNode(startLeaf)),
+    path: getPath(startLeaf),
+    leafHtml: null,
+    nodeHtml: null,
+    offset: start.offset
   };
   const hasEnd = !!end;
   if (!hasEnd) end = start;
 
   end = {
-    ...end,
-    leaf: getLeafAtPath({ children: doc.getArray("children") }, end.path)
+    leaf: endLeaf,
+    node: leafNode(endLeaf),
+    leafId: endLeaf.get("id"),
+    leafIndex: getIndex(endLeaf),
+    nodeIndex: getIndex(leafNode(endLeaf)),
+    path: getPath(endLeaf),
+    leafHtml: null,
+    nodeHtml: null,
+    offset: end.offset
   };
+
+  let selectedText = "";
+  traverse({ children: doc.getArray("children") }, (leaf, isText) => {
+    const startPathString = start.path.join(",");
+    const endPathString = end.path.join(",");
+    if (isText) {
+      const path = getPath(leaf);
+
+      if (path.join(",") === startPathString) {
+        selectedText += leafString(leaf).substring(start.offset, leafLength(leaf));
+      } else if (path > start.path && path < end.path) {
+        selectedText += leafString(leaf);
+      } else if (path.join(",") === endPathString) {
+        selectedText += leafString(leaf).substring(0, end.offset);
+      }
+    }
+  });
+
   const equalPaths = start.path.join("") === end.path.join("");
   if (!start.leaf) {
     return { type: "notInDoc" } as EdytorSelection;
   } else {
+    //@ts-ignore
     return {
       start,
-      editorOffset: 0,
       end,
-      length: length || end.offset - start.offset,
+      selectedText,
+      length: selectedText.length,
       edges: {
-        start: start.offset === 0,
-        end: end.offset === end.leaf.length()
+        startLeaf: start.offset === 0,
+        startNode: start.offset === 0 && getIndex(start.leaf) === 0,
+        endLeaf: end.offset === leafLength(end.leaf),
+        endNode: end.offset === leafLength(end.leaf) && getIndex(start.leaf) === leafNodeContentLength(end.leaf) - 1
       },
-      type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : "multinodes",
+      type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : start.node === end.node ? "multileaves" : "multinodes",
       setPosition: () => null
     } as EdytorSelection;
   }
@@ -52,15 +101,14 @@ export const makeEditorFixture = (value: jsonNode[], selection?: partialSelectio
   if (!selection) selection = { start: { path: [0, 0], offset: 0 }, length: 0 };
   const doc = DocFromJson(value);
 
-  //@ts-ignore
   return {
     doc,
     children: doc.getArray("children"),
-    toJSON: (): jsonNode[] => {
-      let array = doc.getArray("children").toJSON();
-      return array;
+    toJSON: (remove = true): jsonNode[] => {
+      let array = [...doc.getArray("children").toJSON()];
+      return remove ? removeIds(array) : array;
     },
-
+    toRawText: () => toString({ children: doc.getArray("children") }),
     selection: makeSelectionFromProgrammaticOperation(doc, selection)
   } as Editor;
 };

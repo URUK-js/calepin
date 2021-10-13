@@ -15,7 +15,6 @@ import {
   createLeaf,
   traverse
 } from "../utils";
-import { nestNode } from "./nestNode";
 
 type deleteTextOpts = {
   mode: "forward" | "backward" | "none";
@@ -29,17 +28,23 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       if (mode === "backward" && edges.startNode) {
         console.log(start.nodeIndex, leafNodeChildrenLength(start.leaf), start.path.length);
         // unnest node if its the last of its parent and if he is nested
-        if (start.nodeIndex === start.node.parent.length - 1 && start.path.length > 1 && start.nodeIndex !== 0) {
+        const node = copyNode(start.node);
+        const children = start.node
+          .get("children")
+          .toArray()
+          .map(copyNode);
+        if (start.nodeIndex === start.node.parent.length - 1 && start.path.length > 2 && start.nodeIndex !== 0) {
           console.log(start.leafId);
-          const node = copyNode(start.node);
+
           start.node.parent.delete(start.nodeIndex);
-          start.node.parent.parent.parent.insert(getIndex(start.node.parent.parent) + 1, [node]);
+          start.node.parent.parent.insert(getIndex(start.node.parent.parent) + 1, [node]);
           setPosition(start.leafId, { offset: 0 });
         } else {
           // merge node with the prev one if it's not the last of its parent regardless of its nesting
           mergeContentWithPrevLeaf(editor);
           start.node.parent.delete(start.nodeIndex);
-
+          start.node.parent.insert(start.nodeIndex, children);
+          return;
           // setPosition(start.leafId, { delta: -1 });
         }
       }

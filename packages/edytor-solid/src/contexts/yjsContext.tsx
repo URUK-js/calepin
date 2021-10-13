@@ -2,7 +2,7 @@ import { createContext, Show, createSignal, onMount, useContext } from "solid-js
 import * as awarenessProtocol from "y-protocols/awareness";
 import { WebsocketProvider } from "y-websocket";
 import { WebrtcProvider } from "y-webrtc";
-import { createWebRtcProvider, createWSProvider, DocFromJson, EditorProps, EdytorDoc, YNode } from "edytor/src";
+import { createWSProvider, DocFromJson, EditorProps, EdytorDoc, YNode } from "edytor/src";
 import { Doc, YArray } from "yjs/dist/src/internals";
 
 const YjsContext = createContext<YjsContextType | undefined>();
@@ -22,15 +22,15 @@ export const useYjsContext = (): YjsContextType => {
 export const YjsContextWrapper = ({ initialValue, renderChildren }: YjsContextWrapperProps) => {
   const [contextValue, setContextValue] = createSignal<YjsContextType>();
   onMount(() => {
-    // let doc, children;
-    // if (initialValue.yarray) {
-    //   children = initialValue.yarray;
-    //   doc = children.doc as Doc;
-    // } else {
-    //   doc = DocFromJson(initialValue.json!);
-    //   children = doc.getArray("children");
-    // }
-    // setContextValue({ doc, children, provider: undefined, awareness: undefined });
+    let doc, children;
+    if (initialValue.yarray) {
+      children = initialValue.yarray;
+      doc = children.doc as Doc;
+    } else {
+      doc = DocFromJson(initialValue.json!);
+      children = doc.getArray("children");
+    }
+    setContextValue({ doc, children, provider: undefined, awareness: undefined });
 
     // createWSProvider("aelalmeeazeaza").then((provider) => {
     //   setContextValue({
@@ -40,15 +40,15 @@ export const YjsContextWrapper = ({ initialValue, renderChildren }: YjsContextWr
     //     awareness: provider.awareness
     //   });
     // });
-    createWebRtcProvider("aelalmeeazeaza", initialValue.json).then((provider) => {
-      console.log(provider);
-      setContextValue({
-        doc: provider.doc,
-        children: provider.doc.getArray("children"),
-        provider,
-        awareness: provider.awareness
-      });
-    });
+    // createWebRtcProvider("aelalmeeazeaza", initialValue.json).then((provider) => {
+    //   console.log(provider);
+    //   setContextValue({
+    //     doc: provider.doc,
+    //     children: provider.doc.getArray("children"),
+    //     provider,
+    //     awareness: provider.awareness
+    //   });
+    // });
   });
 
   return (

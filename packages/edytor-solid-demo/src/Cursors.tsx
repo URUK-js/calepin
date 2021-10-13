@@ -14,7 +14,7 @@ export const Cursors = () => {
       }
       return acc;
     }, {});
-    console.log({ groups });
+
     setUserGroups(Object.values(groups));
   };
   onMount(() => {

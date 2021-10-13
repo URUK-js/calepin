@@ -11,7 +11,7 @@ test("delete one back", () => {
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 0], offset: 5 } });
   deleteText(editor, { mode: "backward" });
-  expect(editor.doc.string()).toBe("hell");
+  expect(editor.toRawText()).toBe("hell");
 });
 
 test("delet deep", () => {
@@ -27,7 +27,7 @@ test("delet deep", () => {
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 5 } });
   deleteText(editor, { mode: "backward" });
-  expect(editor.doc.string()).toBe("hello edy");
+  expect(editor.toRawText()).toBe("hello edy");
 });
 test("delete backward at start of leaf should delete the start of the prev leaf ", () => {
   const value = [
@@ -42,7 +42,7 @@ test("delete backward at start of leaf should delete the start of the prev leaf 
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 0 } });
   deleteText(editor, { mode: "backward" });
-  expect(editor.doc.string()).toBe("deletebackward");
+  expect(editor.toRawText()).toBe("deletebackward");
 });
 test("should fail silently", () => {
   const value = [
@@ -54,7 +54,7 @@ test("should fail silently", () => {
   ];
   const editor = makeEditorFixture(value, { start: { path: [0, 1], offset: 10 } });
   deleteText(editor, { mode: "backward" });
-  expect(editor.doc.string()).toBe("hello");
+  expect(editor.toRawText()).toBe("hello");
 });
 
 test("delete at start", () => {
@@ -75,7 +75,6 @@ test("delete at start", () => {
 
   const expectedValue = [
     {
-      id: "delete",
       type: "paragraph",
       content: [{ text: "hello edytor from the tests" }],
       children: []
@@ -87,23 +86,61 @@ test("delete at start", () => {
   expect(editor.toJSON()).toStrictEqual(expectedValue);
 });
 
-test("delete at start deep shoul merge with prev leaf", () => {
+test("delete at start nested without children", () => {
   const value = [
     {
       id: "delete",
       type: "paragraph",
       content: [{ text: "hello edytor" }],
+      children: [
+        {
+          id: "delete2",
+          type: "paragraph",
+          content: [{ text: " from the tests" }],
+          children: []
+        }
+      ]
+    },
+    {
+      id: "delete3",
+      type: "paragraph",
+      content: [{ text: " from the tests" }],
+      children: []
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      content: [{ text: "hello edytor from the tests" }],
       children: []
     },
     {
-      id: "delete2",
+      type: "paragraph",
+      content: [{ text: " from the tests" }],
+      children: []
+    }
+  ];
+  const editor = makeEditorFixture(value, { start: { path: [0, 0, 0], offset: 0 } });
+  deleteText(editor, { mode: "backward" });
+
+  expect(editor.toJSON()).toStrictEqual(expectedValue);
+});
+
+test("delete at start deep should unnest if it has children with prev leaf and climb up the children", () => {
+  const value = [
+    {
+      type: "paragraph",
+      content: [{ text: "hello edytor" }],
+      children: []
+    },
+    {
       type: "paragraph",
       content: [{ text: " from the tests" }],
       children: [
         {
-          id: "delete3",
           type: "paragraph",
-          content: [{ text: " from the tests" }],
+          content: [{ text: "I hope this work fine" }],
           children: []
         }
       ]
@@ -112,15 +149,13 @@ test("delete at start deep shoul merge with prev leaf", () => {
 
   const expectedValue = [
     {
-      id: "delete",
       type: "paragraph",
       content: [{ text: "hello edytor from the tests" }],
       children: []
     },
     {
-      id: "delete3",
       type: "paragraph",
-      content: [{ text: " from the tests" }],
+      content: [{ text: "I hope this work fine" }],
       children: []
     }
   ];
@@ -175,18 +210,15 @@ test("delete at start", () => {
 
   const expectedValue = [
     {
-      id: "1",
       type: "paragraph",
       content: [{ text: "hello edytor" }],
       children: []
     },
     {
-      id: "2",
       type: "paragraph",
       content: [{ text: " from the tests" }],
       children: [
         {
-          id: "3",
           type: "paragraph",
           content: [{ text: " from the tests" }],
           children: []
@@ -194,12 +226,10 @@ test("delete at start", () => {
       ]
     },
     {
-      id: "4",
       type: "paragraph",
       content: [{ text: " from the tests from the tests" }],
       children: [
         {
-          id: "6",
           type: "paragraph",
           content: [{ text: " from the tests" }],
           children: []

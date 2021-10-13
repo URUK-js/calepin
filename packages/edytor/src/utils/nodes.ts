@@ -113,3 +113,14 @@ export const copyNode = (node: YNode) => {
     content: jsonNode.content.map(getContent)
   });
 };
+
+export const nodeString = (node: YNode) => {
+  let text = "";
+  getNodeContent(node).forEach((leaf) => {
+    text += leafString(leaf);
+  });
+  getNodeChildren(node).forEach((node) => {
+    text += nodeString(node);
+  });
+  return text;
+};

@@ -1,5 +1,6 @@
 import { Doc } from "yjs";
-import { YLeaf, YNode } from ".";
+import { YNode } from ".";
+import { YLeaf } from "../..";
 import { createLeaf } from "./yLeaf";
 import { createNode } from "./yNode";
 export interface jsonLeaf extends Record<string, any> {

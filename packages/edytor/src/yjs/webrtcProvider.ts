@@ -1,19 +1,19 @@
-import { WebrtcProvider } from "y-webrtc";
+import { WebrtcProvider } from "./y-webrtc";
 import { Doc } from "yjs";
 import { DocFromJson } from "../utils";
 
 export const createWebRtcProvider = (room = "hello", initialValue) => {
   return new Promise((res) => {
     const doc = new Doc();
+    const prod = "wss://yjs-webrtc-production.up.railway.app";
     const provider = new WebrtcProvider(room, doc, {
-      signaling: ["wss://yjs-webrtc-production.up.railway.app"],
-      password: "hello"
+      signaling: [prod],
+      password: "hello",
+      debug: true
     });
-    provider.connect();
 
     setTimeout(() => {
       const interval = setInterval(() => {
-        console.log(provider?.connected, provider, provider.room.synced);
         if (provider?.connected) {
           if (provider.doc.getArray("children").length === 0 && provider.awareness.states.size === 1) {
             DocFromJson(initialValue, doc);

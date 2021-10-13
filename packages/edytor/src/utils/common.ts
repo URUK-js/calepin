@@ -1,9 +1,9 @@
 import { customAlphabet } from "nanoid";
 import { YArray, YMap } from "yjs/dist/src/internals";
-import { Editor } from "../types";
+import { Editor, EditorWithChildren, YLeaf } from "../types";
 import { leafString } from "./leaves";
-import { getNodeChildren, getNodeContent } from "./nodes";
-import { YLeaf } from "./yClasses";
+import { getNodeChildren, getNodeContent, nodeString } from "./nodes";
+
 export const nanoid = () => "y-" + customAlphabet("346789ABCDEFGHJKLMNPQRTUV-WXYabcdefghijkmnpqrtwxyz", 20)();
 
 type YNode = YMap<any>;
@@ -42,7 +42,7 @@ export const getPath = (node: YNode): number[] => {
 
 export const getId = (node): string => node.get("id");
 
-export const getLeafAtPath = (editor: Editor, [start, ...path]: number[]): YLeaf => {
+export const getLeafAtPath = (editor: Editor | EditorWithChildren, [start, ...path]: number[]): YLeaf => {
   let node = editor.children.get(start);
   let i = 0;
   while (i < path.length - 1) {
@@ -73,7 +73,7 @@ export const getContainerAtPath = (editor: Editor, path: number[]): YArray<any> 
   }
 };
 export const traverse = (
-  editor: Editor,
+  editor: Editor | EditorWithChildren,
   cb: (node: YMap<any>, isText: boolean, path: number[]) => void,
   opts?: {
     start?: number;
@@ -101,11 +101,11 @@ export const traverse = (
   }
 };
 
-export const toString = (editor: Editor): string => {
+export const toString = (editor: Editor | EditorWithChildren): string => {
   let t = "";
   const array = editor.children.toArray() as YNode[];
   for (let i = 0; i < array.length; i++) {
-    t += leafString(array[i]);
+    t += nodeString(array[i]);
   }
   return t;
 };

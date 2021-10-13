@@ -89,6 +89,7 @@ export interface EditorProps extends Record<any, any> {
   onChange?: (editor: Editor) => void;
 }
 
+export type EditorWithChildren = Pick<Editor, "children">;
 export interface Editor {
   allowNesting: boolean;
   readOnly: boolean;
@@ -105,7 +106,7 @@ export interface Editor {
   undoManager: any;
   editorRef: HTMLDivElement | undefined;
   doc: EdytorDoc;
-
+  toRawText: () => string;
   toJSON: () => jsonNode[];
   ID_TO_NODE: Map<string, YMap<any>>;
   children: YArray<any>;

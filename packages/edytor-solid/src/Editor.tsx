@@ -44,7 +44,10 @@ export const Editor = ({
     // console.log(children.toJSON());
   };
   onMountSolid(() => children.observeDeep(onChangeObserver));
-  onCleanup(() => children.unobserveDeep(onChangeObserver));
+  onCleanup(() => {
+    children.unobserveDeep(onChangeObserver);
+    if (provider) provider.disconnect();
+  });
   collaboration.user.id = editorId;
   const selection = new EdytorSelection();
   const dropper = new Dropper();

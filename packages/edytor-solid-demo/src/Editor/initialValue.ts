@@ -5,7 +5,7 @@ export const initialValue = () => {
   let v = [];
   for (let h = 0; h < HEADINGS; h++) {
     v.push({
-      type: "heading",
+      type: "heading-1",
       content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
     });
     v.push({
