@@ -112,9 +112,14 @@ test("delete at start nested without children", () => {
   const expectedValue = [
     {
       type: "paragraph",
-      content: [{ text: "hello edytor from the tests" }],
+      content: [{ text: "hello edytor" }],
       children: []
     },
+    {
+      type: "paragraph",
+      content: [{ text: " from the tests" }],
+      children: []
+    }
     {
       type: "paragraph",
       content: [{ text: " from the tests" }],
@@ -168,6 +173,60 @@ test("delete at start deep should unnest if it has children with prev leaf and c
 test("delete at start", () => {
   const value = [
     {
+      id: "4",
+      type: "paragraph",
+      content: [{ text: "Hi" }],
+      children: [
+        {
+          id: "5",
+          type: "paragraph",
+          content: [{ text: "Hola" }],
+          children: []
+        },
+        {
+          id: "6",
+          type: "paragraph",
+          content: [{ text: "Bonjour" }],
+          children: []
+        },
+        {
+          id: "7",
+          type: "paragraph",
+          content: [{ text: "Ciao" }],
+          children: []
+        }
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      content: [{ text: "HiHola" }],
+      children: [
+        {
+          type: "paragraph",
+          content: [{ text: "Bonjour" }],
+          children: []
+        },
+        {
+          type: "paragraph",
+          content: [{ text: "Ciao" }],
+          children: []
+        }
+      ]
+    }
+  ];
+
+  const editor = makeEditorFixture(value, { start: { path: [0, 0, 0], offset: 0 } });
+  deleteText(editor, { mode: "backward" });
+  console.log(editor.toJSON());
+  expect(editor.toJSON()).toStrictEqual(expectedValue);
+});
+
+test("delete to unnest", () => {
+  const value = [
+    {
       id: "1",
       type: "paragraph",
       content: [{ text: "hello edytor" }],
@@ -176,33 +235,13 @@ test("delete at start", () => {
     {
       id: "2",
       type: "paragraph",
-      content: [{ text: " from the tests" }],
+      content: [{ text: "from the tests" }],
       children: [
         {
           id: "3",
           type: "paragraph",
-          content: [{ text: " from the tests" }],
+          content: [{ text: "i hope it work" }],
           children: []
-        }
-      ]
-    },
-    {
-      id: "4",
-      type: "paragraph",
-      content: [{ text: " from the tests" }],
-      children: [
-        {
-          id: "5",
-          type: "paragraph",
-          content: [{ text: " from the tests" }],
-          children: [
-            {
-              id: "6",
-              type: "paragraph",
-              content: [{ text: " from the tests" }],
-              children: []
-            }
-          ]
         }
       ]
     }
@@ -216,29 +255,18 @@ test("delete at start", () => {
     },
     {
       type: "paragraph",
-      content: [{ text: " from the tests" }],
-      children: [
-        {
-          type: "paragraph",
-          content: [{ text: " from the tests" }],
-          children: []
-        }
-      ]
+      content: [{ text: "from the tests" }],
+      children: []
     },
     {
       type: "paragraph",
-      content: [{ text: " from the tests from the tests" }],
-      children: [
-        {
-          type: "paragraph",
-          content: [{ text: " from the tests" }],
-          children: []
-        }
-      ]
+      content: [{ text: "i hope it work" }],
+      children: []
     }
   ];
 
-  const editor = makeEditorFixture(value, { start: { path: [2, 0, 0], offset: 0 } });
+  const editor = makeEditorFixture(value, { start: { path: [1, 0, 0], offset: 0 } });
   deleteText(editor, { mode: "backward" });
+  console.log(JSON.stringify(editor.toJSON(), null, 3));
   expect(editor.toJSON()).toStrictEqual(expectedValue);
 });
