@@ -84,7 +84,6 @@ const Code = ({ node }) => {
       }
     });
 
-    console.log({ LAZY });
     updateEditorHeight(); // typing
     requestAnimationFrame(updateEditorHeight); // folding
     editor.onDidChangeModelDecorations(() => {
