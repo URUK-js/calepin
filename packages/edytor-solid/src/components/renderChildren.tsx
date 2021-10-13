@@ -5,11 +5,13 @@ import { YArray } from "yjs/dist/src/internals";
 import { YLeaf, YNode, getId, leafText } from "edytor";
 import { renderHandle } from "./renderHandle";
 
-export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement =>
-  mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
+export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement => {
+  return mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
+};
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
   const leaf = useNode(node);
+
   const { leaves } = useEditor();
   const content = createMemo(() => {
     const l = leaf() as any;

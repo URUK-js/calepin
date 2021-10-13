@@ -25,35 +25,28 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
 
   switch (type) {
     case "collapsed": {
-      console.log({ edges, start });
       if (mode === "backward" && edges.startNode) {
         if (edges.startDocument) return;
 
-        const node = copyNode(start.node);
-        const children = start.node
-          .get("children")
-          .toArray()
-          .map(copyNode);
         // unnest node if its the last of its parent and if he is nested or it's the first its the only child of its parent
         if (
           start.nodeIndex === start.node.parent.length - 1 &&
           start.path.length > 2 &&
           (start.nodeIndex !== 0 || start.node.parent.length === 1)
         ) {
+          const node = copyNode(start.node);
           const nodeGrandParent = start.node.parent.parent;
           const index = getIndex(nodeGrandParent);
-          console.log(nodeGrandParent.toJSON());
-
           start.node.parent.delete(start.nodeIndex);
           nodeGrandParent.parent.insert(index + 1, [node]);
           return setPosition(start.leafId, { offset: 0 });
         } else {
-          // merge node with the prev one if it's not the last of its parent regardless of its nesting
-          mergeContentWithPrevLeaf(editor);
-          start.node.parent.delete(start.nodeIndex);
-          start.node.parent.insert(start.nodeIndex, children);
-          return;
-          // setPosition(start.leafId, { delta: -1 });
+          return editor.doc.transact(() => {
+            const [prevLeaf, offset] = mergeContentWithPrevLeaf(editor);
+            setTimeout(() => {
+              setPosition(prevLeaf.get("id"), { offset });
+            });
+          });
         }
       }
       if (mode === "backward" && edges.startLeaf) {
@@ -65,7 +58,12 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
 
       if (mode === "forward" && edges.endNode) {
         // merge node with the next node because we are at edge end of it
-        return mergeContentWithNextLeaf(editor);
+        return editor.doc.transact(() => {
+          mergeContentWithNextLeaf(editor);
+          setTimeout(() => {
+            setPosition(start.leafId, { offset: start.offset });
+          });
+        });
       }
       if (mode === "forward" && edges.endLeaf) {
         // delete content in the next leaf because we are at its edge end

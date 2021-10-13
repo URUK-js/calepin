@@ -81,21 +81,30 @@ const makeSelectionFromProgrammaticOperation = (doc: EdytorDoc, selection: parti
   } else {
     const startNode = start.offset === 0 && getIndex(start.leaf) === 0;
     const endNode = end.offset === leafLength(end.leaf) && getIndex(end.leaf) === leafNodeContentLength(end.leaf) - 1;
+    const type = !hasEnd
+      ? "collapsed"
+      : equalPaths
+      ? "singlenode"
+      : start.node === end.node
+      ? "multileaves"
+      : "multinodes";
+    console.log(selectedText);
     //@ts-ignore
     return {
       start,
       end,
       selectedText,
-      length: selectedText.length,
+      length: type === "collapsed" ? 0 : selectedText.length,
       edges: {
         startLeaf: start.offset === 0,
         endLeaf: end.offset === leafLength(end.leaf),
         startNode,
         endNode,
         startDocument: startNode && start.path.join("") === "00"
+
         // endDocument: endNode && doc.getArray("children").get(end.nodeIndex) === end.node
       },
-      type: !hasEnd ? "collapsed" : equalPaths ? "singlenode" : start.node === end.node ? "multileaves" : "multinodes",
+      type,
       setPosition: () => null
     } as EdytorSelection;
   }

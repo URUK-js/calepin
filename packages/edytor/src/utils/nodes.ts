@@ -2,7 +2,7 @@ import { YArray, YMap } from "yjs/dist/src/internals";
 import { mergeLeafs } from "../operations";
 import { Editor } from "../types";
 import { getIndex, getNode, traverse } from "./common";
-import { leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
+import { leafLength, leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
 import { createLeaf, createNode, EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
@@ -20,7 +20,7 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
     }
   });
   if (!prevLeaf) return;
-
+  const prevLeafLength = leafLength(prevLeaf);
   leafNodeContent(prevLeaf).insert(
     leafNodeContentLength(prevLeaf),
     leafNodeContent(start.leaf)
@@ -30,11 +30,23 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
       })
   );
   mergeLeafs(leafNodeContent(prevLeaf));
-  (start.leaf.parent.parent as YArray<YNode>).delete(getIndex(getNode(start.leaf)));
+
+  const children = start.node
+    .get("children")
+    .toArray()
+    .map(copyNode);
+  if (children.length) {
+    start.node.parent.insert(start.nodeIndex, children);
+  }
+  start.node.parent.delete(start.nodeIndex + children.length);
+  return [prevLeaf, prevLeafLength];
+  // (start.leaf.parent.parent as YArray<YNode>).delete(index);
 };
 
 export const mergeContentWithNextLeaf = (editor: Editor) => {
   const { start } = editor.selection;
+
+  // 1 .get the next leaf
   let nextLeaf;
   let stop = false;
 
@@ -48,9 +60,10 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
       }
     }
   });
+  // end of document do nothing
+  if (!nextLeaf) return;
 
-  //TODO the children should be pull to the depth level of the removed parent
-  console.log(leafNodeContent(nextLeaf).toArray());
+  // 2 .merge the next leaf with the start leaf
   leafNodeContent(start.leaf).insert(
     leafNodeContentLength(start.leaf),
     leafNodeContent(nextLeaf)
@@ -60,19 +73,14 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
       })
   );
   mergeLeafs(leafNodeContent(start.leaf));
-  console.log(start.leaf.parent.toJSON());
+
+  // 3 get the merged node children if any and place it where the merged node was
   const node = getNode(nextLeaf);
-  if (hasChildren(node)) {
-    console.log(node.get("children").toJSON());
-    node.parent.insert(
-      getIndex(node),
-      node
-        .get("children")
-        .toJSON()
-        .map((node) => createNode(node.type, node))
-    );
-  }
-  node.parent.delete(getIndex(node));
+  const index = getIndex(node);
+  const parent = node.parent as YArray<any>;
+  const children = node.get("children").toArray();
+  children.length > 0 && parent.insert(index, children.map(copyNode));
+  parent.delete(index + children.length);
   return nextLeaf;
 };
 
