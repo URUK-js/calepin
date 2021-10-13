@@ -10,7 +10,7 @@ import { renderHandle } from "./Handle";
 import { SelectionIndicator } from "./Editor/SelectionIndicator";
 import { Cursors } from "./Cursors";
 import * as monaco from "monaco-editor";
-import LAZY from "monaco-themes/themes/Lazy.json";
+import { monacoTheme } from "./theme";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
@@ -55,10 +55,8 @@ const Code = ({ node }) => {
         editor.layout();
       }
     };
-    const t = { ...LAZY };
-    t.colors["editor.background"] = "#F3F4F6";
-    console.log({ t });
-    monaco.editor.defineTheme("Cobalt", t);
+
+    monaco.editor.defineTheme("Cobalt", monacoTheme);
     const editor = monaco.editor.create(ref, {
       value: "hello",
       language: "javascript",
