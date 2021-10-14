@@ -3,11 +3,8 @@ import {
   copyNode,
   deleteLeafText,
   getIndex,
-  getNode,
   getPath,
-  hasChildren,
   leafLength,
-  leafNodeChildrenLength,
   leafNodeContent,
   LeavesHarvest,
   mergeContentWithNextLeaf,
@@ -28,7 +25,6 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
     case "collapsed": {
       if (mode === "backward" && edges.startNode) {
         if (edges.startDocument) return;
-
         // unnest node if its the last of its parent and if he is nested or it's the first its the only child of its parent
         if (
           start.nodeIndex === start.node.parent.length - 1 &&
@@ -51,7 +47,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         }
       }
       if (mode === "backward" && edges.startLeaf) {
-        // delete content in the prev leaf because we are at its edge start, and escape current leaf
+        // delete content in the previous leaf because we are at its edge start
         const prevLeaf = leafNodeContent(start.leaf).get(start.leafIndex - 1);
         deleteLeafText(prevLeaf, leafLength(prevLeaf) - 1, length || 1);
         return setPosition(prevLeaf.get("id"), { offset: leafLength(prevLeaf) });

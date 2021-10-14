@@ -17,10 +17,7 @@ export const moveNode = ({ from, to }: moveNodeOperation) => {
   const [firstIndex] = indexes;
   const firstNode = from.container.get(firstIndex);
 
-  const nodesCopies = indexes.map((index) => {
-    const node = from.container.get(index);
-    return copyNode(node);
-  });
+  const nodesCopies = indexes.map((index) => copyNode(from.container.get(index)));
 
   to.container.insert(to.at, nodesCopies);
   from.container.delete(getIndex(firstNode), indexes.length);

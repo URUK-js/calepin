@@ -1,6 +1,5 @@
 import { Doc } from "yjs";
 import { YNode } from ".";
-import { YLeaf } from "../..";
 import { createLeaf } from "./yLeaf";
 import { createNode } from "./yNode";
 export interface jsonLeaf extends Record<string, any> {
@@ -14,23 +13,13 @@ export type jsonNode = {
   children?: jsonNode[];
 };
 
-export const getContent = (leaf: jsonLeaf): YLeaf => {
-  return createLeaf(leaf);
-};
 export const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
-  return createNode(type, { ...props, children: children.map(getChildren), content: content.map(getContent) });
+  return createNode(type, { ...props, children: children.map(getChildren), content: content.map(createLeaf) });
 };
-export class EdytorDoc extends Doc {
-  constructor(value?: jsonNode[]) {
-    super();
-    if (value) {
-    }
-  }
-}
+export class EdytorDoc extends Doc {}
 
 export const DocFromJson = (value: jsonNode[], initialDoc?: Doc) => {
-  const doc = initialDoc || new Doc();
-  const array = doc.getArray("children");
+  const array = (initialDoc || new Doc()).getArray("children");
   array.insert(0, value.map(getChildren));
-  return doc;
+  return array.doc;
 };

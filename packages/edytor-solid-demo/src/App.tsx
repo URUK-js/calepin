@@ -29,7 +29,7 @@ self.MonacoEnvironment = {
   }
 };
 
-const Code = ({ node }) => {
+const Code = ({ node, children }) => {
   console.log({ node });
   let editorContainer;
   const onMount = (ref) => {
@@ -39,19 +39,17 @@ const Code = ({ node }) => {
 
     const updateEditorHeight = () => {
       const editorElement = editor.getDomNode();
-
       if (!editorElement) {
         return;
       }
-
+      editor.getScrollHeight();
       const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
       const lineCount = editor.getModel()?.getLineCount() || 1;
-      const height = editor.getTopForLineNumber(lineCount + 1) + lineHeight;
-      console.log({ height });
+      const height = editor.getTopForLineNumber(lineCount);
+      console.log({ height, lineCount }, editor.getTopForLineNumber(lineCount), editor.getScrollHeight());
       if (prevHeight !== height) {
         prevHeight = height;
-        console.log({ height });
-        editorElement.style.height = `${height || 19}px`;
+        editorElement.style.height = `${height < 39 ? 33 : height - 19}px`;
         editor.layout();
       }
     };
@@ -59,7 +57,7 @@ const Code = ({ node }) => {
     monaco.editor.defineTheme("Cobalt", monacoTheme);
     const editor = monaco.editor.create(ref, {
       value: "hello",
-      language: "javascript",
+      language: "typescript",
       automaticLayout: true,
       readOnly: false,
       scrollBeyondLastLine: false,
@@ -72,7 +70,7 @@ const Code = ({ node }) => {
       selectionHighlight: true,
       lineNumbersMinChars: 5,
       padding: { top: 15 },
-
+      lineHeight: 18,
       scrollbar: {
         handleMouseWheel: false,
         vertical: "hidden",
@@ -93,18 +91,22 @@ const Code = ({ node }) => {
   };
 
   return (
-    <div contentEditable={false} className="p-0 mt-3 mb-3">
-      <div className=" transition-none h-auto min-h-44 shadow-lg p-5 rounded-md bg-gra bg-gray-100" ref={onMount}></div>
-    </div>
+    <>
+      <div className="p-0 mt-3 mb-3">
+        <div
+          contentEditable={false}
+          className=" transition-none h-auto min-h-44 shadow-lg p-5 rounded-md bg-gra bg-gray-100"
+          ref={onMount}
+        />
+        <span className="text-gray-400 text-sm  ">{children}</span>
+      </div>
+    </>
   );
 };
 
 const App: Component = () => {
   return (
     <div>
-      <div className="p-5 mx-auto max-w-3xl shadow-xl mt-5">
-        <Code />
-      </div>
       <Editor
         initialValue={{
           json: initialValue()

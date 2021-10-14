@@ -46,15 +46,14 @@ export const splitNode = (editor: Editor) => {
         content: [newLeaf].concat(nextLeaves.map((leaf) => createLeaf(leaf.toJSON())))
       })
     ]);
+    setPosition(newLeaf.get("id") as string, { offset: 0 });
     leafContent.delete(indexOfLeaf + 1, leafNodeContentLength(start.leaf) - indexOfLeaf - 1);
-    setTimeout(() => {
-      setPosition(newLeaf.get("id"), { offset: 0 });
-    }, 10);
   };
 
   let doSplit = (!edges.startNode || !edges.endNode) && type !== "multinodes";
 
   if ((edges.endNode || edges.startNode) && type === "collapsed") {
+    // if cursor is at edge node with insert a default block before of after the current node
     const newNode = createNode(editor.defaultBlock);
     (node.parent as YArray<any>).insert(indexOfNode + (edges.endNode ? 1 : 0), [newNode]);
     return setTimeout(() => {

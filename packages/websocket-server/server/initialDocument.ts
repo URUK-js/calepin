@@ -6,11 +6,8 @@ export type YLeafProps = {
   id?: string;
 };
 
-export const getContent = (leaf: any): any => {
-  return createLeaf(leaf);
-};
 export const getChildren = ({ type, content = [], children = [], ...props }: any): any => {
-  return createNode(type, { ...props, children: children.map(getChildren), content: content.map(getContent) });
+  return createNode(type, { ...props, children: children.map(getChildren), content: content.map(createLeaf) });
 };
 
 export const createLeaf = (props?: any) => {

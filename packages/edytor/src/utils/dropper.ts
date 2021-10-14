@@ -54,7 +54,6 @@ export class Dropper {
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "0";
     setTimeout(() => {
-      console.log(id);
       this.selection.setPosition(id, { offset: 0 });
     });
   };

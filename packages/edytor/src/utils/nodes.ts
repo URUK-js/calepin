@@ -3,7 +3,7 @@ import { mergeLeafs } from "../operations";
 import { Editor } from "../types";
 import { getIndex, getNode, traverse } from "./common";
 import { leafLength, leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
-import { createLeaf, createNode, EdytorDoc, getChildren, getContent, YLeaf, YNode } from "./yClasses";
+import { createLeaf, createNode, getChildren, YNode } from "./yClasses";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
   const { start } = editor.selection;
@@ -25,7 +25,7 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
     leafNodeContentLength(prevLeaf),
     leafNodeContent(start.leaf)
       .toArray()
-      .map((leaf: YLeaf) => {
+      .map((leaf: YMap<any>) => {
         return createLeaf(leaf.toJSON());
       })
   );
@@ -68,7 +68,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
     leafNodeContentLength(start.leaf),
     leafNodeContent(nextLeaf)
       .toArray()
-      .map((leaf: YLeaf) => {
+      .map((leaf: YMap<any>) => {
         return createLeaf(leaf.toJSON());
       })
   );
@@ -118,7 +118,7 @@ export const copyNode = (node: YNode) => {
   return createNode(jsonNode.type, {
     ...jsonNode,
     children: jsonNode.children.map(getChildren),
-    content: jsonNode.content.map(getContent)
+    content: jsonNode.content.map(createLeaf)
   });
 };
 

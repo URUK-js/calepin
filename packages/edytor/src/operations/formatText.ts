@@ -10,8 +10,7 @@ import {
   leafNodeContent,
   leafText,
   createLeaf,
-  traverse,
-  YLeaf
+  traverse
 } from "../utils";
 
 export type formatTextOperation = {
@@ -32,7 +31,7 @@ export type formatAtEqualPathOperation = {
 
 export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
   Array.from(parent.keys(), (key) => {
-    if (key !== "text") {
+    if (key !== "text" && key !== "id" && key !== "data") {
       leafs.forEach((leaf) => {
         leaf.set(key, parent.get(key));
       });
@@ -92,61 +91,57 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
   editor.doc.transact(() => {
     switch (type) {
       case "collapsed": {
-        const isMarkActive = start.leaf.has(format);
-
-        if (isMarkActive && isLeafEmpty(start.leaf)) {
-          start.leaf.delete(format);
-          newPath = leafNodeContent(start.leaf)
-            .toArray()
-            .indexOf(start.leaf);
+        const isMarkActive = start.leaf.has(format) && start.leaf.get(format) === value;
+        if (isLeafEmpty(start.leaf)) {
+          // if the leaf is empty we only toggle the mark
+          isMarkActive ? start.leaf.delete(format) : start.leaf.set(format, value);
         } else {
+          // if leaf is not empty we split the current leaf in half to insert an empty fragment with the desired mark
+          splitLeaf(editor);
+          const fragment = createLeaf({ text: "", [format]: value });
+          // we are applying the current marks on the fragment
+          applyMarksFromParent(start.leaf, [fragment]);
+          // we remove the mark if its here
+          if (isMarkActive) fragment.delete(format);
+          // we insert the fragment after the spitted leaf
+          leafNodeContent(start.leaf).insert(start.leafIndex + 1, [fragment]);
+          // we remove the spitted leaf if empty
           if (isLeafEmpty(start.leaf)) {
-            isMarkActive ? start.leaf.delete(format) : start.leaf.set(format, value);
-          } else {
-            splitLeaf(editor, { yText: start.leaf.get("text"), at: start });
-            const newChild = createLeaf({ text: "", [format]: value });
-            applyMarksFromParent(start.leaf, [newChild]);
-
-            if (isMarkActive) newChild.delete(format);
-
-            leafNodeContent(start.leaf).insert(start.path.slice().reverse()[0] + 1, [newChild]);
-
-            if (isLeafEmpty(start.leaf)) {
-              leafNodeContent(start.leaf).delete(start.path.slice().reverse()[0]);
-            }
-            newPath = leafNodeContent(start.leaf)
-              .toArray()
-              .indexOf(newChild);
+            leafNodeContent(start.leaf).delete(start.leafIndex);
           }
+          setTimeout(() => {
+            setPosition(fragment.get("id") as string, { offset: 0 });
+            console.log(leafNodeContent(start.leaf).toJSON());
+          });
         }
+
+        // we merge leaves to avoid two subsequent leaves with the same marks
         mergeLeafs(leafNodeContent(start.leaf));
         break;
-        // return newPath;
       }
       case "singlenode": {
-        editor.doc.transact(() => {
-          const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
-          mergeLeafs(leafNodeContent(start.leaf));
-          const isRemoved = formatedLeaf._item.deleted;
+        const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
+        mergeLeafs(leafNodeContent(start.leaf));
+        const isRemoved = formatedLeaf._item.deleted;
 
-          if (!isRemoved) {
-            setPosition(start.leaf.get("id"), { offset: start.offset });
-            setTimeout(() => {
-              setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
+        if (!isRemoved) {
+          setPosition(start.leaf.get("id"), { offset: start.offset });
+          setTimeout(() => {
+            setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
+          });
+        } else {
+          const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
+          const offset = leafText(remainingLeaf)
+            .toJSON()
+            .indexOf(selectedText);
+          setTimeout(() => {
+            setPosition(remainingLeaf.get("id"), {
+              offset,
+              end: offset + selectedText.length
             });
-          } else {
-            const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
-            const offset = leafText(remainingLeaf)
-              .toJSON()
-              .indexOf(selectedText);
-            setTimeout(() => {
-              setPosition(remainingLeaf.get("id"), {
-                offset,
-                end: offset + selectedText.length
-              });
-            });
-          }
-        });
+          });
+        }
+
         break;
       }
       case "multileaves":

@@ -8,10 +8,10 @@ export const initialValue = () => {
       type: "heading-1",
       content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
     });
-    v.push({
-      type: "code",
-      content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
-    });
+    // v.push({
+    //   type: "code",
+    //   content: [{ text: "Lorem ipsum dolor sit amet consectetur adipisicing elit" }]
+    // });
     v.push({
       type: "paragraph",
       content: [

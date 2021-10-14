@@ -176,7 +176,7 @@ export class EdytorSelection {
     { offset, delta, end }: { offset?: number; delta?: number; end?: number; select?: boolean }
   ) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
-
+    console.log({ node });
     while (node && node.nodeType !== 3 && node?.firstChild) {
       node = node.firstChild;
     }

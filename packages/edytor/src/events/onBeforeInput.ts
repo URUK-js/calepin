@@ -11,12 +11,13 @@ const getDataTransfer = (e: any): string => e.dataTransfer.getData("text/plain")
 
 export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: InputEvent) => {
   // console.log(e);
-  const { start, length } = editor.selection;
-  console.log(editor.selection, e.target, e.composedPath());
-  if (e.composedPath().some((el) => el.getAttribute && el.getAttribute("data-edytor-void") === "true")) {
-    return;
-  }
+  const { start, length, setPosition } = editor.selection;
 
+  // if (e.composedPath().some((el) => el.getAttribute && el.getAttribute("data-edytor-void") === "true")) {
+  //   return;
+  // }
+  const tag = e.target?.tagName;
+  if (tag === "TEXTAREA" || tag === "INPUT") return;
   prevent(e);
   switch (e.inputType) {
     case "insertFromPaste":
@@ -46,13 +47,11 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     case "deleteByCut":
     case "deleteContentForward": {
       deleteText(editor, { mode: "forward" });
-
       break;
     }
 
     case "insertParagraph": {
       splitNode(editor);
-
       break;
     }
 
@@ -94,9 +93,8 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
     }
 
     case "insertReplacementText": {
-      doc().doc.transact(() => {
-        replaceLeafText(start.leaf, start.offset, length, getDataTransfer(e));
-      });
+      replaceLeafText(start.leaf, start.offset, length, getDataTransfer(e));
+      setPosition(start.leafId, { offset: start.offset });
     }
   }
 

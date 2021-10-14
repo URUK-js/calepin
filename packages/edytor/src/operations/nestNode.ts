@@ -1,11 +1,11 @@
-import { Editor, getNode, getNodeContainer, getPath, YNode, getChildren, getContent } from "..";
-import { createNode, getNodeAtPath, traverse } from "../utils";
+import { Editor, getNode, getNodeContainer, getPath } from "..";
+import { copyNode, getNodeAtPath, traverse } from "../utils";
 
 export const nestNode = (editor: Editor) => {
   const { start, type, end, setPosition } = editor.selection;
 
   const startNode = getNode(start.leaf);
-  const startJsonNode = startNode.toJSON();
+  const nodeCopy = copyNode(startNode);
   const startPath = getPath(startNode);
   const [index, ...newPath] = startPath.slice().reverse();
   const prevNode = getNodeAtPath(editor, [...newPath, index - 1]);
@@ -17,15 +17,7 @@ export const nestNode = (editor: Editor) => {
       const id = start.leaf.get("id");
       const prevChildren = prevNode.get("children");
       startContainer.delete(index);
-
-      prevChildren.insert(prevChildren.length, [
-        createNode(startJsonNode.type, {
-          ...startJsonNode,
-          children: startJsonNode.children.map(getChildren),
-          content: startJsonNode.content.map(getContent)
-        })
-      ]);
-
+      prevChildren.insert(prevChildren.length, [nodeCopy]);
       setPosition(id, { offset: start.offset });
       break;
     }
@@ -41,18 +33,10 @@ export const nestNode = (editor: Editor) => {
         (node, isText) => {
           if (!isText) {
             const path = getPath(node).join("");
-
             if (path.length === startPath.length) {
               if (path <= endPathString && path >= startPathString) {
                 length++;
-                const jsonNode = node.toJSON();
-                newNodes.push(
-                  createNode(jsonNode.type, {
-                    ...jsonNode,
-                    children: jsonNode.children.map(getChildren),
-                    content: jsonNode.content.map(getContent)
-                  })
-                );
+                newNodes.push(copyNode(node));
               }
             }
           }
