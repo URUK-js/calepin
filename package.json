@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev:solid": "pnpm recursive run dev --filter edytor-solid-demo",
-    "build:solid": "cd packages/edytor-solid-demo && npm install && npm run build",
+    "build:solid": "pnpm recursive run build --filter edytor-solid-demo",
     "build:edytor": "pnpm recursive run build --filter edytor",
     "publish:edytor": "pnpm recursive run publish --filter edytor"
   }
