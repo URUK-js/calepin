@@ -4,6 +4,7 @@ import { setupWSConnection } from "./server/livecycle";
 import WebSocket from "ws";
 import http, { IncomingMessage } from "http";
 import { handleAuth } from "./logic";
+import { onBeforeInput, onDrop, createWSProvider } from "edytor/dist";
 const port = process.env.PORT || 1234;
 
 const server = http.createServer((request: IncomingMessage, response: any) => {
@@ -24,4 +25,4 @@ server.on("upgrade", (req: IncomingMessage, socket: any, head: any) => {
 
 server.listen(port);
 
-console.log(`running yjs websocket sorcer  on port ${port}`);
+console.log(`running yjs websocket server on port ${port}`);

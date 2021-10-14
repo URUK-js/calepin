@@ -1,6 +1,6 @@
 {
   "name": "edytor",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "the core of edytor",
   "keywords": [
     "richtext"
@@ -13,9 +13,10 @@
     "dist"
   ],
   "scripts": {
-    "build-core": " tsdx build --transpileOnly",
+    "build": "tsdx build --transpileOnly",
     "test": "jest --coverage",
-    "publish-edytor": "yarn run build-core && npm publish"
+    "publish": "npm publish",
+    "test:coverage": "tsdx test --coverage"
   },
   "dependencies": {
     "is-hotkey": "^0.2.0",

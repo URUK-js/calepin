@@ -25,12 +25,13 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
     case "collapsed": {
       if (mode === "backward" && edges.startNode) {
         if (edges.startDocument) return;
-        // unnest node if its the last of its parent and if he is nested or it's the first its the only child of its parent
+
         if (
           start.nodeIndex === start.node.parent.length - 1 &&
           start.path.length > 2 &&
           (start.nodeIndex !== 0 || start.node.parent.length === 1)
         ) {
+          // unnest node if its the last of its parent and if he is nested or it's the first its the only child of its parent
           const node = copyNode(start.node);
           const nodeGrandParent = start.node.parent.parent;
           const index = getIndex(nodeGrandParent);
@@ -38,6 +39,7 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
           nodeGrandParent.parent.insert(index + 1, [node]);
           return setPosition(start.leafId, { offset: 0 });
         } else {
+          // merge with previous node if we are not nested
           return editor.doc.transact(() => {
             const [prevLeaf, offset] = mergeContentWithPrevLeaf(editor);
             setTimeout(() => {

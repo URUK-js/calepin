@@ -21,7 +21,6 @@ export class LeavesHarvest {
         indexes: []
       };
     }
-
     this.leaves[id].indexes.push(getIndex(leaf));
   };
 
