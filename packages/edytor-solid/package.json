@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "edytor": "workspace:*",
-    "solid-js": "^1.1.5"
+    "solid-js": "^1.1.5",
+    "yjs": "13.5.11"
   }
 }

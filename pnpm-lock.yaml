@@ -36,9 +36,11 @@ importers:
     specifiers:
       edytor: workspace:*
       solid-js: ^1.1.5
+      yjs: 13.5.11
     dependencies:
       edytor: link:../edytor
       solid-js: 1.1.6
+      yjs: 13.5.11
 
   packages/edytor-solid-demo:
     specifiers:
