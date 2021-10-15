@@ -9,7 +9,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "npx pnpm install && vite build",
+    "build": "vite build",
     "serve": "vite preview"
   },
   "devDependencies": {
