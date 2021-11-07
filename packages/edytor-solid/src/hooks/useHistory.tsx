@@ -9,7 +9,6 @@ export const useHistory = (children: YArray<any>, selection: EdytorSelection) =>
       return new UndoManager(children);
     }
   );
-
   onMount(() => {
     // this don't work very well
     undoManager().on("stack-item-added", (event: any) => {

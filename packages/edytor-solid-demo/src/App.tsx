@@ -111,7 +111,6 @@ const App: Component = () => {
         initialValue={{
           json: initialValue()
         }}
-        blocks={{ paragraph: "p", blockquote: "blockquote", "heading-1": "h1", code: Code }}
         voids={{
           blocks: {
             code: true
@@ -129,7 +128,7 @@ const App: Component = () => {
         spellcheck={false}
         renderHandle={renderHandle}
         props={{ "data-font": "sans", "data-full-width": false, "data-small-text": true }}
-        renderInner={() => {
+        Inner={({ editor }) => {
           return (
             <>
               <SelectionIndicator />
@@ -137,7 +136,7 @@ const App: Component = () => {
             </>
           );
         }}
-        renderBefore={() => {
+        Before={() => {
           return (
             <>
               <StyleSelector />

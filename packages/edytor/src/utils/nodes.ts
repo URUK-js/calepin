@@ -1,9 +1,17 @@
-import { YArray, YMap } from "yjs/dist/src/internals";
-import { mergeLeafs } from "../operations";
-import { Editor } from "../types";
-import { getIndex, getNode, traverse } from "./common";
-import { leafLength, leafNodeContent, leafNodeContentLength, leafString } from "./leaves";
-import { createLeaf, createNode, getChildren, YNode } from "./yClasses";
+import { Editor, NodesArray, YLeaf, YNode, YArray } from "../types";
+import {
+  leafLength,
+  leafNodeContent,
+  leafNodeContentLength,
+  leafString,
+  createLeaf,
+  createNode,
+  getChildren,
+  getIndex,
+  getNode,
+  traverse,
+  mergeLeafs
+} from "..";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
   const { start } = editor.selection;
@@ -25,9 +33,11 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
     leafNodeContentLength(prevLeaf),
     leafNodeContent(start.leaf)
       .toArray()
-      .map((leaf: YMap<any>) => {
-        return createLeaf(leaf.toJSON());
-      })
+      .map(
+        (leaf: YLeaf): YLeaf => {
+          return createLeaf(leaf.toJSON());
+        }
+      )
   );
   mergeLeafs(leafNodeContent(prevLeaf));
 
@@ -68,9 +78,11 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
     leafNodeContentLength(start.leaf),
     leafNodeContent(nextLeaf)
       .toArray()
-      .map((leaf: YMap<any>) => {
-        return createLeaf(leaf.toJSON());
-      })
+      .map(
+        (leaf: YLeaf): YLeaf => {
+          return createLeaf(leaf.toJSON());
+        }
+      )
   );
   mergeLeafs(leafNodeContent(start.leaf));
 
@@ -86,7 +98,7 @@ export const mergeContentWithNextLeaf = (editor: Editor) => {
 
 export const deleteNode = (node, defaultBlock: string) => {
   if (isNodeEmpty(node)) {
-    (node.parent as YArray<YNode>).delete(getIndex(node));
+    (node.parent as NodesArray).delete(getIndex(node));
   } else if (isNodeContentEmpty(node)) {
     const children = getNodeChildren(node).toJSON();
     const index = getIndex(node);
@@ -97,13 +109,14 @@ export const deleteNode = (node, defaultBlock: string) => {
     );
   }
   if (node.parent === (node.doc.getArray("children") && node.doc.getArray("children").length === 0)) {
-    (node.parent as YArray<YNode>).insert(0, [createNode(defaultBlock, { content: [createLeaf()] })]);
+    (node.parent as NodesArray).insert(0, [createNode(defaultBlock, { content: [createLeaf()] })]);
   }
 };
 
-export const getNodeContainer = (node) => node.parent as YArray<YNode>;
-export const getNodeChildren = (node) => node.get("children") as YArray<YNode>;
-export const getNodeContent = (node) => node.get("content") as YArray<YNode>;
+export const getNodeNode = (node) => getNodeContainer(node).parent as YNode;
+export const getNodeContainer = (node) => node.parent as NodesArray;
+export const getNodeChildren = (node) => node.get("children") as NodesArray;
+export const getNodeContent = (node) => node.get("content") as NodesArray;
 export const hasChildren = (node) => getNodeChildren(node).length > 0;
 export const isNodeEmpty = (node) => isNodeContentEmpty(node) && !hasChildren(node);
 export const isNodeContentEmpty = (node) =>

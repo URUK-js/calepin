@@ -1,14 +1,12 @@
-import { createMemo, onMount as onMountSolid, onCleanup } from "solid-js";
+import { onMount as onMountSolid, onCleanup } from "solid-js";
 import { renderChildren, defaultLeaves, defaultBlocks } from "./components";
-import { useHistory, EditorContext, useEditor } from "./hooks";
+import { useHistory, EditorContext } from "./hooks";
 import {
   EditorProps,
   onDragOver,
   onDrop,
   onBeforeInput,
   onKeyDown,
-  Editor as EditorType,
-  EdytorDoc,
   EdytorSelection,
   defaultHotkeys
   // createWSProvider
@@ -17,7 +15,6 @@ import { Dropper, nanoid } from "edytor/src";
 import { useYjsContext } from "./contexts/yjsContext";
 
 export const Editor = ({
-  renderInner,
   renderHandle = () => null,
   leaves = defaultLeaves,
   blocks = defaultBlocks,
@@ -25,12 +22,14 @@ export const Editor = ({
   spellcheck = true,
   onChange = () => null,
   collaboration,
+  Inner,
+  Before,
+  After,
   onMount = () => null,
-  renderBefore,
+
   dnd = { active: false },
   hotkeys = defaultHotkeys,
   defaultBlock = "paragraph",
-  renderAfter,
   className = "edytor",
   allowNesting = true,
   readOnly = false,
@@ -82,7 +81,7 @@ export const Editor = ({
 
   return (
     <EditorContext value={editor}>
-      {renderBefore && renderBefore()}
+      {Before && <Before editor={editor} />}
       <div
         {...props}
         className={className}
@@ -104,11 +103,11 @@ export const Editor = ({
         onKeyDown={[onKeyDown, editor]}
         contentEditable={!readOnly}
       >
-        {renderInner && renderInner()}
+        {Inner && <Inner editor={editor} />}
         {dnd?.active && dnd.renderIndicator()}
         {renderChildren(children, "root")}
       </div>
-      {renderAfter && renderAfter()}
+      {After && <After editor={editor} />}
     </EditorContext>
   );
 };

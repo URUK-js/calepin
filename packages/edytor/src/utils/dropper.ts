@@ -1,7 +1,5 @@
-import { moveNode } from "../operations";
-import { Editor, EdytorSelection } from "../types";
-import { getIndex, getPath } from "./common";
-import { EdytorDoc } from "./yClasses";
+import { moveNode, getIndex, getPath } from "..";
+import { Editor, EdytorSelection, Doc } from "../types";
 
 export class Dropper {
   from;
@@ -10,7 +8,7 @@ export class Dropper {
   startPath;
   container: HTMLDivElement;
   editor: Editor;
-  doc: EdytorDoc;
+  doc: Doc;
   editorId: string;
   ID_TO_NODE: Map<any, any>;
   selection: EdytorSelection;

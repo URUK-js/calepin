@@ -1,5 +1,5 @@
-import { YMap, YText } from "yjs/dist/src/internals";
-import { Editor, Position, EdytorSelection } from "../types";
+import { YMap } from "yjs/dist/src/internals";
+import { Editor, Position, EdytorSelection, YText } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
 import {
   deleteLeafText,
@@ -114,8 +114,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
             console.log(leafNodeContent(start.leaf).toJSON());
           });
         }
-
-        // we merge leaves to avoid two subsequent leaves with the same marks
+        // we merge leaves to avoid two subsequent leaves with the same marks => clean markup
         mergeLeafs(leafNodeContent(start.leaf));
         break;
       }

@@ -1,6 +1,5 @@
-import { replaceLeafText } from "../utils";
+import { splitNode, insertText, deleteText, replaceLeafText } from "..";
 import { onBeforeInputData } from "../types";
-import { splitNode, insertText, deleteText, formatText } from "../operations";
 
 const prevent = (e: any) => {
   e.preventDefault();

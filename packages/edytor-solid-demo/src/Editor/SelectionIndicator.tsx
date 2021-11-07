@@ -29,7 +29,5 @@ export const SelectionIndicator = () => {
       indicator.style.opacity = "0";
     }
   });
-  return (
-    <div id="selectionIndicator" className="z-0 bg-gray-100 rounded-sm absolute select-none " contentEditable={false} />
-  );
+  return <div id="selectionIndicator" className=" rounded-sm absolute  " contentEditable={false} />;
 };

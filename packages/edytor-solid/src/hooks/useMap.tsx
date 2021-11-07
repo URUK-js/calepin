@@ -6,7 +6,6 @@ export const useMap = (node: YMap<any>) => {
   const observer = () => {
     setValue(node.toJSON());
   };
-
   onMount(() => {
     node.observe(observer);
   });

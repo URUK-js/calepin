@@ -14,7 +14,6 @@ const extractMap = (node: YMap<any>) => {
 
   return json;
 };
-// TO DO conditionally observe if inside viewport
 export const useNode = (node: YMap<any>) => {
   const editor = useEditor();
   const [value, setValue] = createSignal(extractMap(node));

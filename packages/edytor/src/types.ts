@@ -1,13 +1,28 @@
-import { YArray, YMap } from "yjs/dist/src/internals";
-import { EdytorDoc } from ".";
-import { Dropper, EdytorSelection, jsonNode, YNode } from "./utils";
+import { Array as YArray, Map as YMap, Doc, Text as YText } from "yjs";
+import { Dropper, EdytorSelection, jsonNode } from "./utils";
 import * as awarenessProtocol from "y-protocols/awareness";
-
+export { Doc, YText, YArray };
 export { EdytorSelection };
 type Accessor<T> = () => T;
 
+export class YNode extends YMap<any> {}
+export type YNodeProps = {
+  data?: any;
+  content?: YLeaf[] | YArray<YLeaf>;
+  children?: YNode[] | YArray<YNode>;
+  id?: string;
+};
+
 export type YLeaf = YMap<any>;
 
+export type YLeafProps = {
+  data?: any;
+  text?: string;
+  id?: string;
+};
+export type EdytorArray = YArray<any>;
+export type LeavesArray = YArray<YLeaf>;
+export type NodesArray = YArray<YNode>;
 export type dataEdytorType = "data-edytor-block" | "data-edytor-leave";
 export type attributes = {
   id: string;
@@ -105,7 +120,7 @@ export interface Editor {
   renderHandle: (({ node, attributes }: renderHandleProps) => any) | undefined;
   undoManager: any;
   editorRef: HTMLDivElement | undefined;
-  doc: EdytorDoc;
+  doc: Doc;
   toRawText: () => string;
   toJSON: () => jsonNode[];
   ID_TO_NODE: Map<string, YMap<any>>;

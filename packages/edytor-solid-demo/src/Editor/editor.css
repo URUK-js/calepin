@@ -126,3 +126,6 @@ blockquote {
 [data-edytor-handle]:active {
   cursor: grabbing;
 }
+[data-edytor-focused="true"] {
+  @apply bg-gray-100 rounded-sm;
+}

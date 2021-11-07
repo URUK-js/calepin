@@ -1,13 +1,8 @@
 import { nanoid } from "..";
 import { Map, Text } from "yjs";
+import { YLeaf, YLeafProps } from "../../types";
 
-export type YLeafProps = {
-  data?: any;
-  text?: string;
-  id?: string;
-};
-
-export const createLeaf = (props?: YLeafProps) => {
+export const createLeaf = (props?: YLeafProps): YLeaf => {
   const leaf = new Map();
   leaf.set("id", props?.id || nanoid());
   leaf.set("text", new Text(props?.text || ""));

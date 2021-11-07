@@ -1,17 +1,8 @@
-import { nanoid } from "..";
+import { nanoid, createLeaf } from "..";
 import { Map, Array } from "yjs";
-import { YArray, YMap } from "yjs/dist/src/internals";
-import { YLeaf } from "../../";
-import { createLeaf } from "./yLeaf";
+import { YNode, YNodeProps } from "../../types";
 
-export type YNodeProps = {
-  data?: any;
-  content?: YLeaf[] | YArray<YLeaf>;
-  children?: YNode[] | YArray<YNode>;
-  id?: string;
-};
-
-export const createNode = (type: string, props?: YNodeProps): YMap<any> => {
+export const createNode = (type: string, props?: YNodeProps): YNode => {
   const node = new Map();
   node.set("id", props?.id || nanoid());
   node.set("type", type);
@@ -22,5 +13,3 @@ export const createNode = (type: string, props?: YNodeProps): YMap<any> => {
   node.set("children", props?.children instanceof Array ? props.children : Array.from(props?.children || []));
   return node;
 };
-
-export class YNode extends Map<any> {}

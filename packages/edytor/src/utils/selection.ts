@@ -1,6 +1,5 @@
-import { Editor, Position, YLeaf } from "../types";
-import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength, YNode } from ".";
-
+import { Editor, Position, YLeaf, YNode } from "../types";
+import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength } from ".";
 export class EdytorSelection {
   editor: Editor;
   observers: ((selection: EdytorSelection) => void)[];

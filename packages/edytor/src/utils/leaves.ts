@@ -1,11 +1,8 @@
-import { YArray, YMap, YText } from "yjs/dist/src/internals";
-import { Editor } from "../types";
-import { getIndex } from "./common";
-import { deleteNode } from "./nodes";
-import { createLeaf, YLeaf, YNode } from "./yClasses";
+import { Editor, YNode, LeavesArray, NodesArray, YLeaf, YText } from "../types";
+import { getIndex, deleteNode, createLeaf } from ".";
 
 export class LeavesHarvest {
-  leaves: { [id: string]: { shouldDeleteNode: boolean; content: YArray<YLeaf>; node: YMap<any>; indexes: number[] } };
+  leaves: { [id: string]: { shouldDeleteNode: boolean; content: LeavesArray; node: YNode; indexes: number[] } };
   constructor() {
     this.leaves = {};
   }
@@ -34,7 +31,7 @@ export class LeavesHarvest {
   };
 }
 
-export const leafData = (leaf): YMap<any> => leaf.get("data");
+export const leafData = (leaf): YLeaf => leaf.get("data");
 export const leafText = (leaf): YText => leaf.get("text");
 export const leafLength = (leaf): number => leafText(leaf).length;
 export const leafString = (leaf): string => leafText(leaf).toString();
@@ -71,7 +68,6 @@ export const setLeafData = (leaf, data: object) => {
 
 export const removeIfEmpty = (leaf) => {
   if (isLeafEmpty(leaf)) {
-    console.log("isEmpty", leafNodeContent(leaf).toJSON());
     leafNodeContent(leaf).delete(getIndex(leaf));
     // if (leafNodeContentLength(leaf) === 0) {
     //   deleteNode(leafNode(leaf));
@@ -82,7 +78,7 @@ export const removeIfEmpty = (leaf) => {
 export const leafNode = (leaf): YNode => leaf.parent.parent as YNode;
 export const leafNodeId = (leaf): string => leafNode(leaf).get("id");
 
-export const leafNodeContent = (leaf): YArray<YLeaf> => leaf.parent as YArray<YLeaf>;
+export const leafNodeContent = (leaf): LeavesArray => leaf.parent as LeavesArray;
 
 export const leafNodeContentLength = (leaf): number => leafNodeContent(leaf).length;
 export const leafNodeContentStringLength = (leaf): number =>
@@ -90,6 +86,6 @@ export const leafNodeContentStringLength = (leaf): number =>
     .toArray()
     .reduce((acc, leaf) => acc + leafLength(leaf), 0);
 
-export const leafNodeChildren = (leaf): YArray<YNode> => leafNode(leaf).get("children") as YArray<YNode>;
+export const leafNodeChildren = (leaf): NodesArray => leafNode(leaf).get("children") as NodesArray;
 
 export const leafNodeChildrenLength = (leaf): number => leafNodeChildren(leaf).length;

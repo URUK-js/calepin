@@ -1,15 +1,14 @@
 import { createContext, Show, createSignal, onMount, useContext } from "solid-js";
 import * as awarenessProtocol from "y-protocols/awareness";
 import { WebsocketProvider } from "y-websocket";
-import { WebrtcProvider } from "y-webrtc";
-import { createWSProvider, DocFromJson, EditorProps, EdytorDoc, YNode } from "edytor/src";
+import { createWSProvider, DocFromJson, EditorProps, YNode } from "edytor/src";
 import { Doc, YArray } from "yjs/dist/src/internals";
 
 const YjsContext = createContext<YjsContextType | undefined>();
 type YjsContextType = {
-  doc: EdytorDoc | Doc;
+  doc: Doc;
   children: YArray<YNode>;
-  provider: WebrtcProvider | WebsocketProvider | undefined;
+  provider: WebsocketProvider | undefined;
   awareness: awarenessProtocol.Awareness | undefined;
 };
 

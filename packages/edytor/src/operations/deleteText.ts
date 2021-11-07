@@ -9,9 +9,11 @@ import {
   LeavesHarvest,
   mergeContentWithNextLeaf,
   mergeContentWithPrevLeaf,
-  createLeaf,
   traverse,
-  isNodeContentEmpty
+  getNodeContainer,
+  getNodeNode,
+  isNodeContentEmpty,
+  createLeaf
 } from "../utils";
 
 type deleteTextOpts = {
@@ -27,16 +29,16 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         if (edges.startDocument) return;
 
         if (
-          start.nodeIndex === start.node.parent.length - 1 &&
+          start.nodeIndex === getNodeContainer(start.node).length - 1 &&
           start.path.length > 2 &&
-          (start.nodeIndex !== 0 || start.node.parent.length === 1)
+          (start.nodeIndex !== 0 || getNodeContainer(start.node).length === 1)
         ) {
           // unnest node if its the last of its parent and if he is nested or it's the first its the only child of its parent
           const node = copyNode(start.node);
-          const nodeGrandParent = start.node.parent.parent;
+          const nodeGrandParent = getNodeNode(start.node);
           const index = getIndex(nodeGrandParent);
-          start.node.parent.delete(start.nodeIndex);
-          nodeGrandParent.parent.insert(index + 1, [node]);
+          getNodeContainer(start.node).delete(start.nodeIndex);
+          getNodeContainer(nodeGrandParent).insert(index + 1, [node]);
           return setPosition(start.leafId, { offset: 0 });
         } else {
           // merge with previous node if we are not nested
@@ -76,11 +78,17 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
       break;
     }
     case "singlenode": {
+      // delete text at range and remove it if empty
       deleteLeafText(start.leaf, start.offset, length, true);
+      // ad a nex leaf if node is empty
       if (isNodeContentEmpty(start.node)) {
-        leafNodeContent(start.leaf).insert(0, [createLeaf()]);
+        const newLeaf = createLeaf();
+        leafNodeContent(start.leaf).insert(0, [newLeaf]);
+        setPosition(newLeaf.get("id"), { offset: start.offset });
+      } else {
+        setPosition(start.leafId, { offset: start.offset });
       }
-      setPosition(start.leafId, { offset: start.offset });
+
       break;
     }
     case "multileaves":
@@ -90,26 +98,22 @@ export const deleteText = (editor: Editor, { mode, selection }: deleteTextOpts) 
         const endPathString = end.path.join(",");
         editor.doc.transact(() => {
           const { reap, burn } = new LeavesHarvest();
-          traverse(
-            editor,
-            (leaf, isText) => {
-              if (isText) {
-                const path = getPath(leaf);
-                const l = leafLength(leaf);
-                if (path.join(",") === startPathString) {
-                  deleteLeafText(leaf, start.offset, l);
-                  reap(leaf, false);
-                } else if (path > start.path && path < end.path) {
-                  deleteLeafText(leaf, 0, l);
-                  reap(leaf, true);
-                } else if (path.join(",") === endPathString) {
-                  deleteLeafText(leaf, 0, end.offset);
-                  reap(leaf, end.offset === l);
-                }
+          traverse(editor, (leaf, isText) => {
+            if (isText) {
+              const path = getPath(leaf);
+              const l = leafLength(leaf);
+              if (path.join(",") === startPathString) {
+                deleteLeafText(leaf, start.offset, l);
+                reap(leaf, false);
+              } else if (path > start.path && path < end.path) {
+                deleteLeafText(leaf, 0, l);
+                reap(leaf, true);
+              } else if (path.join(",") === endPathString) {
+                deleteLeafText(leaf, 0, end.offset);
+                reap(leaf, end.offset === l);
               }
-            },
-            { start: start.path[0], end: end.path[0] + 1 }
-          );
+            }
+          });
           return burn(editor);
         });
       }
