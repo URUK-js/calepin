@@ -62,12 +62,12 @@ export const formatAtEqualPath = ({
   } else {
     // we get the remaining text of the leaf that is not formated
     const remainingText = content.substring(end.offset, leafLength(leaf));
-    // if there is not remaining text the whole leaf is formated
+    // if there is not remaining text and the whole leaf is selected we are just applying the mark the leaf
     if (remainingText.length === 0 && leafLength(leaf) === end.offset - start.offset) {
       leaf.set(format, value);
       return leaf;
     } else {
-      // delete the leaf starting at the start offset to split it in half and being able to apply format to the right part of it
+      // delete the leaf at the start offset to split it in half and being able to apply format to the right part of it
       deleteLeafText(leaf, start.offset, leafLength(leaf));
 
       // create a new leaf in order to apply it the desired format and copying all previous leaf infos into it to preserve the actual format and data
@@ -78,13 +78,17 @@ export const formatAtEqualPath = ({
         text: content.substring(start.offset, end.offset)
       });
 
+      // we create an array of leaves that will be pushed inside the parent content
       let newLeaves = [formatedLeaf];
+      // if there is a remaining text that should not be formated we create a leaf with the same properties the current leaf has and push it the leaves array
       if (remainingText.length > 0) {
         newLeaves.push(createLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
+      // if the mark is active we are removing it from the selected leaf
       if (isMarkActive) {
         formatedLeaf.delete(format);
       }
+      // we push the leaves array to the parent content starting at the current leaf index + 1
       newLeaves.length && leafNodeContent(leaf).insert(index + 1, newLeaves);
       return formatedLeaf;
     }
