@@ -39,14 +39,17 @@ export const renderNode = (node: YNode) => {
   const block = useNode(node);
   const { blocks, defaultBlock } = useEditor();
   return (
-    <Dynamic
-      props={{ "data-edytor-block": true, id: getId(node) }}
-      block={block}
-      node={node}
-      focused={useIsFocused(node)}
-      content={renderChildren(node.get("content"), "leaf")}
-      children={renderChildren(node.get("children"), "node")}
-      component={createMemo(() => blocks[block().type || blocks[defaultBlock]])()}
-    />
+    <>
+      {getId(node)}
+      <Dynamic
+        props={{ "data-edytor-block": true, id: getId(node) }}
+        block={block}
+        node={node}
+        focused={useIsFocused(node)}
+        content={renderChildren(node.get("content"), "leaf")}
+        children={renderChildren(node.get("children"), "node")}
+        component={createMemo(() => blocks[block().type || blocks[defaultBlock]])()}
+      />
+    </>
   );
 };
