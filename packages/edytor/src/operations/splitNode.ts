@@ -1,8 +1,10 @@
-import { YArray, YText } from "yjs/dist/src/internals";
-import { Editor, Position, EdytorSelection } from "../types";
-import { deleteText } from ".";
-import { YNode, YLeaf } from "..";
 import {
+  Editor,
+  Position,
+  EdytorSelection,
+  deleteText,
+  YArray,
+  YText,
   leafNodeContent,
   leafString,
   leafLength,
@@ -14,7 +16,7 @@ import {
   getNodeChildren,
   createLeaf,
   createNode
-} from "../utils";
+} from "..";
 
 export type splitNodeOperation = {
   at: Position;

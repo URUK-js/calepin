@@ -1,14 +1,13 @@
-import { Editor } from "../types";
 import {
+  Editor,
   deleteLeafText,
   getPath,
   insertTextInLeaf,
   leafLength,
   LeavesHarvest,
   replaceLeafText,
-  traverse,
-  YLeaf
-} from "../utils";
+  traverse
+} from "..";
 
 export type insertTextOperation = {
   text: string | null;

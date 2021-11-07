@@ -1,6 +1,19 @@
 import { customAlphabet } from "nanoid";
-import { Editor, EditorWithChildren, YLeaf, YNode, EdytorArray } from "../types";
-import { getNodeChildren, getNodeContent, nodeString } from ".";
+
+import {
+  getNodeChildren,
+  Doc,
+  getNodeContent,
+  nodeString,
+  createNode,
+  Editor,
+  EditorWithChildren,
+  YLeaf,
+  YNode,
+  EdytorArray,
+  createLeaf,
+  jsonNode
+} from "..";
 
 export const nanoid = () => "y-" + customAlphabet("346789ABCDEFGHJKLMNPQRTUV-WXYabcdefghijkmnpqrtwxyz", 20)();
 
@@ -104,4 +117,14 @@ export const toString = (editor: Editor | EditorWithChildren): string => {
     t += nodeString(array[i]);
   }
   return t;
+};
+
+export const getChildren = ({ type, content = [], children = [], ...props }: jsonNode): YNode => {
+  return createNode(type, { ...props, children: children.map(getChildren), content: content.map(createLeaf) });
+};
+
+export const DocFromJson = (value: jsonNode[], initialDoc?: Doc): Doc => {
+  const array = (initialDoc || new Doc()).getArray("children");
+  array.insert(0, value.map(getChildren));
+  return array.doc;
 };

@@ -1,5 +1,4 @@
 import { formatText } from "../../..";
-import { Value } from "../../../src";
 import { makeEditorFixture, removeIds } from "../../fixture/editorFixture";
 
 test("format range at same path", () => {

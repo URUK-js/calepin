@@ -1,5 +1,4 @@
-import { moveNode, getIndex, getPath } from "..";
-import { Editor, EdytorSelection, Doc } from "../types";
+import { moveNode, getIndex, getPath, Editor, EdytorSelection, Doc } from "..";
 
 export class Dropper {
   from;

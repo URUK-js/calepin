@@ -1,4 +1,4 @@
-import { Editor } from "../types";
+import { Editor } from "..";
 
 export const onDrop = (editor: Editor, e: DragEvent) => {
   if (e.dataTransfer?.files.length > 0) {

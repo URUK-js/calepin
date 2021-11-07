@@ -1,5 +1,6 @@
-import { Editor, EdytorSelection } from "../types";
 import {
+  Editor,
+  EdytorSelection,
   copyNode,
   deleteLeafText,
   getIndex,
@@ -14,7 +15,7 @@ import {
   getNodeNode,
   isNodeContentEmpty,
   createLeaf
-} from "../utils";
+} from "..";
 
 type deleteTextOpts = {
   mode: "forward" | "backward" | "none";

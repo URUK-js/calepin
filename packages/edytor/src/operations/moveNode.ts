@@ -1,14 +1,12 @@
-import { getIndex } from "..";
-import { YArray } from "../../../../node_modules/yjs/dist/src/internals";
-import { copyNode } from "../utils";
+import { getIndex, EdytorArray, copyNode } from "..";
 
 export type moveNodeOperation = {
   from: {
-    container: YArray<any> | any;
+    container: EdytorArray | any;
     at: number | number[];
   };
   to: {
-    container: YArray<any>;
+    container: EdytorArray;
     at: number;
   };
 };

@@ -1,5 +1,4 @@
-import { Editor, Position, YLeaf, YNode } from "../types";
-import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength } from ".";
+import { getIndex, getPath, leafLength, leafNode, leafNodeContentLength, Editor, Position, YLeaf, YNode } from "..";
 export class EdytorSelection {
   editor: Editor;
   observers: ((selection: EdytorSelection) => void)[];
@@ -175,7 +174,6 @@ export class EdytorSelection {
     { offset, delta, end }: { offset?: number; delta?: number; end?: number; select?: boolean }
   ) => {
     let node = this.container.querySelector(`#${id}`) as ChildNode;
-    console.log({ node });
     while (node && node.nodeType !== 3 && node?.firstChild) {
       node = node.firstChild;
     }

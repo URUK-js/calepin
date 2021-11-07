@@ -1,5 +1,5 @@
-import { Editor } from "../types";
-import { createLeaf, deleteLeafText, leafNodeContent, leafString } from "../utils";
+import { createLeaf, deleteLeafText, leafNodeContent, leafString, Editor } from "..";
+
 export const splitLeaf = (editor: Editor) => {
   const {
     start: { leaf, leafIndex, offset }

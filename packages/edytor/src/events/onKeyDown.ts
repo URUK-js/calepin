@@ -1,6 +1,5 @@
-import { Editor } from "../types";
 import isHotkey from "is-hotkey";
-import { formatText, nestNode } from "../operations";
+import { formatText, nestNode, Editor } from "..";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
   if (e.key === "Tab") {

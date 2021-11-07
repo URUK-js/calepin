@@ -1,17 +1,24 @@
-import { Editor, NodesArray, YLeaf, YNode, YArray } from "../types";
 import {
+  Editor,
+  NodesArray,
+  YLeaf,
+  YNode,
+  YNodeProps,
+  YArray,
   leafLength,
   leafNodeContent,
   leafNodeContentLength,
   leafString,
   createLeaf,
-  createNode,
   getChildren,
   getIndex,
   getNode,
+  nanoid,
   traverse,
-  mergeLeafs
+  mergeLeafs,
+  EdytorArray
 } from "..";
+import { Map, Array } from "yjs";
 
 export const mergeContentWithPrevLeaf = (editor: Editor) => {
   const { start } = editor.selection;
@@ -45,10 +52,11 @@ export const mergeContentWithPrevLeaf = (editor: Editor) => {
     .get("children")
     .toArray()
     .map(copyNode);
+  const parent = start.node.parent as EdytorArray;
   if (children.length) {
-    start.node.parent.insert(start.nodeIndex, children);
+    parent.insert(start.nodeIndex, children);
   }
-  start.node.parent.delete(start.nodeIndex + children.length);
+  parent.delete(start.nodeIndex + children.length);
   return [prevLeaf, prevLeafLength];
   // (start.leaf.parent.parent as YArray<YNode>).delete(index);
 };
@@ -144,4 +152,16 @@ export const nodeString = (node: YNode) => {
     text += nodeString(node);
   });
   return text;
+};
+
+export const createNode = (type: string, props?: YNodeProps): YNode => {
+  const node = new Map();
+  node.set("id", props?.id || nanoid());
+  node.set("type", type);
+  if (props?.data) {
+    node.set("data", new Map(Object.entries(props.data)));
+  }
+  node.set("content", props?.content instanceof Array ? props.content : Array.from(props?.content || [createLeaf()]));
+  node.set("children", props?.children instanceof Array ? props.children : Array.from(props?.children || []));
+  return node;
 };

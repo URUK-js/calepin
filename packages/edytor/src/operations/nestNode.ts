@@ -1,5 +1,4 @@
-import { Editor, getNode, getNodeContainer, getPath } from "..";
-import { copyNode, getNodeAtPath, traverse } from "../utils";
+import { Editor, getNodeContainer, getPath, copyNode, getNodeAtPath, traverse } from "..";
 
 export const nestNode = (editor: Editor) => {
   const { start, type, end, setPosition } = editor.selection;

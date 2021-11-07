@@ -1,5 +1,4 @@
-import { YText, YArray, YMap } from "yjs/dist/src/internals";
-
+import { YArray, YText, YMap } from "..";
 export const removeEmptyText = (yText: YText) => {
   let array = yText?.parent?.parent as YArray<YMap<any>> | undefined;
   const index = (array: YArray<any>, node: YMap<any>) => array?.toArray().indexOf(node);

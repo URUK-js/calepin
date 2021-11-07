@@ -1,7 +1,11 @@
-import { YMap } from "yjs/dist/src/internals";
-import { Editor, Position, EdytorSelection, YText, YLeaf } from "../types";
-import { mergeLeafs, splitLeaf } from ".";
 import {
+  Editor,
+  Position,
+  EdytorSelection,
+  YText,
+  YLeaf,
+  mergeLeafs,
+  splitLeaf,
   deleteLeafText,
   getIndex,
   getPath,
@@ -10,8 +14,9 @@ import {
   leafNodeContent,
   leafText,
   createLeaf,
-  traverse
-} from "../utils";
+  traverse,
+  YNode
+} from "..";
 
 export type formatTextOperation = {
   at?: Position;
@@ -23,14 +28,13 @@ export type formatTextOperation = {
 export type formatAtEqualPathOperation = {
   format: string;
   value: any;
-  start: EdytorSelection["start"];
-  end: EdytorSelection["end"];
-  length: EdytorSelection["length"];
+  start: EdytorSelection["start"] | Pick<EdytorSelection["start"], "leaf" | "offset">;
+  end: EdytorSelection["end"] | Pick<EdytorSelection["end"], "offset">;
   data?: object;
   removeFormatIfPresent?: boolean;
 };
 
-export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
+export const applyMarksFromParent = (parent: YNode, leafs: YLeaf[]) => {
   Array.from(parent.keys(), (key) => {
     if (key !== "text" && key !== "id" && key !== "data") {
       leafs.forEach((leaf) => {
@@ -80,7 +84,7 @@ export const formatAtEqualPath = ({
 
       // we create an array of leaves that will be pushed inside the parent content
       let newLeaves = [formatedLeaf];
-      // if there is a remaining text that should not be formated we create a leaf with the same properties the current leaf has and push it the leaves array
+      // if there is a remaining text that should not be formatted, we create a leaf with the same properties of the current leaf has and push it into the leaves array
       if (remainingText.length > 0) {
         newLeaves.push(createLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
@@ -132,7 +136,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
         break;
       }
       case "singlenode": {
-        const formatedLeaf = formatAtEqualPath({ format, value, start, end, length });
+        const formatedLeaf = formatAtEqualPath({ format, value, start, end });
         mergeLeafs(leafNodeContent(start.leaf));
         const isRemoved = formatedLeaf._item.deleted;
 
@@ -142,7 +146,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
             setPosition(formatedLeaf.get("id"), { offset: 0, end: leafLength(formatedLeaf) });
           });
         } else {
-          const remainingLeaf = formatedLeaf.parent.get(start.leafIndex - 1);
+          const remainingLeaf = leafNodeContent(formatedLeaf).get(start.leafIndex - 1);
           const offset = leafText(remainingLeaf)
             .toJSON()
             .indexOf(selectedText);
@@ -166,11 +170,10 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
 
         traverse(
           editor,
-          (leaf, isText) => {
+          (leaf, isText, path) => {
             if (isText) {
               leaves.push([leaf.has(format), leaf]);
-              const path = getPath(leaf);
-              console.log(path);
+
               const isStart = path.join(",") === startPathString;
               const isEnd = path.join(",") === getPath(end.leaf).join(",");
               console.log({ isEnd }, endPathString, getPath(end.leaf).join(","), path.join(","));

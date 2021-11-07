@@ -1,5 +1,4 @@
-import { splitNode, insertText, deleteText, replaceLeafText } from "..";
-import { onBeforeInputData } from "../types";
+import { splitNode, insertText, deleteText, replaceLeafText, onBeforeInputData } from "..";
 
 const prevent = (e: any) => {
   e.preventDefault();
@@ -15,6 +14,7 @@ export const onBeforeInput = ([doc, onChange, editor]: onBeforeInputData, e: Inp
   // if (e.composedPath().some((el) => el.getAttribute && el.getAttribute("data-edytor-void") === "true")) {
   //   return;
   // }
+  //@ts-ignore
   const tag = e.target?.tagName;
   if (tag === "TEXTAREA" || tag === "INPUT") return;
   prevent(e);

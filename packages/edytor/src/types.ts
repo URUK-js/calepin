@@ -1,9 +1,20 @@
 import { Array as YArray, Map as YMap, Doc, Text as YText } from "yjs";
-import { Dropper, EdytorSelection, jsonNode } from "./utils";
+import { Dropper, EdytorSelection } from "./utils";
 import * as awarenessProtocol from "y-protocols/awareness";
-export { Doc, YText, YArray };
+export { Doc, YText, YArray, YMap };
 export { EdytorSelection };
 type Accessor<T> = () => T;
+
+export interface jsonLeaf extends Record<string, any> {
+  text: string;
+  data?: object;
+}
+export type jsonNode = {
+  type: string;
+  content?: jsonLeaf[];
+  data?: object;
+  children?: jsonNode[];
+};
 
 export class YNode extends YMap<any> {}
 export type YNodeProps = {

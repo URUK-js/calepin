@@ -1,16 +1,15 @@
-import { YArray, YMap } from "yjs/dist/src/internals";
-import { getIndex } from "../utils";
+import { getIndex, YLeaf, YNode, LeavesArray } from "..";
 
-export const areLeafsMergeable = (nodes: YMap<any>[]) => {
+export const areLeafsMergeable = (nodes: YNode[]) => {
   let keys = nodes.map((node) => Array.from(node.keys())).flat();
   return nodes.every((node) => {
     return keys.every((key) => node.has(key));
   });
 };
 
-export const mergeLeafs = (leafs: YArray<YMap<any>>) => {
+export const mergeLeafs = (leafs: LeavesArray) => {
   let currentLeaf = leafs.get(0);
-  let leafsToDelete = [] as YMap<any>[];
+  let leafsToDelete = [] as YLeaf[];
   leafs.forEach((_, i) => {
     const leaf = leafs.get(i + 1);
     if (!leaf) return;
