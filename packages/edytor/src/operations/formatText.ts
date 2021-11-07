@@ -1,5 +1,5 @@
 import { YMap } from "yjs/dist/src/internals";
-import { Editor, Position, EdytorSelection, YText } from "../types";
+import { Editor, Position, EdytorSelection, YText, YLeaf } from "../types";
 import { mergeLeafs, splitLeaf } from ".";
 import {
   deleteLeafText,
@@ -27,6 +27,7 @@ export type formatAtEqualPathOperation = {
   end: EdytorSelection["end"];
   length: EdytorSelection["length"];
   data?: object;
+  removeFormatIfPresent?: boolean;
 };
 
 export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
@@ -39,7 +40,13 @@ export const applyMarksFromParent = (parent: YMap<any>, leafs: YMap<any>[]) => {
   });
 };
 
-export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPathOperation) => {
+export const formatAtEqualPath = ({
+  format,
+  value,
+  start,
+  end,
+  removeFormatIfPresent = true
+}: formatAtEqualPathOperation) => {
   const length = end.offset - start.offset;
   const leaf = start.leaf;
   const text = leafText(leaf);
@@ -47,19 +54,23 @@ export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPa
   const content = text.toString();
   const index = getIndex(leaf);
 
-  const isMarkActive = leaf.has(format);
+  const isMarkActive = leaf.has(format) && removeFormatIfPresent;
 
   if (isMarkActive && leafLength(leaf) === length) {
     leaf.delete(format);
     return leaf;
   } else {
+    // we get the remaining text of the leaf that is not formated
     const remainingText = content.substring(end.offset, leafLength(leaf));
-    if (remainingText.length == 0 && leafLength(leaf) === end.offset - start.offset) {
+    // if there is not remaining text the whole leaf is formated
+    if (remainingText.length === 0 && leafLength(leaf) === end.offset - start.offset) {
       leaf.set(format, value);
       return leaf;
     } else {
+      // delete the leaf starting at the start offset to split it in half and being able to apply format to the right part of it
       deleteLeafText(leaf, start.offset, leafLength(leaf));
 
+      // create a new leaf in order to apply it the desired format and copying all previous leaf infos into it to preserve the actual format and data
       const formatedLeaf = createLeaf({
         ...leaf.toJSON(),
         id: undefined,
@@ -68,11 +79,9 @@ export const formatAtEqualPath = ({ format, value, start, end }: formatAtEqualPa
       });
 
       let newLeaves = [formatedLeaf];
-
       if (remainingText.length > 0) {
         newLeaves.push(createLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
-
       if (isMarkActive) {
         formatedLeaf.delete(format);
       }
@@ -145,6 +154,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
       }
       case "multileaves":
       case "multinodes": {
+        let leaves = [] as [boolean, YLeaf][];
         const startPathString = start.path.join(",");
         const endPathString = end.path.join(",");
         let started = false;
@@ -154,7 +164,9 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
           editor,
           (leaf, isText) => {
             if (isText) {
+              leaves.push([leaf.has(format), leaf]);
               const path = getPath(leaf);
+              console.log(path);
               const isStart = path.join(",") === startPathString;
               const isEnd = path.join(",") === getPath(end.leaf).join(",");
               console.log({ isEnd }, endPathString, getPath(end.leaf).join(","), path.join(","));
@@ -164,20 +176,26 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
 
               const startOffset = isStart ? start.offset : 0;
               const endOffset = isEnd ? end.offset : leafLength(leaf);
+              console.log({ startOffset, endOffset });
+
               started &&
                 !ended &&
                 formatAtEqualPath({
                   format,
                   start: { leaf, offset: startOffset },
                   end: { offset: endOffset },
-                  value
+                  value,
+                  removeFormatIfPresent: false
                 });
-              console.log({ ended });
+              console.log({ ended, isEnd });
               if (isEnd) {
                 ended = true;
-              }
 
-              mergeLeafs(leafNodeContent(leaf));
+                if (leaves.every(([hasFormat]) => hasFormat === true)) {
+                  leaves.forEach(([_, leaf]) => leaf.delete(format));
+                }
+                mergeLeafs(leafNodeContent(leaf));
+              }
             }
           },
           { start: start.path[0], end: end.path[0] + 1 }
