@@ -15,7 +15,7 @@ import {
   jsonNode
 } from "..";
 
-export const nanoid = () => "y-" + customAlphabet("346789ABCDEFGHJKLMNPQRTUV-WXYabcdefghijkmnpqrtwxyz", 20)();
+export const nanoid = () => "y-" + customAlphabet("12346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz", 20)();
 
 export const getNode = (node): YNode => node?.parent?.parent as YNode;
 

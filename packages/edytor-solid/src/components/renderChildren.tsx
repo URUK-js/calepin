@@ -1,24 +1,22 @@
-import { JSXElement, mapArray, createMemo } from "solid-js";
+import { JSXElement, mapArray, createMemo, Accessor } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { useNode, useText, useChildren, useEditor, useNodeObservation } from "../hooks";
-import { YArray } from "yjs/dist/src/internals";
-import { YLeaf, YNode, getId, leafText } from "edytor";
-import { useIsFocused } from "../hooks/useIsFocused";
+import { useNode, useText, useChildren, useEditor, useIsFocused } from "../hooks";
+import { YLeaf, YNode, getId, leafText, jsonLeaf, jsonNode, YArray } from "edytor";
 
 export const renderChildren = (content: YArray<YLeaf | YNode>, type: "leaf" | "node" | "root"): JSXElement =>
   mapArray(useChildren(content) as any, type === "leaf" ? renderLeaf : renderNode);
 
 export const renderLeaf = (node: YLeaf): JSXElement => {
-  const leaf = useNode(node)();
+  const leaf = useNode(node) as Accessor<jsonLeaf>;
   const { leaves } = useEditor();
   const content = createMemo(() => {
     let leafNode = useText(leafText(node))() as any;
     if (!leafNode.length) leafNode = "\uFEFF";
-    Object.keys(leaf).forEach((mark) => {
+    Object.keys(leaf()).forEach((mark) => {
       if (mark !== "data" && mark !== "text" && mark !== "id") {
         leafNode = (
           <Dynamic
-            {...(typeof leaves[mark] === "string" ? {} : { mark: { [mark]: leaf[mark] }, node })}
+            {...(typeof leaves[mark] === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node })}
             component={leaves[mark]}
           >
             {leafNode}
@@ -36,7 +34,7 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
 };
 
 export const renderNode = (node: YNode) => {
-  const block = useNode(node);
+  const block = useNode(node) as Accessor<jsonNode>;
   const { blocks, defaultBlock } = useEditor();
   return (
     <>

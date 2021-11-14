@@ -1,6 +1,6 @@
 import { WebrtcProvider } from "./y-webrtc";
 import { Doc } from "yjs";
-import { DocFromJson } from "../utils";
+import { DocFromJson } from "..";
 
 export const createWebRtcProvider = (room = "hello", initialValue) => {
   return new Promise((res) => {

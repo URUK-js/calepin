@@ -1,4 +1,3 @@
-import { Editor, jsonNode } from "../..";
 import {
   DocFromJson,
   EdytorSelection,
@@ -10,9 +9,11 @@ import {
   leafNodeContentLength,
   leafString,
   toString,
-  traverse
-} from "../../src";
-import { Doc } from "yjs/dist/src/internals";
+  traverse,
+  Editor,
+  jsonNode,
+  Doc
+} from "../../src/index";
 
 type partialSelection = {
   start: {
@@ -31,6 +32,7 @@ const makeSelectionFromProgrammaticOperation = (doc: Doc, selection: partialSele
   let { start, end, length } = selection as EdytorSelection;
   const startLeaf = getLeafAtPath({ children: doc.getArray("children") }, start.path);
   const endLeaf = getLeafAtPath({ children: doc.getArray("children") }, end?.path || start.path);
+  //@ts-ignore
   if (!startLeaf) return { type: "notInDoc" };
   start = {
     ...start,

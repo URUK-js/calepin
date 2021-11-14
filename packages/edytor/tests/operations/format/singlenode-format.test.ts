@@ -44,6 +44,52 @@ test("format range at same path", () => {
   expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
 });
 
+test("add format to already formated node ", () => {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const expectedValue = [
+    {
+      type: "paragraph",
+      children: [],
+      content: [
+        {
+          text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
+          bold: true
+        },
+        {
+          text: "Rem",
+          bold: true,
+          italic: true
+        },
+        {
+          text: " eius nisi quam molestias laudantium distinctio mollitia excepturi autem consequatur quo",
+          bold: true
+        }
+      ]
+    }
+  ];
+
+  const editor = makeEditorFixture(initialValue, {
+    start: { path: [0, 0], offset: 57 },
+    end: { path: [0, 0], offset: 60 }
+  });
+  formatText(editor, { italic: true });
+
+  expect(removeIds(editor.toJSON())).toStrictEqual(expectedValue);
+});
+
 test("format range  at same path 2", () => {
   const initialValue = [
     {

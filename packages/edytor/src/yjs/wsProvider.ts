@@ -1,4 +1,4 @@
-import { Doc } from "yjs";
+import { Doc } from "..";
 import { WebsocketProvider } from "y-websocket";
 
 export const createWSProvider = (room?) => {

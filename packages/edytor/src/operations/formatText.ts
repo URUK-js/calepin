@@ -17,6 +17,7 @@ import {
   traverse,
   YNode
 } from "..";
+import { getNodeContent, leafString } from "../utils";
 
 export type formatTextOperation = {
   at?: Position;
@@ -31,6 +32,7 @@ export type formatAtEqualPathOperation = {
   start: EdytorSelection["start"] | Pick<EdytorSelection["start"], "leaf" | "offset">;
   end: EdytorSelection["end"] | Pick<EdytorSelection["end"], "offset">;
   data?: object;
+  index: number;
   removeFormatIfPresent?: boolean;
 };
 
@@ -49,6 +51,7 @@ export const formatAtEqualPath = ({
   value,
   start,
   end,
+  index,
   removeFormatIfPresent = true
 }: formatAtEqualPathOperation) => {
   const length = end.offset - start.offset;
@@ -56,7 +59,6 @@ export const formatAtEqualPath = ({
   const text = leafText(leaf);
 
   const content = text.toString();
-  const index = getIndex(leaf);
 
   const isMarkActive = leaf.has(format) && removeFormatIfPresent;
 
@@ -66,9 +68,11 @@ export const formatAtEqualPath = ({
   } else {
     // we get the remaining text of the leaf that is not formated
     const remainingText = content.substring(end.offset, leafLength(leaf));
+
     // if there is not remaining text and the whole leaf is selected we are just applying the mark the leaf
     if (remainingText.length === 0 && leafLength(leaf) === end.offset - start.offset) {
       leaf.set(format, value);
+
       return leaf;
     } else {
       // delete the leaf at the start offset to split it in half and being able to apply format to the right part of it
@@ -79,12 +83,14 @@ export const formatAtEqualPath = ({
         ...leaf.toJSON(),
         id: undefined,
         [format]: value,
+
         text: content.substring(start.offset, end.offset)
       });
 
       // we create an array of leaves that will be pushed inside the parent content
       let newLeaves = [formatedLeaf];
       // if there is a remaining text that should not be formatted, we create a leaf with the same properties of the current leaf has and push it into the leaves array
+
       if (remainingText.length > 0) {
         newLeaves.push(createLeaf({ ...leaf.toJSON(), id: undefined, text: remainingText }));
       }
@@ -101,9 +107,9 @@ export const formatAtEqualPath = ({
 
 export const formatText = (editor: Editor, mark: Record<string, any>) => {
   const [[format, value]] = Object.entries(mark);
-  console.log(format);
+
   let newPath = 0;
-  const { start, end, type, length, setPosition, selectedText } = editor.selection;
+  const { start, end, type, length, setPosition, selectedText, edges } = editor.selection;
 
   editor.doc.transact(() => {
     switch (type) {
@@ -128,7 +134,6 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
           }
           setTimeout(() => {
             setPosition(fragment.get("id") as string, { offset: 0 });
-            console.log(leafNodeContent(start.leaf).toJSON());
           });
         }
         // we merge leaves to avoid two subsequent leaves with the same marks => clean markup
@@ -136,7 +141,7 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
         break;
       }
       case "singlenode": {
-        const formatedLeaf = formatAtEqualPath({ format, value, start, end });
+        const formatedLeaf = formatAtEqualPath({ format, value, start, end, index: getIndex(start.leaf) });
         mergeLeafs(leafNodeContent(start.leaf));
         const isRemoved = formatedLeaf._item.deleted;
 
@@ -160,54 +165,61 @@ export const formatText = (editor: Editor, mark: Record<string, any>) => {
 
         break;
       }
-      case "multileaves":
-      case "multinodes": {
+      case "multileaves": {
         let leaves = [] as [boolean, YLeaf][];
         const startPathString = start.path.join(",");
-        const endPathString = end.path.join(",");
         let started = false;
         let ended = false;
-
-        traverse(
-          editor,
-          (leaf, isText, path) => {
-            if (isText) {
-              leaves.push([leaf.has(format), leaf]);
-
-              const isStart = path.join(",") === startPathString;
-              const isEnd = path.join(",") === getPath(end.leaf).join(",");
-              console.log({ isEnd }, endPathString, getPath(end.leaf).join(","), path.join(","));
-              if (isStart) {
-                started = true;
-              }
-
-              const startOffset = isStart ? start.offset : 0;
-              const endOffset = isEnd ? end.offset : leafLength(leaf);
-              console.log({ startOffset, endOffset });
-
-              started &&
-                !ended &&
-                formatAtEqualPath({
-                  format,
-                  start: { leaf, offset: startOffset },
-                  end: { offset: endOffset },
-                  value,
-                  removeFormatIfPresent: false
-                });
-              console.log({ ended, isEnd });
-              if (isEnd) {
-                ended = true;
-
-                if (leaves.every(([hasFormat]) => hasFormat === true)) {
-                  leaves.forEach(([_, leaf]) => leaf.delete(format));
+        let indexDelta = 0;
+        editor.doc.transact(() => {
+          traverse(
+            editor,
+            (leaf, isText) => {
+              if (isText) {
+                const path = getPath(leaf);
+                const isStart = path.join(",") === startPathString;
+                const isEnd = path.join(",") === getPath(end.leaf).join(",");
+                if (isStart) {
+                  started = true;
                 }
-                mergeLeafs(leafNodeContent(leaf));
+
+                const startOffset = isStart ? start.offset : 0;
+                const endOffset = isEnd ? end.offset : leafLength(leaf);
+
+                if (started && !ended) {
+                  leaves.push([
+                    leaf.has(format),
+                    formatAtEqualPath({
+                      format,
+                      start: { leaf, offset: startOffset },
+                      end: { offset: endOffset },
+                      value,
+                      removeFormatIfPresent: false,
+                      index: path[path.length - 1] - indexDelta
+                    })
+                  ]);
+                }
+                // we increment the index delta if the start leaf is cut in half because a blank text leaf will be inserted otherwise
+                if (isStart && !edges.startLeaf) indexDelta++;
+
+                if (isEnd) {
+                  ended = true;
+                  // we iterates all the touched leaves to delete the format if all of them have it
+                  if (leaves.every(([hasFormat]) => hasFormat)) {
+                    leaves.forEach(([_, leaf]) => leaf.delete(format));
+                  }
+                  // we merge the leaves in order to have a clean json output
+                  mergeLeafs(leafNodeContent(leaf));
+                }
               }
-            }
-          },
-          { start: start.path[0], end: end.path[0] + 1 }
-        );
+            },
+            { start: start.path[0], end: end.path[0] + 1 }
+          );
+        });
         break;
+      }
+      case "multinodes": {
+        return;
       }
     }
   });

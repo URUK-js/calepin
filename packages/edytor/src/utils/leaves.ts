@@ -1,6 +1,16 @@
-import { Map, Text } from "yjs";
-import { getIndex, nanoid, deleteNode, YLeafProps, Editor, YNode, LeavesArray, NodesArray, YLeaf, YText } from "..";
-
+import {
+  getIndex,
+  nanoid,
+  deleteNode,
+  YLeafProps,
+  Editor,
+  YNode,
+  LeavesArray,
+  NodesArray,
+  YLeaf,
+  YText,
+  YMap
+} from "..";
 export class LeavesHarvest {
   leaves: { [id: string]: { shouldDeleteNode: boolean; content: LeavesArray; node: YNode; indexes: number[] } };
   constructor() {
@@ -62,7 +72,7 @@ export const setLeafData = (leaf, data: object) => {
       leafData(leaf).set(key, data[key]);
     });
   } else {
-    leaf.set("data", new Map(Object.entries(data)));
+    leaf.set("data", new YMap(Object.entries(data)));
   }
 };
 
@@ -87,13 +97,13 @@ export const leafNodeChildren = (leaf): NodesArray => leafNode(leaf).get("childr
 export const leafNodeChildrenLength = (leaf): number => leafNodeChildren(leaf).length;
 
 export const createLeaf = (props?: YLeafProps): YLeaf => {
-  const leaf = new Map();
+  const leaf = new YMap();
   leaf.set("id", props?.id || nanoid());
-  leaf.set("text", new Text(props?.text || ""));
+  leaf.set("text", new YText(props?.text || ""));
   if (props) {
     const { id, text, data, ...marks } = props;
-    leaf.set("text", new Text(text || ""));
-    data && leaf.set("data", new Map(Object.entries(data)));
+    leaf.set("text", new YText(text || ""));
+    data && leaf.set("data", new YMap(Object.entries(data)));
     marks &&
       Object.keys(marks).forEach((mark) => {
         leaf.set(mark, marks[mark]);

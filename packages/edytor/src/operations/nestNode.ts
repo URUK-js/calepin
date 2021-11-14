@@ -34,16 +34,18 @@ export const nestNode = (editor: Editor) => {
       const endPathString = end.path.slice(0, start.path.length - 1).join("");
       traverse(
         editor,
-        (node, isText, path) => {
+        (node, isText) => {
+          // only nodes
+          if (isText) return;
+          const path = getPath(node);
           if (
-            // only nodes
-            !isText &&
             // only nodes that have the same depth of the first focused node
             path.length === startPath.length &&
             // only nodes that are between the first and last focused nodes included
             path.join("") <= endPathString &&
             path.join("") >= startPathString
           ) {
+            const path = getPath(node);
             // increment length because this node should be removed
             length++;
             // increment length because this node should be removed

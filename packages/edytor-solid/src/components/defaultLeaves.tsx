@@ -1,7 +1,7 @@
 const Ref = () => {
   return (
     <span contentEditable={false}>
-      <b>I'M a ref bitch</b>
+      <b>I'M an inline void leaf</b>
     </span>
   );
 };
