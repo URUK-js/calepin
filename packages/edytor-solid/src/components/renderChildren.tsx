@@ -14,11 +14,10 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
     if (!leafNode.length) leafNode = "\uFEFF";
     Object.keys(leaf()).forEach((mark) => {
       if (mark !== "data" && mark !== "text" && mark !== "id") {
+        const { component, isVoid } = leaves[mark];
+        let leafProps = { ...(typeof component === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node, isVoid }) };
         leafNode = (
-          <Dynamic
-            {...(typeof leaves[mark] === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node })}
-            component={leaves[mark]}
-          >
+          <Dynamic {...leafProps} component={component}>
             {leafNode}
           </Dynamic>
         );
@@ -36,18 +35,17 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
 export const renderNode = (node: YNode) => {
   const block = useNode(node) as Accessor<jsonNode>;
   const { blocks, defaultBlock } = useEditor();
+  const { component, isVoid } = createMemo(() => blocks[block().type || blocks[defaultBlock]])();
   return (
-    <>
-      {getId(node)}
-      <Dynamic
-        props={{ "data-edytor-block": true, id: getId(node) }}
-        block={block}
-        node={node}
-        focused={useIsFocused(node)}
-        content={renderChildren(node.get("content"), "leaf")}
-        children={renderChildren(node.get("children"), "node")}
-        component={createMemo(() => blocks[block().type || blocks[defaultBlock]])()}
-      />
-    </>
+    <Dynamic
+      props={{ "data-edytor-block": true, id: getId(node) }}
+      block={block}
+      node={node}
+      isVoid={isVoid}
+      focused={useIsFocused(node)}
+      content={renderChildren(node.get("content"), "leaf")}
+      children={renderChildren(node.get("children"), "node")}
+      component={component}
+    />
   );
 };
