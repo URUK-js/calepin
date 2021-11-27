@@ -23,7 +23,6 @@ export class Dropper {
     this.allowNesting = editor.allowNesting;
   };
   startDrag = (node, e: DragEvent) => {
-    if (!this.editor.dnd.active) return;
     this.node = node;
     const dndIndicator = document.getElementById("dndIndicator");
     dndIndicator.style.opacity = "1";
@@ -72,7 +71,6 @@ export class Dropper {
     return { hoveredElement: element, hoveredNode };
   };
   onDrag = (e: MouseEvent) => {
-    if (!this.editor.dnd.active) return;
     const { hoveredElement, hoveredNode } = this.getHoveredNode(e.target as HTMLElement);
     const dndIndicator = document.getElementById("dndIndicator");
 
@@ -89,17 +87,17 @@ export class Dropper {
 
     let [index, ...startOfPath] = path.slice().reverse();
 
-    if (this.startPath.join("") === startOfPath.join("")) {
+    if (this.startPath?.join("") === startOfPath.join("")) {
       return;
-      // this.to= undefined
     }
-
+    dndIndicator.style.opacity = "1";
     dndIndicator.style.width = `${rect.width - deltaX}px`;
     dndIndicator.style.top = `${top + window.pageYOffset}px`;
     dndIndicator.style.left = `${rect.left + deltaX}px`;
 
     index = index + (isOnTop ? 0 : 1);
     if (index === -1) index = 0;
+    console.log({ rect, hoveredElement });
     this.to = {
       container: isNested ? hoveredNode.get("children") : path.length === 1 ? this.editor.children : hoveredNode.parent,
       at: isNested ? 0 : index
