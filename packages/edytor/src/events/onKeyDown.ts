@@ -1,5 +1,5 @@
 import isHotkey from "is-hotkey";
-import { formatText, nestNode, Editor } from "..";
+import { formatText, nestNode, Editor, HotKeys } from "..";
 
 export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
   if (e.key === "Tab") {
@@ -18,7 +18,8 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
 
     if (editor.hotkeys) {
       for (let i = 0; i < editor.hotkeys.length; i++) {
-        const { keys, operation, mark } = editor.hotkeys[i];
+        const hk = editor.hotkeys[i];
+        const { keys, operation } = hk;
         if (isHotkey(keys, e)) {
           e.preventDefault();
           e.stopPropagation();
@@ -27,7 +28,11 @@ export const onKeyDown = (editor: Editor, e: KeyboardEvent) => {
           }
           switch (operation) {
             case "formatText": {
-              return formatText(editor, mark);
+              return formatText(editor, hk.mark);
+            }
+
+            case "wrapInlines": {
+              return;
             }
           }
           break;
@@ -44,4 +49,4 @@ export const defaultHotkeys = [
   { operation: "formatText", keys: "mod+shift+c", mark: { code: true } },
   { operation: "formatText", keys: "mod+shift+x", mark: { strikethrough: true } },
   { operation: "formatText", keys: "mod+shift+h", mark: { highlight: true } }
-];
+] as HotKeys[];

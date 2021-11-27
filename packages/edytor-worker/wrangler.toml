@@ -1,0 +1,24 @@
+name = "edytor"
+
+type = "javascript"
+account_id = "6886250e2aff0047919a1ed731a55c64"
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2021-11-27"
+
+[build]
+command = "pnpm run build"
+[build.upload]
+# The "modules" upload format is required for all projects that export a Durable Objects class
+format = "modules"
+dir = "dist"
+main = "./index.mjs"
+
+[durable_objects]
+bindings = [{name = "rooms", class_name = "Edytor"}]
+
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["Edytor"]

@@ -11,11 +11,14 @@ import {
   defaultHotkeys
   // createWSProvider
 } from "edytor";
-import { Dropper, nanoid } from "edytor/src";
+import { Dropper, nanoid, toString } from "edytor/src";
 import { useYjsContext } from "./contexts/yjsContext";
 
 export const Editor = ({
+  documentId = nanoid(),
+  user = { id: nanoid(), name: nanoid() },
   renderHandle = () => null,
+  renderDndIndicator,
   leaves = defaultLeaves,
   blocks = defaultBlocks,
   voids,
@@ -26,38 +29,38 @@ export const Editor = ({
   Before,
   After,
   onMount = () => null,
-
-  dnd = { active: false },
   hotkeys = defaultHotkeys,
   defaultBlock = "paragraph",
   className = "edytor",
   allowNesting = true,
   readOnly = false,
-  props
+  accept,
+  props,
+  onFileDrop
 }: EditorProps) => {
-  let editorId = nanoid();
   let editorRef = undefined as HTMLDivElement | undefined;
 
   const { doc, children, awareness, provider } = useYjsContext();
 
   const onChangeObserver = () => {
-    // console.log(children.toJSON());
+    console.log(editor.toString());
   };
   onMountSolid(() => children.observeDeep(onChangeObserver));
+
   onCleanup(() => {
     children.unobserveDeep(onChangeObserver);
     if (provider) provider.disconnect();
   });
-  collaboration.user.id = editorId;
+
   const selection = new EdytorSelection();
   const dropper = new Dropper();
   awareness?.setLocalStateField("user", {
-    id: editorId
+    ...user
   });
   const undoManager = useHistory(children, selection);
   const editor = {
-    editorId,
-    dnd,
+    documentId,
+    user,
     readOnly,
     collaboration,
     voids,
@@ -74,6 +77,9 @@ export const Editor = ({
     editorRef,
     doc,
     children,
+    onFileDrop,
+    acceptedFileTypes: accept,
+    toString: (separator?: string) => toString(children, separator),
     // toString: doc.string,
     toJSON: children.toJSON,
     ID_TO_NODE: new Map()
@@ -85,26 +91,25 @@ export const Editor = ({
       <div
         {...props}
         className={className}
-        id={editorId}
+        id={documentId}
         spellcheck={spellcheck}
-        data-edytor={editorId}
+        data-edytor={documentId}
         data-gram={true}
         ref={(container) => {
           editorRef = container;
           selection.init(editor, container);
-          dropper.init(editor, container);
+          renderDndIndicator && dropper.init(editor, container);
           onMount(editor);
         }}
         // onMouseMove={[onMouseMove, editor]}
         onDrop={[onDrop, editor]}
         onDragOver={[onDragOver, editor]}
-        onDragStart={[onDragOver, editor]}
         onBeforeInput={[onBeforeInput, [doc, onChange, editor]]}
         onKeyDown={[onKeyDown, editor]}
         contentEditable={!readOnly}
       >
         {Inner && <Inner editor={editor} />}
-        {dnd?.active && dnd.renderIndicator()}
+        {renderDndIndicator && renderDndIndicator({ id: "dndIndicator", contentEditable: false })}
         {renderChildren(children, "root")}
       </div>
       {After && <After editor={editor} />}

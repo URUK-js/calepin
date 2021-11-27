@@ -2,7 +2,7 @@
   /* @apply transition-all; */
 }
 [data-edytor] {
-  @apply mx-auto md:px-16 px-10 mt-10 transition-all;
+  @apply px-10 mx-auto mt-10 transition-all md:px-16;
   text-align: left;
   outline: none;
   white-space: pre-wrap;
@@ -23,34 +23,34 @@
   @apply max-w-5xl;
 }
 [data-edytor][data-full-width="true"] {
-  @apply max-w-full  md:px-16 px-2;
+  @apply max-w-full px-2 md:px-16;
 }
 
 h1 {
-  @apply text-5xl font-extrabold leading-normal  pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-5xl font-extrabold leading-normal;
 }
 h2 {
-  @apply text-4xl font-extrabold leading-normal  pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-4xl font-extrabold leading-normal;
 }
 h3 {
-  @apply text-3xl font-extrabold leading-normal   pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-3xl font-extrabold leading-normal;
 }
 h4 {
-  @apply text-2xl font-bold  leading-normal  pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-2xl font-bold leading-normal;
 }
 h5 {
-  @apply text-xl font-bold   leading-normal  pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-xl font-bold leading-normal;
 }
 h6 {
-  @apply text-base font-bold  leading-normal  pt-5 pb-5 relative;
+  @apply relative pt-5 pb-5 text-base font-bold leading-normal;
 }
 
 p {
-  @apply text-base font-normal leading-relaxed mt-0 mb-0 relative pt-3 pb-3;
+  @apply relative pt-3 pb-3 mt-0 mb-0 text-base font-normal leading-relaxed;
 }
 
 blockquote {
-  @apply border-l-2 text-gray-700 border-gray-400 pl-4 mt-0 mb-0 relative  pt-3 pb-3;
+  @apply relative pt-3 pb-3 pl-4 mt-0 mb-0 text-gray-700 border-l-2 border-gray-400;
 }
 
 [data-edytor][data-small-text="true"] h1 {
@@ -79,17 +79,17 @@ blockquote {
 }
 
 [data-edytor] mark.red {
-  @apply bg-red-100 text-red-400;
+  @apply text-red-400 bg-red-100;
 }
 
 [data-edytor] mark.blue {
-  @apply bg-blue-100 text-blue-400;
+  @apply text-blue-400 bg-blue-100;
 }
 [data-edytor] mark.purple {
-  @apply bg-purple-100 text-purple-400;
+  @apply text-purple-400 bg-purple-100;
 }
 [data-edytor] mark.yellow {
-  @apply bg-yellow-100 text-yellow-400;
+  @apply text-yellow-400 bg-yellow-100;
 }
 
 [data-edytor-block] > [data-edytor-block] {
@@ -101,11 +101,9 @@ blockquote {
 
 #dndIndicator {
   position: absolute;
-  height: 2px;
+  height: 10px;
   border-radius: 10px;
-
   opacity: 0;
-
   transition: all 20ms ease-in;
 }
 [data-edytor-block] {

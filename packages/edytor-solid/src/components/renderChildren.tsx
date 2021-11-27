@@ -15,9 +15,12 @@ export const renderLeaf = (node: YLeaf): JSXElement => {
     Object.keys(leaf()).forEach((mark) => {
       if (mark !== "data" && mark !== "text" && mark !== "id") {
         const { component, isVoid } = leaves[mark];
-        let leafProps = { ...(typeof component === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node, isVoid }) };
+
         leafNode = (
-          <Dynamic {...leafProps} component={component}>
+          <Dynamic
+            {...(typeof component === "string" ? {} : { mark: { [mark]: leaf()[mark] }, node, isVoid })}
+            component={component}
+          >
             {leafNode}
           </Dynamic>
         );
@@ -41,11 +44,11 @@ export const renderNode = (node: YNode) => {
       props={{ "data-edytor-block": true, id: getId(node) }}
       block={block}
       node={node}
-      isVoid={isVoid}
       focused={useIsFocused(node)}
       content={renderChildren(node.get("content"), "leaf")}
       children={renderChildren(node.get("children"), "node")}
       component={component}
+      isVoid={isVoid}
     />
   );
 };

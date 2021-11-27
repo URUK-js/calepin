@@ -3,7 +3,14 @@ import { YjsContextWrapper } from "./src/contexts/yjsContext";
 export * from "./src";
 import { Editor } from ".";
 const WrappedEditor = (props: EditorProps) => {
-  return <YjsContextWrapper initialValue={props.initialValue} renderChildren={() => <Editor {...props} />} />;
+  return (
+    <YjsContextWrapper
+      documentId={props.documentId}
+      collaborativeServerEndpoint={props.collaborativeServerEndpoint}
+      initialValue={props.initialValue}
+      renderChildren={() => <Editor {...props} />}
+    />
+  );
 };
 
 export default WrappedEditor;

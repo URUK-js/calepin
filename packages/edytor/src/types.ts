@@ -3,6 +3,7 @@ import { Dropper, EdytorSelection } from "./utils";
 import * as awarenessProtocol from "y-protocols/awareness";
 export { Doc, YText, YArray, YMap };
 export { EdytorSelection };
+
 type Accessor<T> = () => T;
 
 export interface jsonLeaf extends Record<string, any> {
@@ -67,51 +68,113 @@ export type renderHandleProps = {
   node: YNode;
 };
 
-interface HotKeys {
-  operation: ((editor: Editor) => void) | "formatText" | "wrapInlines";
-  keys: string;
-  mark: Record<string, any>;
-}
-type DNDProps = {
-  canNest?: (block: YMap<any>, path: number[]) => boolean;
-  active: boolean;
-  renderIndicator: () => any;
-  onExternalDrop?: (files) => any;
-  accept?: string[];
-  afterDrop?: (editor: Editor, from, to) => void;
-};
-export interface EditorProps extends Record<any, any> {
-  allowNesting: boolean;
-  children: any;
-  initialValue: {
-    json?: jsonNode[];
-    yarray?: YArray<any>;
-  };
-  dnd?: DNDProps;
+export type HotKeys =
+  | {
+      operation: "formatText";
+      keys: string;
+      mark: { [key: string]: boolean };
+    }
+  | {
+      operation: (editor: Editor) => void;
+      keys: string;
+    }
+  | {
+      operation: "wrapInlines";
+      keys: string;
+      type: "string";
+    };
 
-  collaboration: {
+export interface EditorProps extends Record<any, any> {
+  /**
+  allow user to nest node inside each other either by hitting tab or by drag end dropping them if dnd is active
+  */
+  allowNesting?: boolean;
+  /**
+  the initial value of the document.
+  If the value is a an array of nodes, it will be converted to a Y Document. This usefull for storage and non collaborative editing.
+  If the value is a Yarray we presume that the document is embed inside a preexistant Y Document that we will use a reference.
+  */
+  initialValue: jsonNode[] | YArray<any>;
+
+  /**
+  The current editor of the document
+  */
+  user: {
+    color?: string;
+    name?: string;
+    id?: string | number;
+    picture?: string;
+  };
+  collaboration?: {
     awarenessId?: string;
     awareness?: awarenessProtocol.Awareness;
     url: string;
     room: string;
-    user?: {
-      color?: string;
-      name?: string;
-      id?: string | number;
-      picture?: string;
-    };
   };
+  /**
+  A yjs awareness protocol in case the document is embeded inside another yjs document that you want to share awareness.
+  */
+  awareness?: awarenessProtocol.Awareness;
+  /**
+  The endpoint of your server in case the document is a collaborative one
+  */
+  collaborativeServerEndpoint?: string;
+  /**
+  Function triggered when the editor is ready.
+  */
   onMount?: (editor: Editor) => void;
-  leaves: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
-  blocks: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+  /**
+  An object that map all leaves types to components or an html tag to render
+  */
+  leaves?: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+  /**
+  An object that map all nodes types to components or an html tag to render
+  */
+  blocks?: Record<string, keyof HTMLElementTagNameMap> | Record<string, any>;
+  /**
+  The default block type that is inserted when document is entirely deleted or when hitting enter to split a node
+  */
   defaultBlock?: string;
   spellcheck?: boolean;
-  readOnly: boolean;
+  readOnly?: boolean;
   className?: string;
-  id?: string;
-  hotkeys: HotKeys[];
-  renderBefore?: () => any;
-  renderAfter?: () => any;
+  /**
+  The unique document identifier.
+  This will be the id of the editor div.
+  If collaboration is enabled this will be used to store awareness infos and as the room id.
+  */
+  documentId?: string;
+  /**
+  An array of key combinations defining custom action
+  */
+  hotkeys?: HotKeys[];
+  /**
+  A component to render inside the editor div
+  */
+  Inner?: ({ editor }: { editor: Editor }) => any;
+  /**
+  A component to render before the component div but inside the Editor context
+  */
+  Before?: ({ editor }: { editor: Editor }) => any;
+  /**
+  A component to render after the component div but inside the Editor context
+  */
+  After?: ({ editor }: { editor: Editor }) => any;
+  renderHandle?: any;
+  /**
+  A component to render dnd indicator on file drop or node dnd.
+  If this function is undefined the dnd behavior won't be activated both for node dnd of for file dnd
+  */
+  renderDndIndicator?: (props: { id: "dndIndicator"; contentEditable: false }) => any;
+  /**
+  An array of accepted mime types
+  */
+  accept?: string[];
+  /**
+  A function triggered on file drop.
+  Defining this function will activate external file dropping.
+  */
+  onFileDrop?: (editor: Editor, files: File[], position) => void;
   onChange?: (editor: Editor) => void;
 }
 
@@ -119,10 +182,9 @@ export type EditorWithChildren = Pick<Editor, "children">;
 export interface Editor {
   allowNesting: boolean;
   readOnly: boolean;
-  editorId: string;
+  documentId: string;
   defaultBlock: string;
   awareness?: awarenessProtocol.Awareness;
-  dnd?: DNDProps;
   dropper: Dropper;
   hotkeys?: HotKeys[];
   selection: EdytorSelection;
@@ -132,10 +194,12 @@ export interface Editor {
   undoManager: any;
   editorRef: HTMLDivElement | undefined;
   doc: Doc;
-  toRawText: () => string;
+  toString: (separtor?: string) => string;
   toJSON: () => jsonNode[];
   ID_TO_NODE: Map<string, YMap<any>>;
   children: YArray<any>;
+  acceptedFileTypes?: string[];
+  onFileDrop: (editor: Editor, files: File[], position) => void;
 }
 
 export interface Value {

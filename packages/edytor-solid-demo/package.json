@@ -24,6 +24,7 @@
     "@fontsource/noto-sans-hk": "^4.5.1",
     "@fontsource/playfair-display": "^4.5.0",
     "@fontsource/space-mono": "^4.5.0",
+    "@tailwindcss/typography": "^0.4.1",
     "codemirror": "^5.63.3",
     "edytor": "workspace:*",
     "edytor-solid": "workspace:*",

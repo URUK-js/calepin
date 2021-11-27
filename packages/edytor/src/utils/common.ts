@@ -14,6 +14,7 @@ import {
   createLeaf,
   jsonNode
 } from "..";
+import { NodesArray } from "../types";
 
 export const nanoid = () => "y-" + customAlphabet("12346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz", 20)();
 
@@ -110,11 +111,11 @@ export const traverse = (
   }
 };
 
-export const toString = (editor: Editor | EditorWithChildren): string => {
+export const toString = (children: NodesArray, separator?: string): string => {
   let t = "";
-  const array = editor.children.toArray() as YNode[];
+  const array = children.toArray() as YNode[];
   for (let i = 0; i < array.length; i++) {
-    t += nodeString(array[i]);
+    t += nodeString(array[i]) + (separator || "\n");
   }
   return t;
 };

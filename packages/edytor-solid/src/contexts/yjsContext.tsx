@@ -1,8 +1,7 @@
 import { createContext, Show, createSignal, onMount, useContext } from "solid-js";
 import * as awarenessProtocol from "y-protocols/awareness";
 import { WebsocketProvider } from "y-websocket";
-import { createWSProvider, DocFromJson, EditorProps, YNode } from "edytor/src";
-import { Doc, YArray } from "yjs/dist/src/internals";
+import { createWSProvider, DocFromJson, EditorProps, YNode, YArray, Doc } from "edytor";
 
 const YjsContext = createContext<YjsContextType | undefined>();
 type YjsContextType = {
@@ -14,40 +13,40 @@ type YjsContextType = {
 
 interface YjsContextWrapperProps extends Pick<EditorProps, "initialValue"> {
   renderChildren: () => any;
+  documentId?: string;
+  collaborativeServerEndpoint?: string;
 }
 export const useYjsContext = (): YjsContextType => {
   return useContext(YjsContext) as YjsContextType;
 };
-export const YjsContextWrapper = ({ initialValue, renderChildren }: YjsContextWrapperProps) => {
+export const YjsContextWrapper = ({
+  initialValue,
+  renderChildren,
+  documentId,
+  collaborativeServerEndpoint
+}: YjsContextWrapperProps) => {
   const [contextValue, setContextValue] = createSignal<YjsContextType>();
   onMount(() => {
     let doc, children;
-    if (initialValue.yarray) {
-      children = initialValue.yarray;
-      doc = children.doc as Doc;
+    if (!collaborativeServerEndpoint || !documentId) {
+      if (initialValue instanceof YArray) {
+        children = initialValue;
+        doc = children.doc as Doc;
+      } else {
+        doc = DocFromJson(initialValue);
+        children = doc.getArray("children");
+      }
+      setContextValue({ doc, children, provider: undefined, awareness: undefined });
     } else {
-      doc = DocFromJson(initialValue.json!);
-      children = doc.getArray("children");
+      createWSProvider(documentId, collaborativeServerEndpoint).then((provider) => {
+        setContextValue({
+          doc: provider.doc,
+          children: provider.doc.getArray("children"),
+          provider,
+          awareness: provider.awareness
+        });
+      });
     }
-    setContextValue({ doc, children, provider: undefined, awareness: undefined });
-
-    // createWSProvider("aelalmeeazeaza").then((provider) => {
-    //   setContextValue({
-    //     doc: provider.doc,
-    //     children: provider.doc.getArray("children"),
-    //     provider,
-    //     awareness: provider.awareness
-    //   });
-    // });
-    // createWebRtcProvider("aelalmeeazeaza", initialValue.json).then((provider) => {
-    //   console.log(provider);
-    //   setContextValue({
-    //     doc: provider.doc,
-    //     children: provider.doc.getArray("children"),
-    //     provider,
-    //     awareness: provider.awareness
-    //   });
-    // });
   });
 
   return (
